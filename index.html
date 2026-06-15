@@ -84,17 +84,22 @@
             text-align: left;
             border-left: 5px solid #e2001a;
             background-color: #fdfdfd;
-            padding: 20px;
+            padding: 0px 20px; /* Parte da 0 per l'animazione fluida */
             border-radius: 4px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             opacity: 0;
+            max-height: 0;
+            overflow: hidden;
             transform: translateY(-10px);
-            transition: opacity 0.4s ease, transform 0.4s ease;
+            /* Transizione estesa per gestire anche la scomparsa fluida dello spazio occupato dal box */
+            transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease;
         }
 
         /* Stato per l'animazione di comparsa */
         .news-box.show {
             opacity: 1;
+            max-height: 200px; /* Altezza massima stimata per contenere il testo */
+            padding: 20px;
             transform: translateY(0);
         }
 
@@ -239,22 +244,18 @@
         }
 
         // Funzione principale che genera la notizia e la inserisce in cima alla lista
-        function generaNews() {
-            // 1. Estrazione dei tre pezzi random
+       function generaNews() {
             const squadraScelta = getRandomElement(squadre);
             const giocatoreScelto = getRandomElement(giocatori);
             const azioneScelta = getRandomElement(azioni);
 
-            // 2. Prepariamo le versioni evidenziate
             const squadraEvidenziata = `<span class="highlight">${squadraScelta}</span>`;
             const giocatoreEvidenziato = `<span class="highlight">${giocatoreScelto}</span>`;
 
-            // 3. Logica di composizione
             let notiziaFinale = azioneScelta
                 .replace(/{giocatore}/g, giocatoreEvidenziato)
                 .replace(/{squadra}/g, squadraEvidenziata);
 
-            // 4. Creazione dinamica del nuovo blocco notizia
             const nuovoNewsBox = document.createElement('div');
             nuovoNewsBox.className = 'news-box';
             
@@ -263,14 +264,24 @@
                 <div class="news-text">${notiziaFinale}</div>
             `;
 
-            // 5. Inserimento nel contenitore in cima (prepend)
             const newsContainer = document.getElementById('news-container');
             newsContainer.prepend(nuovoNewsBox);
 
-            // 6. Attivazione dell'effetto fade-in/slide-down tramite un leggerissimo delay
+            // 1. Mostra la notizia con effetto transizione
             setTimeout(() => {
                 nuovoNewsBox.classList.add('show');
             }, 10);
+
+            // 2. Timer per far sparire la notizia dopo 2 minuti (120000 ms)
+            setTimeout(() => {
+                // Avvia l'animazione di sparizione rimuovendo la classe
+                nuovoNewsBox.classList.remove('show');
+                
+                // Rimuove fisicamente l'elemento dal DOM al termine dell'animazione (400ms)
+                setTimeout(() => {
+                    nuovoNewsBox.remove();
+                }, 400);
+            }, 120000); // Puoi impostare 5000 (5 secondi) se vuoi testarlo subito
         }
 
         // Collegiamo la funzione al click del pulsante
