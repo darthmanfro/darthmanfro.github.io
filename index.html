@@ -272,7 +272,7 @@
                 nuovoNewsBox.classList.add('show');
             }, 10);
 
-            // 2. Timer per far sparire la notizia dopo 2 minuti (120000 ms)
+            // 2. Timer per far sparire la notizia dopo 30 secondi (30000 ms)
             setTimeout(() => {
                 // Avvia l'animazione di sparizione rimuovendo la classe
                 nuovoNewsBox.classList.remove('show');
@@ -281,7 +281,7 @@
                 setTimeout(() => {
                     nuovoNewsBox.remove();
                 }, 400);
-            }, 120000); // Puoi impostare 5000 (5 secondi) se vuoi testarlo subito
+            }, 30000); // Puoi impostare 5000 (5 secondi) se vuoi testarlo subito
         }
 
         // Collegiamo la funzione al click del pulsante
