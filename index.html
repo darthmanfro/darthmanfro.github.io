@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -56,6 +57,7 @@
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px rgba(0,47,108,0.2);
+            margin-bottom: 20px;
         }
 
         #btn-genera:hover {
@@ -68,25 +70,32 @@
             transform: translateY(0);
         }
 
-        /* Box della notizia generata */
-        #news-box {
-            margin-top: 30px;
-            min-height: 120px;
+        /* Contenitore della lista di notizie */
+        #news-container {
+            width: 100%;
+            margin-top: 10px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            gap: 15px;
+        }
+
+        /* Box della singola notizia generata */
+        .news-box {
+            text-align: left;
             border-left: 5px solid #e2001a;
             background-color: #fdfdfd;
             padding: 20px;
             border-radius: 4px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transform: translateY(-10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
 
-        #news-box.show {
+        /* Stato per l'animazione di comparsa */
+        .news-box.show {
             opacity: 1;
+            transform: translateY(0);
         }
 
         /* Badge "ULTIM'ORA" */
@@ -98,14 +107,14 @@
             padding: 4px 8px;
             text-transform: uppercase;
             border-radius: 3px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             letter-spacing: 1px;
             display: inline-block;
         }
 
         /* Il titolo della notizia vero e proprio */
         .news-text {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             font-weight: 800;
             color: #111;
             line-height: 1.3;
@@ -124,19 +133,15 @@
         <h1>Calciominchiato LIVE</h1>
         <div class="subtitle">Generatore di Notizie di Calciominchiato in Tempo Reale</div>
         <h2>Affidabile tanto quanto i siti di news ufficiali (forse di più)</h2>
-        
+         
         <button id="btn-genera">Genera News</button>
 
-        <div id="news-box">
-            <span class="badge">Ultim'ora</span>
-            <div id="news-content" class="news-text">
-                Clicca sul pulsante per scoprire l'ultima bomba di mercato!
+        <div id="news-container">
             </div>
-        </div>
     </div>
 
     <script>
-        // Definizione dei 3 archivi di dati (JSON/Array)
+        // Definizione dei 3 archivi di dati
         const squadre = [
             "Atalanta", "Bologna", "Cagliari", "Como", "Fiorentina", 
             "Frosinone", "Genoa", "Inter", "Juventus", "Lazio", 
@@ -158,77 +163,74 @@
             "Malo Gusto", "Curtis Jones", "Rodrygo", "Arda Guler", "Brahim Diaz", "Kubo"
         ];
         
-        // Frasi rimodellate con il doppio placeholder {squadra} e {giocatore}
-const azioni = [
-    "{squadra}: pista calda su {giocatore}, l'accordo è vicino",
-    "{squadra}: si raffredda la pista su {giocatore} dopo l'inserimento a sorpresa di un club inglese",
-    "{squadra}: tentativo lampo per {giocatore}, offerta ufficiale presentata",
-    "È fatta per l'arrivo di {giocatore} al fantacalcio e alla {squadra}: visite mediche programmate",
-    "{squadra}: frena la trattativa per {giocatore}, ballano 5 milioni sui bonus",
-    "{squadra}: assalto totale a {giocatore}, l'agente è in sede",
-    "Beffa vicina per {squadra} su {giocatore}: il giocatore preferisce un'altra destinazione",
-    "Muro contro muro tra {squadra} e {giocatore}: la richiesta del club è considerata troppo alta",
-    "{squadra} al lavoro su {giocatore}, ma c'è un nodo da sciogliere",
-    "{squadra}: pista calda per {giocatore}, le prossime 48 ore saranno decisive",
-    "Si raffredda la pista {squadra} per {giocatore}: c'è una brusca frenata",
-    "Pista fredda per {giocatore} in orbita {squadra}: la trattativa si è arenata",
-    "{squadra}: pista concreta per {giocatore}, si lavora a un accordo pluriennale",
-    "Pista alternativa per {squadra} su {giocatore} se dovesse saltare il primo obiettivo",
-    "Nome concreto per il centrocampo di {squadra}: si punta a chiudere per {giocatore}",
-    "Nome caldo per l'attacco di {squadra}: c'è un forte interesse per {giocatore}",
-    "{giocatore} è considerato un prospetto importante per il futuro di {squadra}",
-    "Occhi di {squadra} su {giocatore}: un prospetto futuribile che piace molto alla dirigenza",
-    "Contatti avviati tra {squadra} e {giocatore}: un prospetto concreto per la difesa",
-    "Profilo importante per {squadra} identificato in {giocatore}: si cerca l'intesa sull'ingaggio",
-    "Profilo concreto per {squadra} che punta {giocatore}: la trattativa entra nel vivo",
-    "Visionato {giocatore} dagli osservatori di {squadra}: un profilo di prospettiva che mette d'accordo tutti",
-    "{squadra} forte su {giocatore}: presentata la prima offerta ufficiale",
-    "{squadra}: pista calda per {giocatore}, l'affare può sbloccarsi entro 48 ore",
-    "{squadra}: pista concreta per {giocatore}, si attende solo il via libera",
-    "Filtra ottimismo in casa {squadra} per {giocatore}: si chiude la quadra con l'agente",
-    "Filtra cauto ottimismo tra {squadra} e l'entourage di {giocatore} dopo l'ultimo incontro",
-    "Filtra velato ottimismo sponda {squadra} per {giocatore}: si lavora ai dettagli del contratto",
-    "Filtra fiducia per l'arrivo di {giocatore} a {squadra}: si va a dama a inizio settimana",
-    "Si lavora a fari spenti in casa {squadra} per {giocatore}: si punta a limare i bonus",
-    "Trattativa {squadra}-{giocatore}: c'è un nodo legato alle commissioni",
-    "C'è uno scoglio da superare per {squadra} su {giocatore}: la formula del trasferimento",
-    "C'è un nodo da sciogliere tra {squadra} e {giocatore}: ballano ancora pochi milioni",
-    "Si accende la pista {squadra} per {giocatore}: accelerata decisiva del club",
-    "Brusca frenata per {squadra} su {giocatore}: inserimento a sorpresa di una rivale",
-    "Tutto pronto in casa {squadra} per {giocatore}: attesa la firma entro 48 ore",
-    
-    // Frasi aggiuntive originali
-    "Clamoroso retroscena su {giocatore}: c'è stato un inserimento nella notte di {squadra}",
-    "Scatto decisivo di {squadra} per {giocatore}: l'accordo sui diritti d'immagine è totale",
-    "Il mister di {squadra} striglia la società: vuole subito {giocatore} per il ritiro",
-    "Inserimento last-minute di {squadra} per {giocatore}: salta l'accordo con il club spagnolo?",
-    "Suggestione {giocatore} per {squadra}: il presidente ci prova con un volo privato in segreto",
-    "Autentico blitz a sorpresa di {squadra} per {giocatore}: fumata bianca vicinissima",
-    "Giallo {giocatore}: non si è presentato agli allenamenti, spinge per la cessione a {squadra}",
-    "Idea low-cost per l'attacco di {squadra}: spunta il nome di {giocatore} svincolato",
-    "Scambio dell'anno all'orizzonte: {squadra} mette {giocatore} sul piatto come contropartita tecnica",
-    "Tentazione araba per {giocatore}, ma {squadra} rilancia con un'offerta di ingaggio importante",
-    "Contatti continui tra {squadra} e l'entourage di {giocatore}: ballano solo le commissioni degli intermediari",
-    "Il procuratore di {giocatore} lancia un indizio social: è nella sede di {squadra}",
-    "Principio di accordo tra {squadra} e {giocatore}: contratto di 4 anni con opzione per il quinto",
-    "Rottura totale con il club: {giocatore} chiede formalmente la cessione a {squadra}",
+        const azioni = [
+            "{squadra}: pista calda su {giocatore}, l'accordo è vicino",
+            "{squadra}: si raffredda la pista su {giocatore} dopo l'inserimento a sorpresa di un club inglese",
+            "{squadra}: tentativo lampo per {giocatore}, offerta ufficiale presentata",
+            "È fatta per l'arrivo di {giocatore} al fantacalcio e alla {squadra}: visite mediche programmate",
+            "{squadra}: frena la trattativa per {giocatore}, ballano 5 milioni sui bonus",
+            "{squadra}: assalto totale a {giocatore}, l'agente è in sede",
+            "Beffa vicina per {squadra} su {giocatore}: il giocatore preferisce un'altra destinazione",
+            "Muro contro muro tra {squadra} e {giocatore}: la richiesta del club è considerata troppo alta",
+            "{squadra} al lavoro su {giocatore}, ma c'è un nodo da sciogliere",
+            "{squadra}: pista calda per {giocatore}, le prossime 48 ore saranno decisive",
+            "Si raffredda la pista {squadra} per {giocatore}: c'è una brusca frenata",
+            "Pista fredda per {giocatore} in orbita {squadra}: la trattativa si è arenata",
+            "{squadra}: pista concreta per {giocatore}, si lavora a un accordo pluriennale",
+            "Pista alternativa per {squadra} su {giocatore} se dovesse saltare il primo obiettivo",
+            "Nome concreto per il centrocampo di {squadra}: si punta a chiudere per {giocatore}",
+            "Nome caldo per l'attacco di {squadra}: c'è un forte interesse per {giocatore}",
+            "{giocatore} è considerato un prospetto importante per il futuro di {squadra}",
+            "Occhi di {squadra} su {giocatore}: un prospetto futuribile che piace molto alla dirigenza",
+            "Contatti avviati tra {squadra} e {giocatore}: un prospetto concreto per la difesa",
+            "Profilo importante per {squadra} identificato in {giocatore}: si cerca l'intesa sull'ingaggio",
+            "Profilo concreto per {squadra} che punta {giocatore}: la trattativa entra nel vivo",
+            "Visionato {giocatore} dagli osservatori di {squadra}: un profilo di prospettiva che mette d'accordo tutti",
+            "{squadra} forte su {giocatore}: presentata la prima offerta ufficiale",
+            "{squadra}: pista calda per {giocatore}, l'affare può sbloccarsi entro 48 ore",
+            "{squadra}: pista concreta per {giocatore}, si attende solo il via libera",
+            "Filtra ottimismo in casa {squadra} per {giocatore}: si chiude la quadra con l'agente",
+            "Filtra cauto ottimismo tra {squadra} e l'entourage di {giocatore} dopo l'ultimo incontro",
+            "Filtra velato ottimismo sponda {squadra} per {giocatore}: si lavora ai dettagli del contratto",
+            "Filtra fiducia per l'arrivo di {giocatore} a {squadra}: si va a dama a inizio settimana",
+            "Si lavora a fari spenti in casa {squadra} per {giocatore}: si punta a limare i bonus",
+            "Trattativa {squadra}-{giocatore}: c'è un nodo legato alle commissioni",
+            "C'è uno scoglio da superare per {squadra} su {giocatore}: la formula del trasferimento",
+            "C'è un nodo da sciogliere tra {squadra} e {giocatore}: ballano ancora pochi milioni",
+            "Si accende la pista {squadra} per {giocatore}: accelerata decisiva del club",
+            "Brusca frenata per {squadra} su {giocatore}: inserimento a sorpresa di una rivale",
+            "Tutto pronto in casa {squadra} per {giocatore}: attesa la firma entro 48 ore",
+            
+            "Clamoroso retroscena su {giocatore}: c'è stato un inserimento nella notte di {squadra}",
+            "Scatto decisivo di {squadra} per {giocatore}: l'accordo sui diritti d'immagine è totale",
+            "Il mister di {squadra} striglia la società: vuole subito {giocatore} per il ritiro",
+            "Inserimento last-minute di {squadra} per {giocatore}: salta l'accordo con il club spagnolo?",
+            "Suggestione {giocatore} per {squadra}: il presidente ci prova con un volo privato in segreto",
+            "Autentico blitz a sorpresa di {squadra} per {giocatore}: fumata bianca vicinissima",
+            "Giallo {giocatore}: non si è presentato agli allenamenti, spinge per la cessione a {squadra}",
+            "Idea low-cost per l'attacco di {squadra}: spunta il nome di {giocatore} svincolato",
+            "Scambio dell'anno all'orizzonte: {squadra} mette {giocatore} sul piatto come contropartita tecnica",
+            "Tentazione araba per {giocatore}, ma {squadra} rilancia con un'offerta di ingaggio importante",
+            "Contatti continui tra {squadra} e l'entourage di {giocatore}: ballano solo le commissioni degli intermediari",
+            "Il procuratore di {giocatore} lancia un indizio social: è nella sede di {squadra}",
+            "Principio di accordo tra {squadra} e {giocatore}: contratto di 4 anni con opzione per il quinto",
+            "Rottura totale con il club: {giocatore} chiede formalmente la cessione a {squadra}",
 
-    // NUOVISSIME FRASI AGGIUNTIVE PER ALLUNGARE LA LISTA
-    "{squadra}, casting per la difesa: l'ultimo nome della lista è {giocatore}",
-    "Accordo totale tra {squadra} e {giocatore}, adesso manca solo il sì del club proprietario del cartellino",
-    "{squadra}: telefonata diretta del tecnico per convincere {giocatore}",
-    "Non solo Italia per {giocatore}: concorrenza spietata, ma {squadra} resta in pole position",
-    "{squadra}, obiettivo sfoltire la rosa: la partenza di {giocatore} sbloccherà il mercato in entrata",
-    "Incontro segreto in hotel: il DS di {squadra} ha visto gli agenti di {giocatore}",
-    "{squadra}, ultimatum per {giocatore}: dentro o fuori entro la fine della settimana",
-    "Sirene inglesi per {giocatore}: {squadra} trema davanti alla maxi offerta in arrivo",
-    "Rilancio nella notte: {squadra} alza la parte fissa per assicurarsi {giocatore}",
-    "{squadra}: visite mediche superate per {giocatore}, a breve l'annuncio ufficiale sul sito",
-    "Intreccio di mercato clamoroso: {squadra} molla l'obiettivo principale e vira tutto su {giocatore}",
-    "{squadra}, spunta una clausola rescissoria nel contratto di {giocatore}: si valuta il pagamento immediato",
-    "Strategia d'attesa per {squadra}: l'obiettivo è prendere {giocatore} a prezzo di saldo negli ultimi giorni di mercato",
-    "Vertice fiume nella sede di {squadra}: caldeggiato il profilo di {giocatore} per rinforzare la rosa"
-];
+            "{squadra}, casting per la difesa: l'ultimo nome della lista è {giocatore}",
+            "Accordo totale tra {squadra} e {giocatore}, adesso manca solo il sì del club proprietario del cartellino",
+            "{squadra}: telefonata diretta del tecnico per convincere {giocatore}",
+            "Non solo Italia per {giocatore}: concorrenza spietata, ma {squadra} resta in pole position",
+            "{squadra}, obiettivo sfoltire la rosa: la partenza di {giocatore} sbloccherà il mercato in entrata",
+            "Incontro segreto in hotel: il DS di {squadra} ha visto gli agenti di {giocatore}",
+            "{squadra}, ultimatum per {giocatore}: dentro o fuori entro la fine della settimana",
+            "Sirene inglesi per {giocatore}: {squadra} trema davanti alla maxi offerta in arrivo",
+            "Rilancio nella notte: {squadra} alza la parte fissa per assicurarsi {giocatore}",
+            "{squadra}: visite mediche superate per {giocatore}, a breve l'annuncio ufficiale sul sito",
+            "Intreccio di mercato clamoroso: {squadra} molla l'obiettivo principale e vira tutto su {giocatore}",
+            "{squadra}, spunta una clausola rescissoria nel contratto di {giocatore}: si valuta il pagamento immediato",
+            "Strategia d'attesa per {squadra}: l'obiettivo è prendere {giocatore} a prezzo di saldo negli ultimi giorni di mercato",
+            "Vertice fiume nella sede di {squadra}: caldeggiato il profilo di {giocatore} per rinforzare la rosa"
+        ];
 
         // Funzione per estrarre un elemento casuale da un array
         function getRandomElement(array) {
@@ -236,33 +238,39 @@ const azioni = [
             return array[randomIndex];
         }
 
-        // Funzione principale che genera la notizia
+        // Funzione principale che genera la notizia e la inserisce in cima alla lista
         function generaNews() {
             // 1. Estrazione dei tre pezzi random
             const squadraScelta = getRandomElement(squadre);
             const giocatoreScelto = getRandomElement(giocatori);
             const azioneScelta = getRandomElement(azioni);
 
-            // 2. Prepariamo le versioni evidenziate (avvolte nel tag span con classe highlight)
+            // 2. Prepariamo le versioni evidenziate
             const squadraEvidenziata = `<span class="highlight">${squadraScelta}</span>`;
             const giocatoreEvidenziato = `<span class="highlight">${giocatoreScelto}</span>`;
 
-            // 3. Logica di composizione: sostituisco i segnaposto con le versioni evidenziate
+            // 3. Logica di composizione
             let notiziaFinale = azioneScelta
                 .replace(/{giocatore}/g, giocatoreEvidenziato)
                 .replace(/{squadra}/g, squadraEvidenziata);
 
-            // 4. Aggiornamento del DOM con effetto transizione
-            const newsBox = document.getElementById('news-box');
-            const newsContent = document.getElementById('news-content');
+            // 4. Creazione dinamica del nuovo blocco notizia
+            const nuovoNewsBox = document.createElement('div');
+            nuovoNewsBox.className = 'news-box';
+            
+            nuovoNewsBox.innerHTML = `
+                <span class="badge">Ultim'ora</span>
+                <div class="news-text">${notiziaFinale}</div>
+            `;
 
-            // Nascondiamo un attimo il box per l'effetto cambio
-            newsBox.classList.remove('show');
+            // 5. Inserimento nel contenitore in cima (prepend)
+            const newsContainer = document.getElementById('news-container');
+            newsContainer.prepend(nuovoNewsBox);
 
+            // 6. Attivazione dell'effetto fade-in/slide-down tramite un leggerissimo delay
             setTimeout(() => {
-                newsContent.innerHTML = notiziaFinale;
-                newsBox.classList.add('show');
-            }, 150); 
+                nuovoNewsBox.classList.add('show');
+            }, 10);
         }
 
         // Collegiamo la funzione al click del pulsante
