@@ -1,0 +1,452 @@
+/* ==========================================================================
+   1. RESET DI BASE E LAYOUT PRINCIPALE ADATTIVO
+   ========================================================================== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Elimina le barre di scorrimento su proiettori e TV */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f2f5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 10px;
+}
+
+/* ==========================================================================
+   2. PANNELLO INFO E COMANDI (PIÙ ALTO E LEGGIBILE)
+   ========================================================================== */
+.pannello-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    max-width: 1300px;
+    margin-bottom: 8px;
+    padding: 6px 16px; /* Aumentato il padding interno */
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 50px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+}
+
+/* Gruppo Pulsanti d'Azione */
+.comandi-gruppo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Pulsanti Circolari Base */
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(34px, 3.5vw, 42px);
+    height: clamp(34px, 3.5vw, 42px);
+    border-radius: 50%;
+    border: 1px solid #adb5bd;
+    background-color: #ffffff;
+    color: #495057;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+/* Pulsante Estrai */
+.btn-icon.btn-estrai {
+    width: clamp(40px, 4.2vw, 50px);
+    height: clamp(40px, 4.2vw, 50px);
+    background-color: #28a745;
+    color: #ffffff;
+    border-color: #1e7e34;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.25);
+}
+
+.btn-icon.btn-estrai:hover {
+    background-color: #218838;
+}
+
+.btn-icon.btn-estrai:disabled {
+    background-color: #6c757d;
+    border-color: #5a6268;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Pulsante Reset Partita */
+.btn-icon.btn-reset:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* Storico Ultimi Estratti (INGRANDITO) */
+.storico-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.storico-titolo {
+    font-weight: 700;
+    font-size: clamp(0.8rem, 1.1vw, 0.95rem);
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.storico-numeri {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.storico-empty {
+    font-size: clamp(0.85rem, 1.1vw, 1rem);
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Numeri dello storico (Badge più grandi) */
+.badge-numero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(34px, 3.5vw, 42px);
+    height: clamp(34px, 3.5vw, 42px);
+    border-radius: 50%;
+    background-color: #e9ecef;
+    color: #212529;
+    font-weight: bold;
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    border: 1px solid #adb5bd;
+}
+
+/* Ultimo numero estratto (Ancora più in evidenza) */
+.badge-numero.ultimo {
+    width: clamp(42px, 4.2vw, 50px);
+    height: clamp(42px, 4.2vw, 50px);
+    background-color: #28a745;
+    color: #ffffff;
+    border-color: #1e7e34;
+    font-size: clamp(1.2rem, 1.7vw, 1.5rem);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Indicatore Premio in Palio */
+.premio-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 16px;
+    background-color: #212529;
+    color: #ffffff;
+    border-radius: 50px;
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s ease;
+}
+
+.premio-container:hover {
+    transform: scale(1.02);
+}
+
+.premio-etichetta {
+    font-size: clamp(0.75rem, 1vw, 0.85rem);
+    text-transform: uppercase;
+    color: #adb5bd;
+}
+
+.premio-badge {
+    font-size: clamp(0.95rem, 1.3vw, 1.15rem);
+    font-weight: 800;
+    color: #ffc107;
+    letter-spacing: 0.5px;
+}
+
+.btn-premio-next {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: clamp(0.85rem, 1.1vw, 1rem);
+    cursor: pointer;
+    padding: 0;
+}
+
+/* ==========================================================================
+   3. TABELLONE DINAMICO (Ricalibrato per la barra più alta)
+   ========================================================================== */
+#tabellone-container {
+    position: relative;
+    width: 100%;
+    max-width: min(1300px, 95vw);
+    /* Aumentato lo spazio riservato alla barra (90px) */
+    height: calc(100vh - 90px);
+    background-color: #ffffff;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.griglia {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: clamp(2px, 0.5vw, 8px);
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.4s ease;
+}
+
+.griglia.fade-out {
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+.casella {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    /* Dimensione testo raddoppiata (da 1rem/2.2vh/2rem a 2rem/4.5vh/4rem) */
+    font-size: clamp(2rem, 4.5vh, 4rem);
+    font-weight: bold;
+    color: #333;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.casella.estratto {
+    background-color: #28a745;
+    color: #ffffff;
+    border-color: #1e7e34;
+}
+
+/* ==========================================================================
+   4. OVERLAY NUMERO ESTRATTO + SMORFIA
+   ========================================================================== */
+#overlay-numero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgba(40, 167, 69, 0.94);
+    backdrop-filter: blur(2px);
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: scale(0.85);
+    z-index: 10;
+}
+
+#overlay-numero.visibile {
+    opacity: 1;
+    transform: scale(1);
+}
+
+#overlay-numero .numero-gigante {
+    font-size: min(35vw, 35vh);
+    font-weight: 900;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+#overlay-numero .testo-smorfia {
+    font-size: min(4vw, 4vh);
+    font-weight: 600;
+    font-style: italic;
+    color: #f8f9fa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   5. MODALE CONFIGURAZIONE
+   ========================================================================== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.visibile {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal-contenuto {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.modal-contenuto h2 {
+    font-size: 1.2rem;
+    color: #212529;
+    margin-bottom: 4px;
+    text-align: center;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+}
+
+.config-sezione {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.config-label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.lingua-opzioni {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-lingua {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.95rem;
+    font-weight: bold;
+    border: 1px solid #adb5bd;
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-lingua.attivo {
+    background-color: #17a2b8;
+    color: #ffffff;
+    border-color: #117a8b;
+}
+
+.premi-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #f8f9fa;
+    padding: 10px 14px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #212529;
+    cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #28a745;
+    cursor: pointer;
+}
+
+.modal-azioni {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-salva-config {
+    width: 100%;
+    padding: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-salva-config:hover {
+    background-color: #218838;
+}
+
+/* ==========================================================================
+   6. RESPONSIVE / PROIETTORI E RISOLUZIONI BASSE
+   ========================================================================== */
+@media (max-width: 768px), (max-height: 600px) {
+    body {
+        padding: 4px;
+    }
+
+    .pannello-info {
+        padding: 2px 8px;
+        margin-bottom: 4px;
+    }
+
+    #tabellone-container {
+        height: calc(100vh - 55px);
+        padding: 6px;
+    }
+}
