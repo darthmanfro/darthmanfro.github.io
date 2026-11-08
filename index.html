@@ -22,6 +22,7 @@
     <div id="banner-vincita" class="banner-vincita">
         <div class="banner-vincita-contenuto">
             <span id="testo-vincita">🎉 VINCITA!</span>
+            <div id="numeri-vincita" class="numeri-vincita-popup"></div> <!-- NUOVO -->
             <div class="banner-vincita-azioni">
                 <button class="btn-vincita btn-conferma" onclick="confermaVincita()">Conferma e Avanza Premio</button>
                 <button class="btn-vincita btn-invenduta" onclick="scartaCartellaInvenduta()">Cartella Invenduta (Scarta)</button>
@@ -135,7 +136,7 @@
     <!-- AREA NASCOSTA PER LA STAMPA -->
     <div id="area-stampa" class="area-stampa"></div>
 
-    <!-- MODALE CONFIGURAZIONE PARTITA -->
+<!-- MODALE CONFIGURAZIONE PARTITA -->
     <div id="modal-config" class="modal-overlay">
         <div class="modal-contenuto">
             <h2>Configurazione Partita</h2>
@@ -146,6 +147,15 @@
                     <button id="btnLinguaIta" class="btn-lingua" onclick="selezionaLingua('ita')">Italiano</button>
                 </div>
             </div>
+            
+            <!-- NUOVA OPZIONE: NUMERI ADIACENTI -->
+            <div class="config-sezione">
+                <label class="config-label">Regola Vincita di Riga:</label>
+                <div class="premi-checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" id="checkNumeriAdiacenti" checked> Richiedi numeri adiacenti</label>
+                </div>
+            </div>
+
             <div class="config-sezione">
                 <label class="config-label">Premi in palio (attivi):</label>
                 <div class="premi-checkbox-group">
