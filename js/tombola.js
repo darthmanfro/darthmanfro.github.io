@@ -2,6 +2,7 @@
 let numeriEstratti = new Set();
 let ultimaEstrazione = null;
 let linguaCorrente = 'nap'; // 'nap' o 'ita'
+let numeriAdiacentiRichiesti = true; // Opzione numeri adiacenti (default true)
 
 // Premi in palio ordinati
 const listaPremi = ['AMBO', 'TERNO', 'QUATERNA', 'CINQUINA', 'TOMBOLA'];
@@ -243,8 +244,14 @@ function apriConfig() {
 }
 
 function salvaChiudiConfig() {
+    // Leggi l'opzione numeri adiacenti
+    const checkAdiacenti = document.getElementById("checkNumeriAdiacenti");
+    if (checkAdiacenti) {
+        numeriAdiacentiRichiesti = checkAdiacenti.checked;
+    }
+
     // Raccogli premi spuntati
-    const checkboxes = document.querySelectorAll(".premi-checkbox-group input[type='checkbox']");
+    const checkboxes = document.querySelectorAll(".premi-checkbox-group input[type='checkbox'][value]");
     const attivi = [];
     checkboxes.forEach(cb => {
         if (cb.checked) attivi.push(cb.value);
@@ -345,6 +352,7 @@ function verificaVinciteAutomatiche() {
     if (!target) return;
 
     let cartellaTrovata = null;
+    let numeriVincentiTrovati = [];
 
     for (const cartella of cartelleCaricate) {
         const chiaveScarto = `${cartella.id}-${premioAttuale}`;
@@ -354,15 +362,45 @@ function verificaVinciteAutomatiche() {
         let haVinto = false;
 
         if (premioAttuale === 'TOMBOLA') {
-            const indovinati = cartella.numeri.filter(n => numeriEstratti.has(n)).length;
-            if (indovinati === 15) haVinto = true;
+            const indovinati = cartella.numeri.filter(n => numeriEstratti.has(n));
+            if (indovinati.length === 15) {
+                haVinto = true;
+                numeriVincentiTrovati = indovinati;
+            }
         } else {
+            // Controllo riga per Ambo, Terno, Quaterna, Cinquina
             for (let r = 0; r < 3; r++) {
-                const numeriRiga = cartella.griglia[r].filter(n => n !== null);
-                const indovinati = numeriRiga.filter(n => numeriEstratti.has(n)).length;
-                if (indovinati >= target) {
-                    haVinto = true;
-                    break;
+                const riga = cartella.griglia[r]; // Array di 9 elementi (numeri o null)
+                const numeriRiga = riga.filter(n => n !== null); // I 5 numeri effettivi della riga
+
+                if (numeriAdiacentiRichiesti) {
+                    // VERIFICA NUMERI ADIACENTI NELLA RIGA
+                    // Controlla se esistono 'target' numeri consecutivi estratti in questa riga
+                    let trovatoSequenza = false;
+                    let subSeq = [];
+
+                    for (let i = 0; i <= numeriRiga.length - target; i++) {
+                        const sub = numeriRiga.slice(i, i + target);
+                        if (sub.every(n => numeriEstratti.has(n))) {
+                            trovatoSequenza = true;
+                            subSeq = sub;
+                            break;
+                        }
+                    }
+
+                    if (trovatoSequenza) {
+                        haVinto = true;
+                        numeriVincentiTrovati = subSeq;
+                        break;
+                    }
+                } else {
+                    // VERIFICA CLASSICA (anche non adiacenti)
+                    const indovinati = numeriRiga.filter(n => numeriEstratti.has(n));
+                    if (indovinati.length >= target) {
+                        haVinto = true;
+                        numeriVincentiTrovati = indovinati;
+                        break;
+                    }
                 }
             }
         }
@@ -376,18 +414,29 @@ function verificaVinciteAutomatiche() {
     if (cartellaTrovata !== null) {
         vincitaCorrenteInAttesa = {
             premio: premioAttuale,
-            cartellaId: cartellaTrovata
+            cartellaId: cartellaTrovata,
+            numeri: numeriVincentiTrovati
         };
-        mostraNotificaVincita(premioAttuale, cartellaTrovata);
+        mostraNotificaVincita(premioAttuale, cartellaTrovata, numeriVincentiTrovati);
     }
 }
 
-function mostraNotificaVincita(premio, cartellaId) {
+function mostraNotificaVincita(premio, cartellaId, numeriVincenti = []) {
     const banner = document.getElementById("banner-vincita");
     const testo = document.getElementById("testo-vincita");
+    const containerNumeri = document.getElementById("numeri-vincita");
     if (!banner || !testo) return;
 
     testo.textContent = `🎉 ${premio}! Raggiunto dalla Cartella N. ${cartellaId}`;
+    
+    if (containerNumeri) {
+        if (numeriVincenti && numeriVincenti.length > 0) {
+            containerNumeri.innerHTML = `Numeri: <strong>${numeriVincenti.join(', ')}</strong>`;
+        } else {
+            containerNumeri.innerHTML = "";
+        }
+    }
+
     banner.classList.add("visibile");
 }
 
