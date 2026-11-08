@@ -1,0 +1,133 @@
+/* ==========================================================================
+   1. MODALE & FORM GENERATORE CARTELE
+   ========================================================================== */
+.modal-contenuto.modal-cartelle-box {
+    max-width: 580px;
+}
+
+.cartelle-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.input-text, .select-text {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.modal-azioni-cartelle {
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.btn-azione {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-pdf { background-color: #28a745; }
+.btn-pdf:hover { background-color: #218838; }
+
+.btn-img { background-color: #007bff; }
+.btn-img:hover { background-color: #0069d9; }
+
+.btn-chiudi { background-color: #6c757d; }
+.btn-chiudi:hover { background-color: #5a6268; }
+
+.btn-icon.btn-cartelle:hover {
+    background-color: #e2e6ea;
+    color: #0056b3;
+}
+
+/* ==========================================================================
+   2. GRAFICA CARTELLA ORIZZONTALE (ANTEPRIMA E STAMPA) - STILE DAL NEGRO
+   ========================================================================== */
+.anteprima-sezione {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.cartella-box {
+    border: 2px solid #212529;
+    border-radius: 6px;
+    background-color: #ffffff;
+    overflow: hidden;
+    margin: 6px 0;
+    width: 100%;
+}
+
+.cartella-header {
+    background-color: #212529;
+    color: #ffffff;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.cartella-titolo {
+    font-weight: 800;
+    color: #ffc107;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.cartella-numero {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e9ecef;
+}
+
+/* Griglia 3 righe per 9 colonne orizzontali */
+.cartella-griglia {
+    display: grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    border-top: 1px solid #212529;
+}
+
+.cartella-cell {
+    border: 1px solid #333333;
+    height: 42px; /* Proporzione larga e bassa */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.15rem;
+    color: #111111;
+}
+
+.cartella-cell.vuota {
+    background-color: #e9ecef;
+}
+
+.area-stampa {
+    display: none;
+}
+
+/* Adattamento Mobile */
+@media (max-width: 600px) {
+  .cartelle-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .modal-azioni-cartelle {
+    flex-direction: column;
+  }
+  .cartella-cell {
+    height: 32px;
+    font-size: 0.95rem;
+  }
+}

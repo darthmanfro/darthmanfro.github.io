@@ -24,7 +24,7 @@ body {
 }
 
 /* ==========================================================================
-   2. PANNELLO INFO E COMANDI (PIÙ ALTO E LEGGIBILE)
+   2. PANNELLO INFO E COMANDI
    ========================================================================== */
 .pannello-info {
     display: flex;
@@ -34,7 +34,7 @@ body {
     width: 100%;
     max-width: 1300px;
     margin-bottom: 8px;
-    padding: 6px 16px; /* Aumentato il padding interno */
+    padding: 6px 16px;
     background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 50px;
@@ -84,13 +84,6 @@ body {
     background-color: #218838;
 }
 
-.btn-icon.btn-estrai:disabled {
-    background-color: #6c757d;
-    border-color: #5a6268;
-    cursor: not-allowed;
-    box-shadow: none;
-}
-
 /* Pulsante Reset Partita */
 .btn-icon.btn-reset:hover {
     background-color: #f8d7da;
@@ -98,7 +91,7 @@ body {
     border-color: #f5c6cb;
 }
 
-/* Storico Ultimi Estratti (INGRANDITO) */
+/* Storico Ultimi Estratti */
 .storico-container {
     display: flex;
     align-items: center;
@@ -128,30 +121,19 @@ body {
     font-style: italic;
 }
 
-/* Numeri dello storico (Badge più grandi) */
-.badge-numero {
+/* Badge Numeri Storico */
+.storico-badge {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: clamp(34px, 3.5vw, 42px);
-    height: clamp(34px, 3.5vw, 42px);
+    width: clamp(32px, 3.2vw, 38px);
+    height: clamp(32px, 3.2vw, 38px);
     border-radius: 50%;
-    background-color: #e9ecef;
-    color: #212529;
-    font-weight: bold;
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
-    border: 1px solid #adb5bd;
-}
-
-/* Ultimo numero estratto (Ancora più in evidenza) */
-.badge-numero.ultimo {
-    width: clamp(42px, 4.2vw, 50px);
-    height: clamp(42px, 4.2vw, 50px);
     background-color: #28a745;
     color: #ffffff;
-    border-color: #1e7e34;
-    font-size: clamp(1.2rem, 1.7vw, 1.5rem);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    font-weight: bold;
+    font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+    border: 1px solid #1e7e34;
 }
 
 /* Indicatore Premio in Palio */
@@ -196,13 +178,12 @@ body {
 }
 
 /* ==========================================================================
-   3. TABELLONE DINAMICO (Ricalibrato per la barra più alta)
+   3. TABELLONE DINAMICO E CASELLE
    ========================================================================== */
 #tabellone-container {
     position: relative;
     width: 100%;
     max-width: min(1300px, 95vw);
-    /* Aumentato lo spazio riservato alla barra (90px) */
     height: calc(100vh - 90px);
     background-color: #ffffff;
     border: 2px solid #333;
@@ -221,29 +202,23 @@ body {
     gap: clamp(2px, 0.5vw, 8px);
     width: 100%;
     height: 100%;
-    transition: opacity 0.4s ease;
 }
 
-.griglia.fade-out {
-    opacity: 0.25;
-    pointer-events: none;
-}
-
-.casella {
+/* CORRETTO: selettore .cella per uniformarsi al JS */
+.cella {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    /* Dimensione testo raddoppiata (da 1rem/2.2vh/2rem a 2rem/4.5vh/4rem) */
-    font-size: clamp(0.9rem, 4.2vh, 4rem);
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: clamp(1.2rem, 3.5vh, 3.5rem);
     font-weight: bold;
-    color: #333;
-    transition: background-color 0.2s, color 0.2s;
+    color: #495057;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.casella.estratto {
+.cella.estratto {
     background-color: #28a745;
     color: #ffffff;
     border-color: #1e7e34;
@@ -264,8 +239,8 @@ body {
     justify-content: center;
     padding: 20px;
     box-sizing: border-box;
-    background-color: rgba(40, 167, 69, 0.94);
-    backdrop-filter: blur(2px);
+    background-color: rgba(40, 167, 69, 0.95);
+    backdrop-filter: blur(3px);
     border-radius: 6px;
     opacity: 0;
     pointer-events: none;
@@ -274,24 +249,24 @@ body {
     z-index: 10;
 }
 
-#overlay-numero.visibile {
+#overlay-numero.mostra {
     opacity: 1;
     transform: scale(1);
 }
 
-#overlay-numero .numero-gigante {
-    font-size: min(35vw, 35vh);
+.overlay-num {
+    font-size: min(30vw, 30vh);
     font-weight: 900;
     line-height: 1;
     color: #ffffff;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-#overlay-numero .testo-smorfia {
-    font-size: min(4vw, 4vh);
+.overlay-smorfia {
+    font-size: min(3.5vw, 3.5vh);
     font-weight: 600;
     font-style: italic;
-    color: #f8f9fa;
+    color: #fff3cd;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: 15px;
@@ -433,26 +408,84 @@ body {
 }
 
 /* ==========================================================================
-   6. RESPONSIVE / PROIETTORI E RISOLUZIONI BASSE
+   6. BANNER NOTIFICA VINCITA AUTOMATICA
    ========================================================================== */
-@media (max-width: 768px), (max-height: 600px) {
-    body {
-        padding: 4px;
-    }
+.banner-vincita {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #212529;
+    color: #ffffff;
+    border: 3px solid #ffc107;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    max-width: 600px;
+    width: 90%;
+    animation: comparsaBanner 0.3s ease-out;
+}
 
-    .pannello-info {
-        padding: 2px 8px;
-        margin-bottom: 4px;
-    }
+.banner-vincita.visibile {
+    display: block;
+}
 
-    #tabellone-container {
-        height: calc(100vh - 55px);
-        padding: 6px;
-    }
+.banner-vincita-contenuto {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+}
+
+#testo-vincita {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #ffc107;
+}
+
+.banner-vincita-azioni {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-vincita {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-conferma {
+    background-color: #28a745;
+    color: #ffffff;
+}
+.btn-conferma:hover {
+    background-color: #218838;
+}
+
+.btn-invenduta {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+.btn-invenduta:hover {
+    background-color: #c82333;
+}
+
+@keyframes comparsaBanner {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
 }
 
 /* ==========================================================================
-   ADATTAMENTO PER CELLULARI E SCHERMI PICCOLI
+   7. RESPONSIVE / CELLULARI E SCHERMI PICCOLI
    ========================================================================== */
 @media (max-width: 600px) {
   body {
@@ -465,21 +498,14 @@ body {
     border-radius: 20px;
   }
 
-  /* Nasconde la scritta "Ultimi:" per guadagnare spazio orizzontale */
   .storico-titolo {
     display: none; 
   }
 
-  .badge-numero {
+  .storico-badge {
     width: 28px;
     height: 28px;
     font-size: 0.85rem;
-  }
-
-  .badge-numero.ultimo {
-    width: 34px;
-    height: 34px;
-    font-size: 1rem;
   }
 
   #tabellone-container {
@@ -491,8 +517,85 @@ body {
     gap: 2px;
   }
 
-  .casella {
+  .cella {
     font-size: clamp(0.75rem, 3.2vw, 1.2rem);
     border-radius: 2px;
   }
+}
+
+/* ==========================================================================
+   BANNER NOTIFICA VINCITA AUTOMATICA
+   ========================================================================== */
+.banner-vincita {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #212529;
+    color: #ffffff;
+    border: 3px solid #ffc107;
+    border-radius: 12px;
+    padding: 16px 24px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    max-width: 600px;
+    width: 90%;
+    animation: comparsaBanner 0.3s ease-out;
+}
+
+.banner-vincita.visibile {
+    display: block;
+}
+
+.banner-vincita-contenuto {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    text-align: center;
+}
+
+#testo-vincita {
+    font-size: 1.15rem;
+    font-weight: bold;
+    color: #ffc107;
+}
+
+.banner-vincita-azioni {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.btn-vincita {
+    flex: 1;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-conferma {
+    background-color: #28a745;
+    color: #ffffff;
+}
+.btn-conferma:hover {
+    background-color: #218838;
+}
+
+.btn-invenduta {
+    background-color: #dc3545;
+    color: #ffffff;
+}
+.btn-invenduta:hover {
+    background-color: #c82333;
+}
+
+@keyframes comparsaBanner {
+    from { opacity: 0; transform: translate(-50%, -20px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
 }
