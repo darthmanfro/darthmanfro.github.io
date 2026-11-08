@@ -5,29 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tombola</title>
+    <!-- Fogli di stile separati -->
     <link rel="stylesheet" href="./css/tombola.css">
+    <link rel="stylesheet" href="./css/cartelle.css">
 </head>
 
 <body>
 
     <!-- BLOCCO 1: Tabellone -->
     <div id="tabellone-container">
-        <!-- Overlay per l'effetto gigante -->
         <div id="overlay-numero"></div>
-        <div id="griglia" class="griglia">
-            <!-- Le 90 caselle verranno generate via JavaScript -->
+        <div id="griglia" class="griglia"></div>
+    </div>
+
+    <!-- BANNER NOTIFICA VINCITA AUTOMATICA -->
+    <div id="banner-vincita" class="banner-vincita">
+        <div class="banner-vincita-contenuto">
+            <span id="testo-vincita">🎉 VINCITA!</span>
+            <div class="banner-vincita-azioni">
+                <button class="btn-vincita btn-conferma" onclick="confermaVincita()">Conferma e Avanza Premio</button>
+                <button class="btn-vincita btn-invenduta" onclick="scartaCartellaInvenduta()">Cartella Invenduta (Scarta)</button>
+            </div>
         </div>
     </div>
+
     <!-- BANNER COMPATTO -->
     <div class="pannello-info">
-
-        <!-- Comandi principali -->
         <div class="comandi-gruppo">
+            <!-- Pulsante Estrai -->
             <button id="btnEstrai" class="btn-icon btn-estrai" onclick="estraiNumero()" title="Estrai Numero">
                 <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"></polyline>
                 </svg>
             </button>
+
+            <!-- Pulsante Generatore Cartelle -->
+            <button id="btnCartelle" class="btn-icon btn-cartelle" onclick="apriModalCartelle()" title="Genera Cartelle">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="3" y1="15" x2="21" y2="15"></line>
+                    <line x1="9" y1="3" x2="9" y2="21"></line>
+                    <line x1="15" y1="3" x2="15" y2="21"></line>
+                </svg>
+            </button>
+
+            <!-- Pulsante Carica Partita JSON -->
+            <button id="btnCaricaPartita" class="btn-icon" onclick="document.getElementById('inputJsonCartelle').click()" title="Carica Partita Cartelle (JSON)">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+            </button>
+            <input type="file" id="inputJsonCartelle" accept=".json" style="display: none;" onchange="caricaFilePartita(event)">
 
             <!-- Pulsante Apri Configurazione -->
             <button id="btnConfig" class="btn-icon" onclick="apriConfig()" title="Configurazione e Impostazioni">
@@ -37,6 +68,7 @@
                 </svg>
             </button>
 
+            <!-- Pulsante Reset -->
             <button id="btnReset" class="btn-icon btn-reset" onclick="init()" title="Nuova Partita">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21.5 2v6h-6"></path>
@@ -59,15 +91,54 @@
             <span id="premio-attuale" class="premio-badge">AMBO</span>
             <button type="button" class="btn-premio-next" title="Cambia premio">➔</button>
         </div>
-
     </div>
 
-    <!-- PANNELLO MODALE CONFIGURAZIONE -->
+    <!-- MODALE GENERATORE CARTELLE -->
+    <div id="modal-cartelle" class="modal-overlay">
+        <div class="modal-contenuto modal-cartelle-box">
+            <h2>Generatore Cartelle</h2>
+
+            <div class="cartelle-form-grid">
+                <div class="config-sezione">
+                    <label class="config-label" for="titoloCartella">Titolo Cartelle:</label>
+                    <input type="text" id="titoloCartella" class="input-text" value="Tombola" oninput="aggiornaAnteprimaCartella()">
+                </div>
+
+                <div class="config-sezione">
+                    <label class="config-label" for="numCartelle">Quantità (1-100):</label>
+                    <input type="number" id="numCartelle" class="input-text" value="20" min="1" max="100">
+                </div>
+
+                <div class="config-sezione">
+                    <label class="config-label" for="formatoStampa">Formato Stampa / PDF:</label>
+                    <select id="formatoStampa" class="select-text">
+                        <option value="A4">A4 (4 cartelle per foglio - Formato Grande ~15x9 cm)</option>
+                        <option value="A3">A3 (8 cartelle per foglio - Formato Grande ~15x9 cm)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="anteprima-sezione">
+                <label class="config-label">Anteprima Modello:</label>
+                <div id="anteprima-cartella-container"></div>
+            </div>
+
+            <div class="modal-azioni modal-azioni-cartelle">
+                <button class="btn-azione btn-pdf" onclick="generaEScaricaPDF()">Download PDF</button>
+                <button class="btn-azione btn-img" onclick="esportaComeImmagine()">Download Immagine (PNG)</button>
+                <button class="btn-azione btn-json" onclick="esportaFileJSONPartita()" style="background-color: #17a2b8;">Download File Partita (.JSON)</button>
+                <button class="btn-azione btn-chiudi" onclick="chiudiModalCartelle()">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AREA NASCOSTA PER LA STAMPA -->
+    <div id="area-stampa" class="area-stampa"></div>
+
+    <!-- MODALE CONFIGURAZIONE PARTITA -->
     <div id="modal-config" class="modal-overlay">
         <div class="modal-contenuto">
             <h2>Configurazione Partita</h2>
-
-            <!-- Selezione Lingua -->
             <div class="config-sezione">
                 <label class="config-label">Lingua Smorfia:</label>
                 <div class="lingua-opzioni">
@@ -75,8 +146,6 @@
                     <button id="btnLinguaIta" class="btn-lingua" onclick="selezionaLingua('ita')">Italiano</button>
                 </div>
             </div>
-
-            <!-- Selezione Premi Abilitati -->
             <div class="config-sezione">
                 <label class="config-label">Premi in palio (attivi):</label>
                 <div class="premi-checkbox-group">
@@ -87,14 +156,16 @@
                     <label class="checkbox-item"><input type="checkbox" value="TOMBOLA" checked> TOMBOLA</label>
                 </div>
             </div>
-
-            <!-- Azione Chiudi / Salva -->
             <div class="modal-azioni">
                 <button class="btn-salva-config" onclick="salvaChiudiConfig()">Salva e Chiudi</button>
             </div>
         </div>
     </div>
+
+    <!-- INCLUSIONE SCRIPT IN MODO SEPARATO E MODULARE -->
+    <script src="./js/lib/jspdf.umd.min.js"></script>
     <script src="./js/tombola.js"></script>
+    <script src="./js/cartelle.js"></script>
 </body>
 
 </html>
