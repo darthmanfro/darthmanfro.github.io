@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Istruzioni e Regolamento - Tombola</title>
+    <link rel="stylesheet" href="css/istruzioni.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>📖 Guida e Regolamento - Tombola</h1>
+    <p>Questa applicazione gestisce il tabellone, genera le cartelle da stampare e controlla in automatico le vincite. Funziona interamente nel browser, senza bisogno di connessione.</p>
+
+    <h2>1. Tabellone ed Estrazioni</h2>
+    <ul>
+        <li><strong>Estrai:</strong> premi il pulsante verde con la freccia per estrarre un numero da 1 a 90. Il pulsante resta bloccato per 1 secondo dopo ogni estrazione, per evitare doppi clic.</li>
+        <li><strong>Numero e Smorfia:</strong> il numero estratto compare a tutto schermo per qualche secondo, insieme al suo significato nella Smorfia napoletana. Poi viene evidenziato in verde sul tabellone.</li>
+        <li><strong>Ultimi estratti:</strong> nella barra in alto sono sempre visibili gli ultimi 5 numeri usciti.</li>
+        <li><strong>Premio in palio:</strong> il riquadro scuro a destra mostra il premio corrente (Ambo, Terno, Quaterna, Cinquina, Tombola). Cliccandolo si passa manualmente al premio successivo.</li>
+        <li><strong>Comandi di servizio:</strong> dopo la linea di separazione ci sono, più piccoli e attenuati, il generatore cartelle (griglia), la configurazione (ingranaggio) e la nuova partita (freccia circolare).</li>
+        <li><strong>Nuova partita:</strong> azzera tabellone, storico e premi. Le cartelle già caricate restano in memoria.</li>
+    </ul>
+
+    <h2>2. Configurazione</h2>
+    <ul>
+        <li><strong>Lingua Smorfia:</strong> scegli se mostrare i significati in napoletano o in italiano.</li>
+        <li><strong>Numeri adiacenti:</strong> se attivo, per Ambo, Terno, Quaterna e Cinquina i numeri vincenti devono essere consecutivi tra i numeri della stessa riga (le caselle vuote non contano). Se disattivo, basta che i numeri siano sulla stessa riga.</li>
+        <li><strong>Premi in palio:</strong> spunta solo i premi che vuoi giocare. Quelli non spuntati vengono saltati.</li>
+        <li><strong>File Partita:</strong> da qui carichi il file .JSON delle cartelle per il controllo automatico delle vincite (vedi punto 4). Il caricamento è immediato e accanto al pulsante vedi quante cartelle sono caricate.</li>
+        <li><strong>Salva e Chiudi</strong> applica lingua, regola e premi. <strong>Chiudi</strong> esce senza salvare e annulla le modifiche fatte.</li>
+    </ul>
+
+    <h2>3. Generazione Cartelle</h2>
+    <ul>
+        <li>Apri il generatore con il pulsante a griglia, imposta il titolo e la quantità (da 1 a 100) e premi <em>Genera Nuove Cartelle</em>.</li>
+        <li>Ogni cartella è regolamentare: 3 righe x 9 colonne, 5 numeri per riga, 15 numeri in totale, con ogni colonna nella sua decina. Non vengono mai generate due cartelle uguali.</li>
+        <li>Ogni cartella ha un numero progressivo (<em>Cartella N. 1, 2, 3…</em>) che serve per riconoscere chi ha vinto.</li>
+        <li>Dopo la generazione puoi scaricare:
+            <ul>
+                <li><strong>PDF</strong>: in A4 escono 4 cartelle per foglio, in A3 ne escono 8.</li>
+                <li><strong>PNG</strong>: un'immagine per ogni foglio da 4 cartelle.</li>
+                <li><strong>File Partita (.JSON)</strong>: serve per il controllo automatico delle vincite. Scaricalo sempre insieme al PDF o ai PNG che stampi.</li>
+            </ul>
+        </li>
+        <li><strong>▶ Usa nella Partita</strong>: se giochi subito, senza chiudere la pagina, carica direttamente le cartelle appena generate per il controllo vincite, senza passare dal file .JSON.</li>
+        <li>Se rigeneri le cartelle, i file scaricati prima non corrispondono più al nuovo set.</li>
+    </ul>
+
+    <h2>4. Controllo Automatico delle Vincite</h2>
+    <ol>
+        <li>Carica il file <strong>.JSON</strong> della partita dal pannello <em>Configurazione</em> (pulsante a ingranaggio), con <em>Carica File (.JSON)</em>, oppure usa <em>▶ Usa nella Partita</em> dal generatore.</li>
+        <li>Accanto al premio in palio compare una piccola <strong>lampadina</strong> spenta. Se non carichi cartelle la lampadina non compare e il controllo resta disattivato.</li>
+        <li>A ogni estrazione l'app controlla tutte le cartelle per il premio in palio. Quando una o più cartelle lo raggiungono, la lampadina si accende in giallo e mostra quante sono. Sul tabellone non compare nient'altro, così sul maxischermo non si vedono vincite non ancora verificate.</li>
+        <li>Clicca la lampadina per aprire l'elenco: per ogni cartella vedi il numero e i numeri vincenti.
+            <ul>
+                <li><strong>Conferma</strong>: il premio viene assegnato e si passa al successivo.</li>
+                <li><strong>Invenduta</strong>: la cartella non è stata venduta a nessun giocatore, quindi viene ignorata per quel premio. Le altre restano in elenco.</li>
+            </ul>
+        </li>
+        <li>Puoi anche non fare nulla: la partita continua normalmente e la lampadina resta accesa come promemoria.</li>
+    </ol>
+
+    <div class="info-box">
+        <strong>💡 Attenzione:</strong> lo stato della partita non viene salvato. Se chiudi o ricarichi la pagina perdi i numeri estratti e devi ricaricare il file .JSON delle cartelle.
+    </div>
+
+    <button class="btn-back" onclick="window.close()">← Chiudi Finestra</button>
+</div>
+
+</body>
+</html>

@@ -45,6 +45,32 @@
 .btn-chiudi { background-color: #6c757d; }
 .btn-chiudi:hover { background-color: #5a6268; }
 
+.btn-genera { background-color: #28a745; }
+.btn-genera:hover { background-color: #218838; }
+
+.btn-json { background-color: #17a2b8; }
+.btn-json:hover { background-color: #138496; }
+
+.btn-usa { background-color: #6f42c1; }
+.btn-usa:hover { background-color: #5a32a3; }
+
+/* Pulsanti di download disabilitati finché non viene generato un set di cartelle */
+.btn-azione:disabled,
+.btn-azione:disabled:hover {
+    opacity: 0.4;
+    cursor: not-allowed;
+    filter: grayscale(60%);
+}
+
+.btn-azione:disabled.btn-pdf { background-color: #28a745; }
+.btn-azione:disabled.btn-img { background-color: #007bff; }
+.btn-azione:disabled.btn-json { background-color: #17a2b8; }
+.btn-azione:disabled.btn-usa { background-color: #6f42c1; }
+
+.input-nascosto {
+    display: none;
+}
+
 .btn-icon.btn-cartelle:hover {
     background-color: #e2e6ea;
     color: #0056b3;

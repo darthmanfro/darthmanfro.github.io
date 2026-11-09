@@ -84,6 +84,31 @@ body {
     background-color: #218838;
 }
 
+/* Separatore tra comando di gioco (Estrai) e comandi di servizio */
+.comandi-separatore {
+    width: 1px;
+    height: 24px;
+    margin: 0 4px;
+    background-color: #ced4da;
+}
+
+/* Comandi di servizio: più piccoli e attenuati, non distraggono sul proiettore */
+.btn-icon.btn-servizio {
+    width: clamp(30px, 3vw, 36px);
+    height: clamp(30px, 3vw, 36px);
+    background-color: transparent;
+    border-color: transparent;
+    color: #868e96;
+    opacity: 0.7;
+}
+
+.btn-icon.btn-servizio:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+    color: #212529;
+    opacity: 1;
+}
+
 /* Pulsante Reset Partita */
 .btn-icon.btn-reset:hover {
     background-color: #f8d7da;
@@ -407,81 +432,286 @@ body {
     background-color: #218838;
 }
 
-/* ==========================================================================
-   6. BANNER NOTIFICA VINCITA AUTOMATICA
-   ========================================================================== */
-.banner-vincita {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #212529;
-    color: #ffffff;
-    border: 3px solid #ffc107;
-    border-radius: 12px;
-    padding: 16px 24px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    max-width: 600px;
-    width: 90%;
-    animation: comparsaBanner 0.3s ease-out;
+/* Pulsante "Leggi Istruzioni" (modali configurazione e cartelle) */
+.modal-azioni {
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
-.banner-vincita.visibile {
-    display: block;
-}
-
-.banner-vincita-contenuto {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    text-align: center;
-}
-
-#testo-vincita {
-    font-size: 1.15rem;
-    font-weight: bold;
-    color: #ffc107;
-}
-
-.banner-vincita-azioni {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-.btn-vincita {
-    flex: 1;
-    padding: 10px;
+.btn-istruzioni {
+    padding: 10px 14px;
     font-size: 0.9rem;
     font-weight: bold;
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #adb5bd;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.btn-istruzioni:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+/* Modale configurazione: "Salva e Chiudi" a tutta larghezza, sotto "Chiudi" e "Istruzioni" affiancati */
+.modal-azioni-config .btn-istruzioni,
+.modal-azioni-config .btn-chiudi-config {
+    flex: 1;
+}
+
+.btn-chiudi-config {
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #6c757d;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color 0.2s ease;
 }
 
-.btn-conferma {
-    background-color: #28a745;
-    color: #ffffff;
+.btn-chiudi-config:hover {
+    background-color: #5a6268;
 }
-.btn-conferma:hover {
+
+/* Caricamento file partita (.JSON) nella modale configurazione */
+.carica-partita-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-carica-partita {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #17a2b8;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-carica-partita:hover {
+    background-color: #138496;
+}
+
+.stato-partita {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.stato-partita.caricata {
+    color: #1e7e34;
+    font-style: normal;
+    font-weight: bold;
+}
+
+/* ==========================================================================
+   6. LAMPADINA VINCITE (PROMEMORIA DISCRETO) E PANNELLINO DI VERIFICA
+   ========================================================================== */
+/* Le vincite non compaiono mai in grande sul tabellone proiettato:
+   si accende solo una piccola lampadina, il dettaglio si apre al clic. */
+
+.premio-gruppo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spia-wrapper {
+    position: relative;
+}
+
+.spia-vincite {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(34px, 3.5vw, 42px);
+    height: clamp(34px, 3.5vw, 42px);
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: #ced4da; /* Spenta: grigio chiaro, quasi invisibile */
+    cursor: default;
+    transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Nessuna cartella caricata: la funzione è spenta e la lampadina non compare */
+.spia-vincite.inattiva {
+    display: none;
+}
+
+/* Accesa: giallo tenue con un leggero alone, pulsa solo 3 volte e poi resta fissa */
+.spia-vincite.accesa {
+    color: #b8860b;
+    background-color: #fff3cd;
+    border-color: #ffe08a;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.45);
+    cursor: pointer;
+    animation: pulsazioneSpia 1.6s ease-in-out 3;
+}
+
+.spia-vincite.accesa svg {
+    fill: #ffe08a;
+}
+
+.spia-vincite.accesa:hover {
+    background-color: #ffe8a1;
+}
+
+.spia-contatore {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background-color: #495057;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+}
+
+.spia-contatore:empty {
+    display: none;
+}
+
+@keyframes pulsazioneSpia {
+    0%, 100% { box-shadow: 0 0 8px rgba(255, 193, 7, 0.45); }
+    50% { box-shadow: 0 0 16px rgba(255, 193, 7, 0.8); }
+}
+
+/* Pannellino a discesa sotto la lampadina */
+.pannello-vincite {
+    display: none;
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: min(340px, 90vw);
+    max-height: 60vh;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    z-index: 500;
+}
+
+.pannello-vincite.visibile {
+    display: block;
+}
+
+.pannello-vincite-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+
+.pannello-vincite-titolo {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.pannello-vincite-chiudi {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.pannello-vincite-chiudi:hover {
+    color: #212529;
+}
+
+.vincita-riga {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.vincita-riga:last-child {
+    border-bottom: none;
+}
+
+.vincita-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.vincita-cartella {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #212529;
+}
+
+.vincita-numeri {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.vincita-azioni {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.btn-vincita-ok,
+.btn-vincita-no {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-vincita-ok {
+    color: #ffffff;
+    background-color: #28a745;
+    border: 1px solid #1e7e34;
+}
+
+.btn-vincita-ok:hover {
     background-color: #218838;
 }
 
-.btn-invenduta {
-    background-color: #dc3545;
-    color: #ffffff;
-}
-.btn-invenduta:hover {
-    background-color: #c82333;
+.btn-vincita-no {
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #adb5bd;
 }
 
-@keyframes comparsaBanner {
-    from { opacity: 0; transform: translate(-50%, -20px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
+.btn-vincita-no:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
 }
 
 /* ==========================================================================
@@ -521,81 +751,4 @@ body {
     font-size: clamp(0.75rem, 3.2vw, 1.2rem);
     border-radius: 2px;
   }
-}
-
-/* ==========================================================================
-   BANNER NOTIFICA VINCITA AUTOMATICA
-   ========================================================================== */
-.banner-vincita {
-    display: none;
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #212529;
-    color: #ffffff;
-    border: 3px solid #ffc107;
-    border-radius: 12px;
-    padding: 16px 24px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    max-width: 600px;
-    width: 90%;
-    animation: comparsaBanner 0.3s ease-out;
-}
-
-.banner-vincita.visibile {
-    display: block;
-}
-
-.banner-vincita-contenuto {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    text-align: center;
-}
-
-#testo-vincita {
-    font-size: 1.15rem;
-    font-weight: bold;
-    color: #ffc107;
-}
-
-.banner-vincita-azioni {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-}
-
-.btn-vincita {
-    flex: 1;
-    padding: 10px;
-    font-size: 0.9rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.btn-conferma {
-    background-color: #28a745;
-    color: #ffffff;
-}
-.btn-conferma:hover {
-    background-color: #218838;
-}
-
-.btn-invenduta {
-    background-color: #dc3545;
-    color: #ffffff;
-}
-.btn-invenduta:hover {
-    background-color: #c82333;
-}
-
-@keyframes comparsaBanner {
-    from { opacity: 0; transform: translate(-50%, -20px); }
-    to { opacity: 1; transform: translate(-50%, 0); }
 }

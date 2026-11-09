@@ -140,21 +140,13 @@ function impostaStatoPulsantiDownload(disabilitati) {
   const btns = [
     document.getElementById('btnDownloadPdf'),
     document.getElementById('btnDownloadPng'),
-    document.getElementById('btnDownloadJson')
+    document.getElementById('btnDownloadJson'),
+    document.getElementById('btnUsaCartelle')
   ];
 
+  // L'aspetto dei pulsanti disabilitati è gestito in css/cartelle.css (.btn-azione:disabled)
   btns.forEach(btn => {
-    if (!btn) return;
-    btn.disabled = disabilitati;
-    if (disabilitati) {
-      btn.style.opacity = '0.4';
-      btn.style.cursor = 'not-allowed';
-      btn.style.filter = 'grayscale(60%)';
-    } else {
-      btn.style.opacity = '1';
-      btn.style.cursor = 'pointer';
-      btn.style.filter = 'none';
-    }
+    if (btn) btn.disabled = disabilitati;
   });
 }
 
@@ -215,13 +207,12 @@ function creaHTMLCartella(griglia, numeroProgressivo, titolo) {
 }
 
 // --- ESPORTAZIONE FILE PARTITA (.JSON) ---
-function esportaFileJSONPartita() {
-  if (!cartelleGenerateState) return;
-
+// Struttura dati della partita: la stessa salvata nel file .JSON
+function costruisciDatiPartita() {
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
   const listaCartelle = cartelleGenerateState;
 
-  const datiPartita = {
+  return {
     titolo: titolo,
     dataGenerazione: new Date().toISOString(),
     totaleCartelle: listaCartelle.length,
@@ -240,6 +231,26 @@ function esportaFileJSONPartita() {
       };
     })
   };
+}
+
+// --- USA LE CARTELLE GENERATE DIRETTAMENTE NELLA PARTITA (senza file .JSON) ---
+function usaCartelleNellaPartita() {
+  if (!cartelleGenerateState) return;
+
+  if (cartelleCaricate.length > 0) {
+    const conferma = confirm(`Ci sono già ${cartelleCaricate.length} cartelle in uso per il controllo vincite.\nVuoi sostituirle con quelle appena generate?`);
+    if (!conferma) return;
+  }
+
+  impostaCartellePartita(costruisciDatiPartita().cartelle);
+  alert(`${cartelleCaricate.length} cartelle in uso per il controllo vincite.\nRicorda di scaricare anche il file .JSON se vuoi riusarle in un altro momento.`);
+}
+
+function esportaFileJSONPartita() {
+  if (!cartelleGenerateState) return;
+
+  const titolo = document.getElementById('titoloCartella').value || 'Tombola';
+  const datiPartita = costruisciDatiPartita();
 
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datiPartita, null, 2));
   const link = document.createElement('a');
@@ -274,23 +285,30 @@ function generaEScaricaPDF() {
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
+  // A4: 1 colonna x 4 righe = 4 cartelle per foglio
+  // A3: 2 colonne x 4 righe = 8 cartelle per foglio
+  const colCount = isA3 ? 2 : 1;
   const rowCount = 4;
+  const perPagina = colCount * rowCount;
   const marginX = 12;
   const marginY = 12;
+  const gapX = 8;
   const gapY = 8;
 
-  const cardW = pageWidth - (marginX * 2);
+  const cardW = (pageWidth - (marginX * 2) - (gapX * (colCount - 1))) / colCount;
   const cardH = (pageHeight - (marginY * 2) - (gapY * (rowCount - 1))) / rowCount;
 
   listaCartelle.forEach((griglia, idx) => {
-    const itemIndex = idx % rowCount;
-    
+    const itemIndex = idx % perPagina;
+
     if (idx > 0 && itemIndex === 0) {
       doc.addPage();
     }
 
-    const x = marginX;
-    const y = marginY + itemIndex * (cardH + gapY);
+    const col = itemIndex % colCount;
+    const row = Math.floor(itemIndex / colCount);
+    const x = marginX + col * (cardW + gapX);
+    const y = marginY + row * (cardH + gapY);
 
     disegnaCartellaSuPDF(doc, griglia, idx + 1, titolo, x, y, cardW, cardH);
   });
