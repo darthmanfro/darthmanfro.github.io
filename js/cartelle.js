@@ -114,31 +114,32 @@ function generaListaCartelleUniche(quantita) {
   return lista;
 }
 
-// --- FUNZIONE DI GENERAZIONE CON CONFERMA POPUP ---
+// --- FUNZIONE DI GENERAZIONE CON POPUP E ABILITAZIONE PULSANTI ---
 function generaNuovoDatasetCartelle() {
   if (cartelleGenerateState !== null) {
-    const conferma = confirm("Attenzione: sono già state generate delle cartelle.\nVuoi rigenerare un nuovo set di cartelle? Verrà persa la coerenza con i file eventualmente già scaricati.");
+    const conferma = confirm("Attenzione: hai già generato un set di cartelle.\nVuoi rigenerare un nuovo dataset? I file precedentemente scaricati non saranno più coerenti con il nuovo set.");
     if (!conferma) return;
   }
 
   const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
   cartelleGenerateState = generaListaCartelleUniche(num);
   
-  // Mostra prima cartella generata come anteprima
+  // Mostra la prima cartella generata come anteprima
   if (cartelleGenerateState.length > 0) {
     anteprimaCartellaDati = cartelleGenerateState[0];
     aggiornaAnteprimaCartella();
   }
 
-  alert(`Generate con successo ${cartelleGenerateState.length} cartelle! Ora puoi scaricare i file coerenti (JSON, PDF, PNG).`);
+  // Abilita i tre pulsanti di download
+  impostaStatoPulsantiDownload(false);
+
+  alert(`Generate con successo ${cartelleGenerateState.length} cartelle! I pulsanti di download sono ora attivi.`);
 }
 
-function assicuraCartelleGenerate() {
-  if (!cartelleGenerateState || cartelleGenerateState.length === 0) {
-    const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
-    cartelleGenerateState = generaListaCartelleUniche(num);
-  }
-  return cartelleGenerateState;
+function impostaStatoPulsantiDownload(disabilitati) {
+  document.getElementById('btnDownloadPdf').disabled = disabilitati;
+  document.getElementById('btnDownloadPng').disabled = disabilitati;
+  document.getElementById('btnDownloadJson').disabled = disabilitati;
 }
 
 // --- GESTIONE INTERFACCIA E ANTEPRIMA ---
@@ -148,6 +149,14 @@ function apriModalCartelle() {
     anteprimaCartellaDati = generaDatiCartellaSingola();
   }
   aggiornaAnteprimaCartella();
+
+  // Reset dello stato dei pulsanti all'apertura se non vi è nulla in memoria
+  if (!cartelleGenerateState) {
+    impostaStatoPulsantiDownload(true);
+  } else {
+    impostaStatoPulsantiDownload(false);
+  }
+
   document.getElementById('modal-cartelle').classList.add('visibile');
 }
 
@@ -191,8 +200,10 @@ function creaHTMLCartella(griglia, numeroProgressivo, titolo) {
 
 // --- ESPORTAZIONE FILE PARTITA (.JSON) ---
 function esportaFileJSONPartita() {
+  if (!cartelleGenerateState) return;
+
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-  const listaCartelle = assicuraCartelleGenerate();
+  const listaCartelle = cartelleGenerateState;
 
   const datiPartita = {
     titolo: titolo,
@@ -225,9 +236,11 @@ function esportaFileJSONPartita() {
 
 // --- ESPORTAZIONE PDF OFFLINE ---
 function generaEScaricaPDF() {
+  if (!cartelleGenerateState) return;
+
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
   const formato = document.getElementById('formatoStampa').value || 'A4';
-  const listaCartelle = assicuraCartelleGenerate();
+  const listaCartelle = cartelleGenerateState;
 
   if (!window.jspdf) {
     alert('Libreria jsPDF non trovata offline in ./js/lib/jspdf.umd.min.js');
@@ -316,8 +329,10 @@ function disegnaCartellaSuPDF(doc, griglia, numProg, titolo, x, y, w, h) {
 
 // --- ESPORTAZIONE IMMAGINI PNG ---
 function esportaComeImmagine() {
+  if (!cartelleGenerateState) return;
+
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-  const listaCartelle = assicuraCartelleGenerate();
+  const listaCartelle = cartelleGenerateState;
 
   const cartellePerFoglio = 4;
   const totaleFogli = Math.ceil(listaCartelle.length / cartellePerFoglio);
