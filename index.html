@@ -208,6 +208,15 @@
                 <input type="file" id="inputJsonCartelle" accept=".json" class="input-nascosto" onchange="caricaFilePartita(event)">
             </div>
 
+            <!-- DOWNLOAD APP PER USO OFFLINE (visibile solo dalla versione online) -->
+            <div id="sezione-offline" class="config-sezione">
+                <label class="config-label">Uso Offline:</label>
+                <button type="button" id="btnScaricaOffline" class="btn-scarica-offline" onclick="scaricaAppOffline()" title="Scarica tutti i file della Tombola in un archivio .zip">
+                    ⬇ Scarica l'app (.zip)
+                </button>
+                <span class="nota-offline">Estrai lo zip e apri <strong>index.html</strong>: funziona senza internet.</span>
+            </div>
+
             <div class="modal-azioni modal-azioni-config">
                 <button class="btn-salva-config" onclick="salvaChiudiConfig()">Salva e Chiudi</button>
                 <button type="button" class="btn-chiudi-config" onclick="chiudiConfigSenzaSalvare()">Chiudi</button>
@@ -228,6 +237,7 @@
     <script src="./js/vincite.js"></script>          <!-- Controllo vincite e lampadina -->
     <script src="./js/avviso.js"></script>           <!-- Scintilla e suono per nuove vincite -->
     <script src="./js/configurazione.js"></script>   <!-- Finestra configurazione e file .JSON -->
+    <script src="./js/scarica-offline.js"></script>  <!-- Download dell'app in .zip per uso offline -->
     <script src="./js/cartelle.js"></script>         <!-- Generatore cartelle ed esportazioni -->
     <script src="./js/app.js"></script>              <!-- Avvio e nuova partita -->
 </body>

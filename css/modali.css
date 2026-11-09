@@ -30,6 +30,8 @@
     padding: 20px 24px;
     width: 90%;
     max-width: 400px;
+    max-height: 92vh;   /* Su schermi bassi la finestra scorre invece di uscire dal monitor */
+    overflow-y: auto;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     display: flex;
     flex-direction: column;
@@ -214,4 +216,32 @@
     color: #1e7e34;
     font-style: normal;
     font-weight: bold;
+}
+
+/* Download dell'app per uso offline */
+.btn-scarica-offline {
+    align-self: flex-start;
+    padding: 8px 12px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #343a40;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-scarica-offline:hover {
+    background-color: #212529;
+}
+
+.btn-scarica-offline:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.nota-offline {
+    font-size: 0.8rem;
+    color: #6c757d;
 }

@@ -26,6 +26,11 @@ function apriConfig() {
     });
 
     aggiornaStatoPartita();
+
+    // Il download per uso offline ha senso solo dalla versione online
+    const sezioneOffline = document.getElementById("sezione-offline");
+    if (sezioneOffline) sezioneOffline.classList.toggle("nascosto", !downloadOfflineDisponibile());
+
     document.getElementById("modal-config").classList.add("visibile");
 }
 
