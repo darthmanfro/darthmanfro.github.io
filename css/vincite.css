@@ -1,0 +1,271 @@
+/* ==========================================================================
+   LAMPADINA VINCITE
+   Promemoria discreto delle possibili vincite e pannellino di verifica.
+   ========================================================================== */
+/* Le vincite non compaiono mai in grande sul tabellone proiettato:
+   si accende solo una piccola lampadina, il dettaglio si apre al clic. */
+
+.premio-gruppo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.spia-wrapper {
+    position: relative;
+}
+
+.spia-vincite {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(34px, 3.5vw, 42px);
+    height: clamp(34px, 3.5vw, 42px);
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background-color: transparent;
+    color: #ced4da; /* Spenta: grigio chiaro, quasi invisibile */
+    cursor: default;
+    transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Nessuna cartella caricata: la funzione è spenta e la lampadina non compare */
+.spia-vincite.inattiva {
+    display: none;
+}
+
+/* Accesa: giallo tenue con un leggero alone, pulsa solo 3 volte e poi resta fissa */
+.spia-vincite.accesa {
+    color: #b8860b;
+    background-color: #fff3cd;
+    border-color: #ffe08a;
+    box-shadow: 0 0 8px rgba(255, 193, 7, 0.45);
+    cursor: pointer;
+    animation: pulsazioneSpia 1.6s ease-in-out 3;
+}
+
+.spia-vincite.accesa svg {
+    fill: #ffe08a;
+}
+
+.spia-vincite.accesa:hover {
+    background-color: #ffe8a1;
+}
+
+.spia-contatore {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 8px;
+    background-color: #495057;
+    color: #ffffff;
+    font-size: 0.65rem;
+    font-weight: bold;
+    line-height: 16px;
+    text-align: center;
+}
+
+.spia-contatore:empty {
+    display: none;
+}
+
+@keyframes pulsazioneSpia {
+    0%, 100% { box-shadow: 0 0 8px rgba(255, 193, 7, 0.45); }
+    50% { box-shadow: 0 0 16px rgba(255, 193, 7, 0.8); }
+}
+
+/* Pannellino che si apre SOPRA la lampadina: la barra è in fondo allo schermo,
+   aprendolo verso il basso finirebbe fuori dal monitor */
+.pannello-vincite {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    width: min(340px, 90vw);
+    max-height: min(60vh, calc(100vh - 100px));
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    z-index: 500;
+}
+
+.pannello-vincite.visibile {
+    display: block;
+}
+
+.pannello-vincite-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    background-color: #f8f9fa;
+    border-radius: 10px 10px 0 0;
+}
+
+.pannello-vincite-titolo {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.pannello-vincite-chiudi {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.pannello-vincite-chiudi:hover {
+    color: #212529;
+}
+
+.vincita-riga {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f3f5;
+}
+
+.vincita-riga:last-child {
+    border-bottom: none;
+}
+
+.vincita-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.vincita-cartella {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #212529;
+}
+
+.vincita-numeri {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+
+.vincita-azioni {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+.btn-vincita-ok,
+.btn-vincita-no {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-vincita-ok {
+    color: #ffffff;
+    background-color: #28a745;
+    border: 1px solid #1e7e34;
+}
+
+.btn-vincita-ok:hover {
+    background-color: #218838;
+}
+
+.btn-vincita-no {
+    color: #495057;
+    background-color: #ffffff;
+    border: 1px solid #adb5bd;
+}
+
+.btn-vincita-no:hover {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+
+/* ==========================================================================
+   SCINTILLA: segnale breve nell'angolo del tabellone, sopra la lampadina
+   ========================================================================== */
+.scintilla-vincita {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+    width: 120px;
+    height: 120px;
+    pointer-events: none; /* Non blocca i clic sul tabellone */
+    z-index: 20;          /* Sopra il tabellone e l'overlay del numero */
+    display: none;
+}
+
+.scintilla-vincita.attiva {
+    display: block;
+}
+
+/* Stella centrale: compare, ruota leggermente e svanisce */
+.scintilla-stella {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    font-size: 64px;
+    line-height: 1;
+    color: #ffc107;
+    text-shadow: 0 0 12px rgba(255, 193, 7, 0.9), 0 0 28px rgba(255, 224, 138, 0.8);
+    transform: translate(-50%, -50%) scale(0);
+    animation: scintillaStella 1.6s ease-out forwards;
+}
+
+/* Particelle che partono dal centro a raggiera */
+.scintilla-particella {
+    --angolo: 0deg;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    margin: -4px 0 0 -4px;
+    border-radius: 50%;
+    background-color: #ffe08a;
+    box-shadow: 0 0 6px #ffc107;
+    opacity: 0;
+    animation: scintillaParticella 1.1s ease-out 0.1s forwards;
+}
+
+/* Direzioni delle 10 particelle (il primo figlio è la stella) */
+.scintilla-particella:nth-child(2)  { --angolo: 0deg; }
+.scintilla-particella:nth-child(3)  { --angolo: 36deg; }
+.scintilla-particella:nth-child(4)  { --angolo: 72deg; }
+.scintilla-particella:nth-child(5)  { --angolo: 108deg; }
+.scintilla-particella:nth-child(6)  { --angolo: 144deg; }
+.scintilla-particella:nth-child(7)  { --angolo: 180deg; }
+.scintilla-particella:nth-child(8)  { --angolo: 216deg; }
+.scintilla-particella:nth-child(9)  { --angolo: 252deg; }
+.scintilla-particella:nth-child(10) { --angolo: 288deg; }
+.scintilla-particella:nth-child(11) { --angolo: 324deg; }
+
+@keyframes scintillaStella {
+    0%   { transform: translate(-50%, -50%) scale(0) rotate(0deg); opacity: 0; }
+    20%  { transform: translate(-50%, -50%) scale(1.2) rotate(20deg); opacity: 1; }
+    40%  { transform: translate(-50%, -50%) scale(0.9) rotate(35deg); opacity: 1; }
+    60%  { transform: translate(-50%, -50%) scale(1.1) rotate(45deg); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(0.4) rotate(90deg); opacity: 0; }
+}
+
+@keyframes scintillaParticella {
+    0%   { transform: rotate(var(--angolo)) translateY(0) scale(1); opacity: 1; }
+    100% { transform: rotate(var(--angolo)) translateY(-52px) scale(0.3); opacity: 0; }
+}

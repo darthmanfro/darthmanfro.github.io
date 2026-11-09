@@ -1,0 +1,114 @@
+/* ==========================================================================
+   TABELLONE
+   Griglia 1-90 e schermata del numero estratto con la Smorfia.
+   ========================================================================== */
+#tabellone-container {
+    position: relative;
+    width: 100%;
+    max-width: min(1300px, 95vw);
+    height: calc(100vh - 90px);
+    background-color: #ffffff;
+    border: 2px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.griglia {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(9, 1fr);
+    gap: clamp(2px, 0.5vw, 8px);
+    width: 100%;
+    height: 100%;
+}
+
+/* CORRETTO: selettore .cella per uniformarsi al JS */
+.cella {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 6px;
+    font-size: clamp(1.2rem, 3.5vh, 3.5rem);
+    font-weight: bold;
+    color: #495057;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.cella.estratto {
+    background-color: #28a745;
+    color: #ffffff;
+    border-color: #1e7e34;
+}
+
+/* ==========================================================================
+   4. OVERLAY NUMERO ESTRATTO + SMORFIA
+   ========================================================================== */
+#overlay-numero {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgba(40, 167, 69, 0.95);
+    backdrop-filter: blur(3px);
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: scale(0.85);
+    z-index: 10;
+}
+
+#overlay-numero.mostra {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.overlay-num {
+    font-size: min(30vw, 30vh);
+    font-weight: 900;
+    line-height: 1;
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.overlay-smorfia {
+    font-size: min(3.5vw, 3.5vh);
+    font-weight: 600;
+    font-style: italic;
+    color: #fff3cd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 15px;
+    text-align: center;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* Cellulari e schermi piccoli */
+@media (max-width: 600px) {
+  #tabellone-container {
+    height: calc(100vh - 70px);
+    padding: 4px;
+  }
+
+  .griglia {
+    gap: 2px;
+  }
+
+  .cella {
+    font-size: clamp(0.75rem, 3.2vw, 1.2rem);
+    border-radius: 2px;
+  }
+}

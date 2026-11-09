@@ -237,13 +237,13 @@ function costruisciDatiPartita() {
 function usaCartelleNellaPartita() {
   if (!cartelleGenerateState) return;
 
-  if (cartelleCaricate.length > 0) {
-    const conferma = confirm(`Ci sono già ${cartelleCaricate.length} cartelle in uso per il controllo vincite.\nVuoi sostituirle con quelle appena generate?`);
+  if (partita.cartelleCaricate.length > 0) {
+    const conferma = confirm(`Ci sono già ${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nVuoi sostituirle con quelle appena generate?`);
     if (!conferma) return;
   }
 
   impostaCartellePartita(costruisciDatiPartita().cartelle);
-  alert(`${cartelleCaricate.length} cartelle in uso per il controllo vincite.\nRicorda di scaricare anche il file .JSON se vuoi riusarle in un altro momento.`);
+  alert(`${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nRicorda di scaricare anche il file .JSON se vuoi riusarle in un altro momento.`);
 }
 
 function esportaFileJSONPartita() {

@@ -1,0 +1,110 @@
+// ==========================================================================
+// TABELLONE ED ESTRAZIONI
+// Griglia 1-90, estrazione del numero, schermata del numero con la Smorfia
+// e barra degli ultimi estratti.
+// ==========================================================================
+
+const DURATA_BLOCCO_ESTRAZIONE_MS = 1000; // Evita doppi clic su "Estrai"
+const DURATA_OVERLAY_MS = 3500;           // Quanto resta a schermo il numero estratto
+const NUMERI_STORICO = 5;                 // Quanti ultimi estratti mostrare
+
+let timerOverlay = null;
+let estrazioneBloccata = false;
+
+// Crea le celle da 1 a 90 sul tabellone
+function creaTabellone() {
+    const griglia = document.getElementById("griglia");
+    if (!griglia) return;
+    griglia.innerHTML = "";
+
+    for (let i = 1; i <= 90; i++) {
+        const cella = document.createElement("div");
+        cella.className = "cella";
+        cella.id = `cella-${i}`;
+        cella.textContent = i;
+        griglia.appendChild(cella);
+    }
+}
+
+// Estrae un numero casuale non ancora uscito (pulsante bloccato per 1 secondo)
+function estraiNumero() {
+    if (estrazioneBloccata) return;
+
+    if (partita.numeriEstratti.size >= 90) {
+        alert("Tutti i 90 numeri sono stati estratti!");
+        return;
+    }
+
+    estrazioneBloccata = true;
+    const btnEstrai = document.getElementById("btnEstrai");
+    if (btnEstrai) btnEstrai.disabled = true;
+
+    setTimeout(() => {
+        estrazioneBloccata = false;
+        if (btnEstrai) btnEstrai.disabled = false;
+    }, DURATA_BLOCCO_ESTRAZIONE_MS);
+
+    let numero;
+    do {
+        numero = Math.floor(Math.random() * 90) + 1;
+    } while (partita.numeriEstratti.has(numero));
+
+    registraEstrazione(numero);
+}
+
+function registraEstrazione(numero) {
+    if (partita.numeriEstratti.has(numero)) return;
+
+    partita.numeriEstratti.add(numero);
+
+    const cella = document.getElementById(`cella-${numero}`);
+    if (cella) cella.classList.add("estratto");
+
+    mostraOverlayNumero(numero);
+    aggiornaStorico();
+    verificaVinciteAutomatiche();
+}
+
+// Mostra il numero a tutto schermo; ogni nuovo numero riparte con la durata piena
+function mostraOverlayNumero(num) {
+    const overlay = document.getElementById("overlay-numero");
+    if (!overlay) return;
+
+    if (timerOverlay) {
+        clearTimeout(timerOverlay);
+        timerOverlay = null;
+    }
+
+    const infoSmorfia = smorfia[num] ? smorfia[num][impostazioni.lingua] : "";
+
+    overlay.innerHTML = `
+        <div class="overlay-num">${num}</div>
+        <div class="overlay-smorfia">${infoSmorfia}</div>
+    `;
+    overlay.classList.add("mostra");
+
+    timerOverlay = setTimeout(() => {
+        overlay.classList.remove("mostra");
+        timerOverlay = null;
+    }, DURATA_OVERLAY_MS);
+}
+
+// Aggiorna gli ultimi numeri estratti nella barra (dal più recente)
+function aggiornaStorico() {
+    const container = document.getElementById("storico-numeri");
+    if (!container) return;
+
+    const ultimi = Array.from(partita.numeriEstratti).slice(-NUMERI_STORICO).reverse();
+    if (ultimi.length === 0) {
+        container.innerHTML = '<span class="storico-empty">Nessuno</span>';
+        return;
+    }
+
+    container.innerHTML = "";
+    ultimi.forEach(n => {
+        const badge = document.createElement("span");
+        badge.className = "storico-badge";
+        badge.textContent = n;
+        container.appendChild(badge);
+    });
+}

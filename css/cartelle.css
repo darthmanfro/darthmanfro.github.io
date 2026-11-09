@@ -67,15 +67,6 @@
 .btn-azione:disabled.btn-json { background-color: #17a2b8; }
 .btn-azione:disabled.btn-usa { background-color: #6f42c1; }
 
-.input-nascosto {
-    display: none;
-}
-
-.btn-icon.btn-cartelle:hover {
-    background-color: #e2e6ea;
-    color: #0056b3;
-}
-
 /* ==========================================================================
    2. GRAFICA CARTELLA ORIZZONTALE (ANTEPRIMA E STAMPA) - STILE DAL NEGRO
    ========================================================================== */
