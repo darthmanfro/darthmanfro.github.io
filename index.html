@@ -125,10 +125,10 @@
             </div>
 
             <div class="modal-azioni modal-azioni-cartelle">
-                <button class="btn-azione btn-genera" onclick="generaNuovoDatasetCartelle()" style="background-color: #28a745; color: white;">⚡ Genera Nuove Cartelle</button>
-                <button class="btn-azione btn-pdf" onclick="generaEScaricaPDF()">Download PDF</button>
-                <button class="btn-azione btn-img" onclick="esportaComeImmagine()">Download Immagine (PNG)</button>
-                <button class="btn-azione btn-json" onclick="esportaFileJSONPartita()" style="background-color: #17a2b8;">Download File Partita (.JSON)</button>
+                <button id="btnGeneraDataset" class="btn-azione btn-genera" onclick="generaNuovoDatasetCartelle()" style="background-color: #28a745; color: white;">⚡ Genera Nuove Cartelle</button>
+                <button id="btnDownloadPdf" class="btn-azione btn-pdf" onclick="generaEScaricaPDF()" disabled>Download PDF</button>
+                <button id="btnDownloadPng" class="btn-azione btn-img" onclick="esportaComeImmagine()" disabled>Download Immagine (PNG)</button>
+                <button id="btnDownloadJson" class="btn-azione btn-json" onclick="esportaFileJSONPartita()" style="background-color: #17a2b8;" disabled>Download File Partita (.JSON)</button>
                 <button class="btn-azione btn-chiudi" onclick="chiudiModalCartelle()">Chiudi</button>
             </div>
         </div>
