@@ -130,16 +130,32 @@ function generaNuovoDatasetCartelle() {
     aggiornaAnteprimaCartella();
   }
 
-  // Abilita i tre pulsanti di download
+  // Abilita i tre pulsanti di download graficamente e funzionalmente
   impostaStatoPulsantiDownload(false);
 
   alert(`Generate con successo ${cartelleGenerateState.length} cartelle! I pulsanti di download sono ora attivi.`);
 }
 
 function impostaStatoPulsantiDownload(disabilitati) {
-  document.getElementById('btnDownloadPdf').disabled = disabilitati;
-  document.getElementById('btnDownloadPng').disabled = disabilitati;
-  document.getElementById('btnDownloadJson').disabled = disabilitati;
+  const btns = [
+    document.getElementById('btnDownloadPdf'),
+    document.getElementById('btnDownloadPng'),
+    document.getElementById('btnDownloadJson')
+  ];
+
+  btns.forEach(btn => {
+    if (!btn) return;
+    btn.disabled = disabilitati;
+    if (disabilitati) {
+      btn.style.opacity = '0.4';
+      btn.style.cursor = 'not-allowed';
+      btn.style.filter = 'grayscale(60%)';
+    } else {
+      btn.style.opacity = '1';
+      btn.style.cursor = 'pointer';
+      btn.style.filter = 'none';
+    }
+  });
 }
 
 // --- GESTIONE INTERFACCIA E ANTEPRIMA ---
@@ -150,7 +166,7 @@ function apriModalCartelle() {
   }
   aggiornaAnteprimaCartella();
 
-  // Reset dello stato dei pulsanti all'apertura se non vi è nulla in memoria
+  // Imposta lo stato iniziale dei pulsanti in base alla presenza del dataset
   if (!cartelleGenerateState) {
     impostaStatoPulsantiDownload(true);
   } else {
