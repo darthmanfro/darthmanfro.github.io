@@ -1,5 +1,6 @@
 // --- STATE & UTILS PER LE CARTELLE ---
 let anteprimaCartellaDati = null;
+let cartelleGenerateState = null; // Memorizza la partita corrente generata
 
 function generaDatiCartellaSingola() {
   let cartellaValida = false;
@@ -113,10 +114,39 @@ function generaListaCartelleUniche(quantita) {
   return lista;
 }
 
+// --- FUNZIONE DI GENERAZIONE CON CONFERMA POPUP ---
+function generaNuovoDatasetCartelle() {
+  if (cartelleGenerateState !== null) {
+    const conferma = confirm("Attenzione: sono già state generate delle cartelle.\nVuoi rigenerare un nuovo set di cartelle? Verrà persa la coerenza con i file eventualmente già scaricati.");
+    if (!conferma) return;
+  }
+
+  const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
+  cartelleGenerateState = generaListaCartelleUniche(num);
+  
+  // Mostra prima cartella generata come anteprima
+  if (cartelleGenerateState.length > 0) {
+    anteprimaCartellaDati = cartelleGenerateState[0];
+    aggiornaAnteprimaCartella();
+  }
+
+  alert(`Generate con successo ${cartelleGenerateState.length} cartelle! Ora puoi scaricare i file coerenti (JSON, PDF, PNG).`);
+}
+
+function assicuraCartelleGenerate() {
+  if (!cartelleGenerateState || cartelleGenerateState.length === 0) {
+    const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
+    cartelleGenerateState = generaListaCartelleUniche(num);
+  }
+  return cartelleGenerateState;
+}
+
 // --- GESTIONE INTERFACCIA E ANTEPRIMA ---
 
 function apriModalCartelle() {
-  anteprimaCartellaDati = generaDatiCartellaSingola();
+  if (!anteprimaCartellaDati) {
+    anteprimaCartellaDati = generaDatiCartellaSingola();
+  }
   aggiornaAnteprimaCartella();
   document.getElementById('modal-cartelle').classList.add('visibile');
 }
@@ -161,14 +191,13 @@ function creaHTMLCartella(griglia, numeroProgressivo, titolo) {
 
 // --- ESPORTAZIONE FILE PARTITA (.JSON) ---
 function esportaFileJSONPartita() {
-  const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-  const listaCartelle = generaListaCartelleUniche(num);
+  const listaCartelle = assicuraCartelleGenerate();
 
   const datiPartita = {
     titolo: titolo,
     dataGenerazione: new Date().toISOString(),
-    totaleCartelle: num,
+    totaleCartelle: listaCartelle.length,
     cartelle: listaCartelle.map((griglia, idx) => {
       const numeri = [];
       for (let r = 0; r < 3; r++) {
@@ -196,11 +225,9 @@ function esportaFileJSONPartita() {
 
 // --- ESPORTAZIONE PDF OFFLINE ---
 function generaEScaricaPDF() {
-  const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
   const formato = document.getElementById('formatoStampa').value || 'A4';
-
-  const listaCartelle = generaListaCartelleUniche(num);
+  const listaCartelle = assicuraCartelleGenerate();
 
   if (!window.jspdf) {
     alert('Libreria jsPDF non trovata offline in ./js/lib/jspdf.umd.min.js');
@@ -289,9 +316,8 @@ function disegnaCartellaSuPDF(doc, griglia, numProg, titolo, x, y, w, h) {
 
 // --- ESPORTAZIONE IMMAGINI PNG ---
 function esportaComeImmagine() {
-  const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
   const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-  const listaCartelle = generaListaCartelleUniche(num);
+  const listaCartelle = assicuraCartelleGenerate();
 
   const cartellePerFoglio = 4;
   const totaleFogli = Math.ceil(listaCartelle.length / cartellePerFoglio);
