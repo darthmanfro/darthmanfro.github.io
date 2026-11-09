@@ -29,7 +29,7 @@ const smorfia = {
     10: { nap: "I fasuli", ita: "I fagioli" },
     11: { nap: "E surice", ita: "I topi" },
     12: { nap: "E surdate", ita: "I soldati" },
-    13: { nap: "Sant'アントニオ", ita: "Sant'Antonio" },
+    13: { nap: "Sant'Antonio", ita: "Sant'Antonio" },
     14: { nap: "U casatiello", ita: "Il cappotto" },
     15: { nap: "U guaglione", ita: "Il ragazzo" },
     16: { nap: "O culo", ita: "Il culo" },
