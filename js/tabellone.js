@@ -4,8 +4,6 @@
 // e barra degli ultimi estratti.
 // ==========================================================================
 
-const DURATA_BLOCCO_ESTRAZIONE_MS = 1000; // Evita doppi clic su "Estrai"
-const DURATA_OVERLAY_MS = 3500;           // Quanto resta a schermo il numero estratto
 const NUMERI_STORICO = 5;                 // Quanti ultimi estratti mostrare
 
 let timerOverlay = null;
@@ -26,7 +24,7 @@ function creaTabellone() {
     }
 }
 
-// Estrae un numero casuale non ancora uscito (pulsante bloccato per 1 secondo)
+// Estrae un numero casuale non ancora uscito (pulsante bloccato per il tempo impostato)
 function estraiNumero() {
     if (estrazioneBloccata) return;
 
@@ -36,13 +34,14 @@ function estraiNumero() {
     }
 
     estrazioneBloccata = true;
-    const btnEstrai = document.getElementById("btnEstrai");
+    // In estrazione automatica il pulsante resta cliccabile per la Pausa
+    const btnEstrai = impostazioni.autoEstrazione ? null : document.getElementById("btnEstrai");
     if (btnEstrai) btnEstrai.disabled = true;
 
     setTimeout(() => {
         estrazioneBloccata = false;
         if (btnEstrai) btnEstrai.disabled = false;
-    }, DURATA_BLOCCO_ESTRAZIONE_MS);
+    }, impostazioni.bloccoEstrazioneSec * 1000);
 
     let numero;
     do {
@@ -86,11 +85,14 @@ function mostraOverlayNumero(num) {
     timerOverlay = setTimeout(() => {
         overlay.classList.remove("mostra");
         timerOverlay = null;
-    }, DURATA_OVERLAY_MS);
+    }, impostazioni.durataNumeroSec * 1000);
 }
 
 // Aggiorna gli ultimi numeri estratti nella barra (dal più recente)
 function aggiornaStorico() {
+    const contatore = document.getElementById("contatore-estratti");
+    if (contatore) contatore.textContent = `/ ${partita.numeriEstratti.size}`;
+
     const container = document.getElementById("storico-numeri");
     if (!container) return;
 

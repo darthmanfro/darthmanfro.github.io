@@ -201,3 +201,55 @@
     font-size: 0.85rem;
   }
 }
+
+/* Pulsante Estrai in estrazione automatica: Play (fermo) o Pausa (in corso, arancione) */
+.btn-estrai .icona-play,
+.btn-estrai .icona-pausa,
+.btn-estrai.modalita-auto .icona-estrai,
+.btn-estrai.modalita-auto.in-corso .icona-play {
+    display: none;
+}
+
+.btn-estrai.modalita-auto .icona-play,
+.btn-estrai.modalita-auto.in-corso .icona-pausa {
+    display: block;
+}
+
+.btn-icon.btn-estrai.in-corso {
+    background-color: #fd7e14;
+    border-color: #dc6502;
+    box-shadow: 0 2px 4px rgba(253, 126, 20, 0.3);
+}
+
+.btn-icon.btn-estrai.in-corso:hover {
+    background-color: #e8590c;
+}
+
+/* In pausa per una possibile vincita: simbolo Pausa su giallo, come la lampadina */
+.btn-estrai.modalita-auto.in-pausa-vincita .icona-play {
+    display: none;
+}
+
+.btn-estrai.modalita-auto.in-pausa-vincita .icona-pausa {
+    display: block;
+}
+
+.btn-icon.btn-estrai.in-pausa-vincita {
+    background-color: #ffc107;
+    border-color: #d39e00;
+    color: #212529;
+    box-shadow: 0 2px 4px rgba(255, 193, 7, 0.35);
+}
+
+.btn-icon.btn-estrai.in-pausa-vincita:hover {
+    background-color: #e0a800;
+}
+
+/* Contatore dei numeri estratti, dopo gli ultimi 5: piccolo e grigio, leggibile ma discreto */
+.contatore-estratti {
+    font-size: clamp(0.8rem, 1vw, 0.9rem);
+    font-weight: 600;
+    color: #868e96;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums; /* Le cifre non fanno "ballare" la barra */
+}

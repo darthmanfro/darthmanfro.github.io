@@ -13,6 +13,7 @@ let timerScintilla = null;
 let contestoAudio = null;
 
 function segnalaNuovaVincita() {
+    pausaAutoEstrazione(true); // L'operatore deve verificare prima di proseguire
     mostraScintilla();
     if (impostazioni.suonoVincite) suonaAvviso();
 }

@@ -296,3 +296,55 @@
 .info-app a {
     color: inherit;
 }
+
+/* Tempi dell'estrazione: descrizione a sinistra, campo in secondi a destra */
+.tempo-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #212529;
+}
+
+.input-tempo {
+    width: 70px;
+    flex-shrink: 0;
+    padding: 4px 8px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-align: right;
+}
+
+/* Configurazione su due colonne: finestra più larga, sezioni divise in due gruppi */
+.modal-contenuto.modal-config-box {
+    max-width: 760px;
+}
+
+.config-colonne {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px 24px;
+    align-items: start;
+}
+
+.config-colonna {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0; /* Le colonne non si allargano oltre lo spazio disponibile */
+}
+
+/* Tablet stretti e cellulari: si torna a una colonna sola */
+@media (max-width: 700px) {
+    .modal-contenuto.modal-config-box {
+        width: 94%;
+        padding: 16px;
+    }
+
+    .config-colonne {
+        grid-template-columns: 1fr;
+    }
+}

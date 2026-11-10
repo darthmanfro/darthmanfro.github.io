@@ -21,6 +21,14 @@ function apriConfig() {
     const checkSuono = document.getElementById("checkSuonoVincite");
     if (checkSuono) checkSuono.checked = impostazioni.suonoVincite;
 
+    document.getElementById("inputBloccoEstrazione").value = impostazioni.bloccoEstrazioneSec;
+    document.getElementById("inputDurataNumero").value = impostazioni.durataNumeroSec;
+    document.getElementById("checkAutoEstrazione").checked = impostazioni.autoEstrazione;
+    document.getElementById("inputIntervalloAuto").value = impostazioni.intervalloAutoSec;
+
+    // Niente estrazioni mentre si cambiano le impostazioni
+    pausaAutoEstrazione();
+
     document.querySelectorAll(SELETTORE_CHECK_PREMI).forEach(cb => {
         cb.checked = partita.premiAttivi.includes(cb.value);
     });
@@ -49,6 +57,23 @@ function chiudiConfigSenzaSalvare() {
 }
 
 function salvaChiudiConfig() {
+    // Il numero deve restare a schermo almeno quanto dura il blocco del pulsante
+    const blocco = leggiSecondi("inputBloccoEstrazione", impostazioni.bloccoEstrazioneSec);
+    const durata = leggiSecondi("inputDurataNumero", impostazioni.durataNumeroSec);
+    if (durata < blocco) {
+        alert(`Il tempo del numero a schermo (${durata} s) deve essere maggiore o uguale al blocco del pulsante Estrai (${blocco} s).`);
+        document.getElementById("inputDurataNumero").focus();
+        return;
+    }
+
+    // Tra due estrazioni automatiche il numero deve fare in tempo a restare a schermo
+    const intervallo = leggiSecondi("inputIntervalloAuto", impostazioni.intervalloAutoSec);
+    if (intervallo < durata) {
+        alert(`I secondi tra un'estrazione automatica e l'altra (${intervallo} s) devono essere maggiori o uguali al tempo del numero a schermo (${durata} s).`);
+        document.getElementById("inputIntervalloAuto").focus();
+        return;
+    }
+
     impostazioni.lingua = linguaSelezionata;
 
     const checkAdiacenti = document.getElementById("checkNumeriAdiacenti");
@@ -56,6 +81,12 @@ function salvaChiudiConfig() {
 
     const checkSuono = document.getElementById("checkSuonoVincite");
     if (checkSuono) impostazioni.suonoVincite = checkSuono.checked;
+
+    impostazioni.bloccoEstrazioneSec = blocco;
+    impostazioni.durataNumeroSec = durata;
+    impostazioni.intervalloAutoSec = intervallo;
+    impostazioni.autoEstrazione = document.getElementById("checkAutoEstrazione").checked;
+    aggiornaPulsanteEstrai();
 
     const attivi = Array.from(document.querySelectorAll(SELETTORE_CHECK_PREMI))
         .filter(cb => cb.checked)
@@ -69,6 +100,15 @@ function salvaChiudiConfig() {
 
     aggiornaInterfacciaPremio(); // Ricalcola anche le vincite con le nuove regole
     document.getElementById("modal-config").classList.remove("visibile");
+}
+
+// Legge un tempo in secondi dal campo e lo riporta nei limiti min/max del campo;
+// se il valore non è un numero tiene quello attuale
+function leggiSecondi(idCampo, valoreAttuale) {
+    const campo = document.getElementById(idCampo);
+    const valore = parseFloat(String(campo.value).replace(",", "."));
+    if (isNaN(valore)) return valoreAttuale;
+    return Math.min(parseFloat(campo.max), Math.max(parseFloat(campo.min), valore));
 }
 
 // --- LINGUA SMORFIA ---

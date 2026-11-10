@@ -28,9 +28,17 @@
     <div class="pannello-info">
         <div class="comandi-gruppo">
             <!-- Pulsante Estrai (unico comando di gioco in evidenza) -->
-            <button id="btnEstrai" class="btn-icon btn-estrai" onclick="estraiNumero()" title="Estrai Numero">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <!-- In estrazione automatica diventa Play/Pausa (icone scelte da css/barra.css) -->
+            <button id="btnEstrai" class="btn-icon btn-estrai" onclick="premiPulsanteEstrai()" title="Estrai Numero">
+                <svg class="icona-estrai" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+                <svg class="icona-play" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
+                    <polygon points="7 4 20 12 7 20 7 4"></polygon>
+                </svg>
+                <svg class="icona-pausa" viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="none">
+                    <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+                    <rect x="14" y="4" width="4" height="16" rx="1"></rect>
                 </svg>
             </button>
 
@@ -71,6 +79,8 @@
             <div id="storico-numeri" class="storico-numeri">
                 <span class="storico-empty">Nessuno</span>
             </div>
+            <!-- Quanti numeri sono usciti finora -->
+            <span id="contatore-estratti" class="contatore-estratti" title="Numeri estratti">/ 0</span>
         </div>
 
         <div class="premio-gruppo">
@@ -157,7 +167,7 @@
 
     <!-- MODALE CONFIGURAZIONE PARTITA -->
     <div id="modal-config" class="modal-overlay">
-        <div class="modal-contenuto">
+        <div class="modal-contenuto modal-config-box">
             <h2>Configurazione Partita</h2>
             <!-- Pulsante info: versione, autore ed email -->
             <button type="button" class="btn-info-app" onclick="mostraInfoApp()" title="Informazioni sull'app">i</button>
@@ -168,6 +178,11 @@
                 <p>Email: <a href="mailto:raniero.manfroni@gmail.com">raniero.manfroni@gmail.com</a></p>
                 <p>Realizzata con l'aiuto di Claude (Anthropic)</p>
             </div>
+
+            <!-- Due colonne su schermi larghi, una sola su cellulare (css/modali.css) -->
+            <div class="config-colonne">
+            <!-- COLONNA SINISTRA: regole del gioco -->
+            <div class="config-colonna">
             <div class="config-sezione">
                 <label class="config-label">Lingua Smorfia:</label>
                 <div class="lingua-opzioni">
@@ -202,6 +217,34 @@
                     <label class="checkbox-item"><input type="checkbox" value="TOMBOLA" checked> TOMBOLA</label>
                 </div>
             </div>
+            </div>
+
+            <!-- COLONNA DESTRA: estrazione e file -->
+            <div class="config-colonna">
+
+            <!-- OPZIONE: TEMPI DELL'ESTRAZIONE (in secondi) -->
+            <div class="config-sezione">
+                <label class="config-label">Tempi Estrazione (secondi):</label>
+                <div class="premi-checkbox-group">
+                    <label class="tempo-item" for="inputBloccoEstrazione">Blocco pulsante Estrai (anti doppio clic)
+                        <input type="number" id="inputBloccoEstrazione" class="input-tempo" min="0" max="10" step="0.5" value="1">
+                    </label>
+                    <label class="tempo-item" for="inputDurataNumero">Numero estratto a schermo
+                        <input type="number" id="inputDurataNumero" class="input-tempo" min="0.5" max="30" step="0.5" value="3.5">
+                    </label>
+                </div>
+            </div>
+
+            <!-- OPZIONE: ESTRAZIONE AUTOMATICA -->
+            <div class="config-sezione">
+                <label class="config-label">Estrazione Automatica:</label>
+                <div class="premi-checkbox-group">
+                    <label class="checkbox-item"><input type="checkbox" id="checkAutoEstrazione"> Pulsante Estrai come Play/Pausa</label>
+                    <label class="tempo-item" for="inputIntervalloAuto">Secondi tra un'estrazione e l'altra
+                        <input type="number" id="inputIntervalloAuto" class="input-tempo" min="1" max="60" step="0.5" value="7">
+                    </label>
+                </div>
+            </div>
 
             <!-- CARICAMENTO FILE PARTITA (.JSON) -->
             <div class="config-sezione">
@@ -228,6 +271,8 @@
                 </button>
                 <span class="nota-offline">Estrai lo zip e apri <strong>index.html</strong>: funziona senza internet.</span>
             </div>
+            </div>
+            </div>
 
             <div class="modal-azioni modal-azioni-config">
                 <button class="btn-salva-config" onclick="salvaChiudiConfig()">Salva e Chiudi</button>
@@ -249,6 +294,7 @@
     <script src="./js/smorfia.js"></script>          <!-- Dizionario Smorfia (solo dati) -->
     <script src="./js/stato.js"></script>            <!-- Stato partita e impostazioni -->
     <script src="./js/tabellone.js"></script>        <!-- Tabellone, estrazione, ultimi estratti -->
+    <script src="./js/auto-estrazione.js"></script>  <!-- Estrazione automatica (Play/Pausa) -->
     <script src="./js/premi.js"></script>            <!-- Premio in palio -->
     <script src="./js/vincite.js"></script>          <!-- Controllo vincite e lampadina -->
     <script src="./js/avviso.js"></script>           <!-- Scintilla e suono per nuove vincite -->

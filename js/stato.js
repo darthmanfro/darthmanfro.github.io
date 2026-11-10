@@ -12,7 +12,11 @@ const SOGLIA_PREMIO = { AMBO: 2, TERNO: 3, QUATERNA: 4, CINQUINA: 5, TOMBOLA: 15
 const impostazioni = {
     lingua: 'nap',                  // Lingua della Smorfia: 'nap' o 'ita'
     numeriAdiacentiRichiesti: true, // Premi di riga solo con numeri consecutivi nella riga
-    suonoVincite: true              // "Ding" quando compare una possibile vincita
+    suonoVincite: true,             // "Ding" quando compare una possibile vincita
+    bloccoEstrazioneSec: 1,         // Pulsante "Estrai" bloccato dopo il clic (evita doppi clic)
+    durataNumeroSec: 3.5,           // Quanto resta a schermo il numero estratto
+    autoEstrazione: false,          // Pulsante Estrai come Play/Pausa
+    intervalloAutoSec: 7            // Secondi tra due estrazioni automatiche
 };
 
 // Stato della partita in corso
