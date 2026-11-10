@@ -146,6 +146,9 @@
                     📖 Leggi Istruzioni
                 </button>
             </div>
+
+            <!-- Firma dell'autore -->
+            <p class="firma">Raniero Manfroni · <a href="mailto:raniero.manfroni@gmail.com">raniero.manfroni@gmail.com</a></p>
         </div>
     </div>
 
@@ -156,6 +159,15 @@
     <div id="modal-config" class="modal-overlay">
         <div class="modal-contenuto">
             <h2>Configurazione Partita</h2>
+            <!-- Pulsante info: versione, autore ed email -->
+            <button type="button" class="btn-info-app" onclick="mostraInfoApp()" title="Informazioni sull'app">i</button>
+            <div id="info-app" class="info-app nascosto">
+                <p><strong>Tombola</strong></p>
+                <p>Versione: <span id="versione-app"></span></p>
+                <p>Autore: Raniero Manfroni</p>
+                <p>Email: <a href="mailto:raniero.manfroni@gmail.com">raniero.manfroni@gmail.com</a></p>
+                <p>Realizzata con l'aiuto di Claude (Anthropic)</p>
+            </div>
             <div class="config-sezione">
                 <label class="config-label">Lingua Smorfia:</label>
                 <div class="lingua-opzioni">
@@ -225,11 +237,15 @@
                     📖 Leggi Istruzioni
                 </button>
             </div>
+
+            <!-- Firma dell'autore -->
+            <p class="firma">Raniero Manfroni · <a href="mailto:raniero.manfroni@gmail.com">raniero.manfroni@gmail.com</a></p>
         </div>
     </div>
 
     <!-- INCLUSIONE SCRIPT: l'ordine conta (prima dati e stato, app.js per ultimo) -->
     <script src="./js/lib/jspdf.umd.min.js"></script>
+    <script src="./js/versione.js"></script>         <!-- Versione generata al commit -->
     <script src="./js/smorfia.js"></script>          <!-- Dizionario Smorfia (solo dati) -->
     <script src="./js/stato.js"></script>            <!-- Stato partita e impostazioni -->
     <script src="./js/tabellone.js"></script>        <!-- Tabellone, estrazione, ultimi estratti -->

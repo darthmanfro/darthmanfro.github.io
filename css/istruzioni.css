@@ -45,3 +45,13 @@ li { margin-bottom: 8px; }
     body { padding: 8px; }
     .container { padding: 18px; }
 }
+/* Firma dell'autore in fondo alla pagina */
+.firma {
+    margin: 20px 0 0;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #7f8c8d;
+}
+.firma a { color: inherit; }

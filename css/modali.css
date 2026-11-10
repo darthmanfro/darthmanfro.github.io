@@ -242,3 +242,57 @@
     font-size: 0.8rem;
     color: #6c757d;
 }
+
+/* Firma dell'autore in fondo alla configurazione */
+.firma {
+    margin-top: 12px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #868e96;
+}
+
+.firma a {
+    color: inherit;
+}
+
+/* Pulsante info (versione, autore, email) nell'angolo della configurazione */
+.modal-contenuto {
+    position: relative;
+}
+
+.btn-info-app {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid #adb5bd;
+    background-color: #ffffff;
+    color: #495057;
+    font-family: Georgia, serif;
+    font-style: italic;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-info-app:hover {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+/* Riquadro informazioni sotto il titolo */
+.info-app {
+    background-color: #f1f3f5;
+    border-left: 4px solid #868e96;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: #495057;
+    line-height: 1.5;
+}
+
+.info-app a {
+    color: inherit;
+}

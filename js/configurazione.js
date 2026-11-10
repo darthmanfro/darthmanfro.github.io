@@ -31,7 +31,17 @@ function apriConfig() {
     const sezioneOffline = document.getElementById("sezione-offline");
     if (sezioneOffline) sezioneOffline.classList.toggle("nascosto", !downloadOfflineDisponibile());
 
+    // Il riquadro informazioni parte sempre chiuso
+    document.getElementById("info-app").classList.add("nascosto");
+
     document.getElementById("modal-config").classList.add("visibile");
+}
+
+// Mostra/nasconde il riquadro con versione, autore ed email
+function mostraInfoApp() {
+    document.getElementById("versione-app").textContent =
+        typeof VERSIONE_APP !== "undefined" ? VERSIONE_APP : "sconosciuta";
+    document.getElementById("info-app").classList.toggle("nascosto");
 }
 
 function chiudiConfigSenzaSalvare() {
