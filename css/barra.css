@@ -1,6 +1,6 @@
 /* ==========================================================================
    BARRA COMANDI
-   Pulsanti, ultimi estratti e premio in palio (sopra il tabellone).
+   Pulsanti, ultimi estratti e premio in palio (sotto il tabellone).
    ========================================================================== */
 .pannello-info {
     display: flex;

@@ -151,7 +151,7 @@ function confermaVincita(cartellaId) {
     if (!vincita) return;
     partita.premiAssegnati.add(vincita.premio);
     chiudiPannelloVincite();
-    avanzaPremio(); // Passa al premio successivo e ricalcola le vincite
+    avanzaAlPremioDaAssegnare(); // Passa al prossimo premio non ancora vinto e ricalcola le vincite
 }
 
 function scartaCartellaInvenduta(cartellaId) {

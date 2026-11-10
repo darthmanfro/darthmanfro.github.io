@@ -115,6 +115,8 @@
     margin-top: 8px;
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .btn-salva-config {
@@ -135,11 +137,6 @@
 }
 
 /* Pulsante "Leggi Istruzioni" (modali configurazione e cartelle) */
-.modal-azioni {
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
 .btn-istruzioni {
     padding: 10px 14px;
     font-size: 0.9rem;

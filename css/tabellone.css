@@ -26,7 +26,7 @@
     height: 100%;
 }
 
-/* CORRETTO: selettore .cella per uniformarsi al JS */
+/* Singola cella del tabellone (creata da tabellone.js) */
 .cella {
     display: flex;
     align-items: center;
@@ -47,7 +47,7 @@
 }
 
 /* ==========================================================================
-   4. OVERLAY NUMERO ESTRATTO + SMORFIA
+   OVERLAY NUMERO ESTRATTO + SMORFIA
    ========================================================================== */
 #overlay-numero {
     position: absolute;
