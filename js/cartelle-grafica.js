@@ -2,11 +2,13 @@
 // PANNELLO GRAFICA DELLE CARTELLE
 // Nella finestra del generatore, il pulsante "Grafica" nasconde i comandi
 // normali e mostra tema, colori e font. Ogni modifica aggiorna subito
-// l'anteprima e viene ricordata nel browser per la volta successiva.
-// Qui si caricano anche i font inclusi nell'app.
+// l'anteprima e il tabellone e viene ricordata nel browser per la volta
+// successiva. Qui si caricano anche i font inclusi nell'app e si salva o
+// carica la grafica da file .JSON.
 // ==========================================================================
 
 const CHIAVE_ARCHIVIO_GRAFICA = "tombola-grafica-cartelle";
+const TIPO_FILE_GRAFICA = "grafica-tombola";
 
 // --- FONT ---
 
@@ -43,15 +45,47 @@ function stileCartelleCorrente() {
     return { ...graficaCartelle };
 }
 
-// --- VALORI E SALVATAGGIO ---
+// --- VALORI ---
+
+// Tema, colori e font proposti da un tema
+function valoriTema(idTema) {
+    const id = TEMI[idTema] ? idTema : TEMA_PREDEFINITO;
+    const valori = { tema: id };
+    [...CAMPI_COLORE_GRAFICA, ...CAMPI_FONT_GRAFICA].forEach(campo => {
+        valori[campo] = TEMI[id][campo];
+    });
+    return valori;
+}
 
 function applicaTema(idTema) {
-    const tema = TEMI[idTema] || TEMI[TEMA_PREDEFINITO];
-    graficaCartelle.tema = TEMI[idTema] ? idTema : TEMA_PREDEFINITO;
-    [...CAMPI_COLORE_GRAFICA, ...CAMPI_FONT_GRAFICA].forEach(campo => {
-        graficaCartelle[campo] = tema[campo];
-    });
+    Object.assign(graficaCartelle, valoriTema(idTema));
 }
+
+// Da una grafica letta (browser o file) ai soli valori validi; null se non è una grafica
+function leggiGrafica(dati) {
+    if (!dati || typeof dati !== "object" || !TEMI[dati.tema]) return null;
+    const grafica = valoriTema(dati.tema);
+    CAMPI_COLORE_GRAFICA.forEach(campo => {
+        if (/^#[0-9a-f]{6}$/i.test(dati[campo] || "")) grafica[campo] = dati[campo].toLowerCase();
+    });
+    CAMPI_FONT_GRAFICA.forEach(campo => {
+        if (FONT_CARTELLE[dati[campo]]) grafica[campo] = dati[campo];
+    });
+    if (typeof dati.tabellone === "boolean") grafica.tabellone = dati.tabellone;
+    return grafica;
+}
+
+// Grafica da scrivere nei file .JSON (il titolo va a parte, in cima al file)
+function graficaDaEsportare() {
+    const grafica = { tema: graficaCartelle.tema };
+    [...CAMPI_COLORE_GRAFICA, ...CAMPI_FONT_GRAFICA].forEach(campo => {
+        grafica[campo] = graficaCartelle[campo];
+    });
+    grafica.tabellone = graficaCartelle.tabellone;
+    return grafica;
+}
+
+// --- SALVATAGGIO NEL BROWSER ---
 
 function salvaGraficaNelBrowser() {
     try {
@@ -61,7 +95,7 @@ function salvaGraficaNelBrowser() {
     }
 }
 
-// Riprende la grafica salvata, scartando valori non validi
+// Riprende grafica e titolo salvati, scartando valori non validi
 function caricaGraficaDalBrowser() {
     applicaTema(TEMA_PREDEFINITO);
     let salvata = null;
@@ -70,15 +104,9 @@ function caricaGraficaDalBrowser() {
     } catch (e) {
         salvata = null;
     }
-    if (!salvata || !TEMI[salvata.tema]) return;
-
-    applicaTema(salvata.tema);
-    CAMPI_COLORE_GRAFICA.forEach(campo => {
-        if (/^#[0-9a-f]{6}$/i.test(salvata[campo] || "")) graficaCartelle[campo] = salvata[campo].toLowerCase();
-    });
-    CAMPI_FONT_GRAFICA.forEach(campo => {
-        if (FONT_CARTELLE[salvata[campo]]) graficaCartelle[campo] = salvata[campo];
-    });
+    const grafica = leggiGrafica(salvata);
+    if (grafica) Object.assign(graficaCartelle, grafica);
+    if (salvata && typeof salvata.titolo === "string") graficaCartelle.titolo = salvata.titolo;
 }
 
 // --- PANNELLO ---
@@ -102,6 +130,8 @@ function aggiornaControlliGrafica() {
         const controllo = document.querySelector(`[data-campo-grafica="${campo}"]`);
         if (controllo) controllo.value = graficaCartelle[campo];
     });
+    document.getElementById("checkGraficaTabellone").checked = graficaCartelle.tabellone;
+    document.getElementById("titoloCartella").value = graficaCartelle.titolo;
 }
 
 function inizializzaGraficaCartelle() {
@@ -117,25 +147,65 @@ function mostraPannelloGrafica(mostra) {
     document.getElementById("modal-cartelle").classList.toggle("mostra-grafica", mostra);
 }
 
+// Dopo ogni modifica: si ricorda e si vede subito su anteprima e tabellone
+function graficaCambiata() {
+    salvaGraficaNelBrowser();
+    aggiornaAnteprimaCartella();
+    aggiornaGraficaTabellone();
+}
+
 // Scelta di un tema: colori e font tornano quelli del tema
 function selezionaTema(idTema) {
     applicaTema(idTema);
     aggiornaControlliGrafica();
-    salvaGraficaNelBrowser();
-    aggiornaAnteprimaCartella();
+    graficaCambiata();
 }
 
 function ripristinaColoriTema() {
     selezionaTema(graficaCartelle.tema);
 }
 
-// Cambio di un singolo colore o font (il campo è indicato da data-campo-grafica)
+// Cambio di un singolo colore, font o opzione (il campo è indicato da data-campo-grafica)
 function cambiaGrafica(controllo) {
     const campo = controllo.dataset.campoGrafica;
     if (!campo) return;
-    graficaCartelle[campo] = controllo.value;
-    salvaGraficaNelBrowser();
-    aggiornaAnteprimaCartella();
+    graficaCartelle[campo] = controllo.type === "checkbox" ? controllo.checked : controllo.value;
+    graficaCambiata();
+}
+
+function cambiaTitolo(campo) {
+    graficaCartelle.titolo = campo.value;
+    graficaCambiata();
+}
+
+// --- FILE GRAFICA (.JSON) ---
+
+// Applica una grafica già controllata con leggiGrafica (da file grafica o file partita)
+function applicaGraficaCaricata(grafica, titolo) {
+    Object.assign(graficaCartelle, grafica);
+    if (typeof titolo === "string" && titolo.trim()) graficaCartelle.titolo = titolo;
+    aggiornaControlliGrafica();
+    graficaCambiata();
+}
+
+// Solo la grafica e il titolo, senza cartelle: per riusare uno stile in un'altra partita
+function scaricaFileGrafica() {
+    const titolo = graficaCartelle.titolo || "Tombola";
+    scaricaFileJson({ tipo: TIPO_FILE_GRAFICA, titolo, grafica: graficaDaEsportare() },
+        `grafica-tombola-${nomeFileDaTitolo(titolo)}.json`);
+}
+
+// Accetta un file grafica o un file partita completo: prende solo la grafica
+async function caricaFileGrafica(event) {
+    const dati = await leggiFileJson(event.target);
+    if (!dati) return;
+    const grafica = leggiGrafica(dati.grafica);
+    if (!grafica) {
+        alert("Questo file non contiene una grafica della Tombola.");
+        return;
+    }
+    applicaGraficaCaricata(grafica, dati.titolo);
+    alert(`Grafica "${TEMI[grafica.tema].nome}" caricata.`);
 }
 
 // --- ANTEPRIMA ---

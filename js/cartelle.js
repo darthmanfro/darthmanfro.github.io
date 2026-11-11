@@ -204,6 +204,8 @@ function costruisciDatiPartita() {
     return {
         titolo: titolo,
         dataGenerazione: new Date().toISOString(),
+        // Tema, colori e font: al caricamento si può scegliere se applicarli
+        grafica: graficaDaEsportare(),
         totaleCartelle: listaCartelle.length,
         cartelle: listaCartelle.map((griglia, idx) => {
             const numeri = [];
@@ -239,12 +241,15 @@ function esportaFileJSONPartita() {
     if (!cartelleGenerateState) return;
 
     const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-    const datiPartita = costruisciDatiPartita();
+    scaricaFileJson(costruisciDatiPartita(), `partita-tombola-${nomeFileDaTitolo(titolo)}.json`);
+}
 
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datiPartita, null, 2));
+// Fa scaricare un oggetto come file .JSON (file partita e file grafica)
+function scaricaFileJson(dati, nomeFile) {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dati, null, 2));
     const link = document.createElement('a');
     link.setAttribute("href", dataStr);
-    link.setAttribute("download", `partita-tombola-${titolo.toLowerCase().replace(/\s+/g, '-')}.json`);
+    link.setAttribute("download", nomeFile);
     document.body.appendChild(link);
     link.click();
     link.remove();

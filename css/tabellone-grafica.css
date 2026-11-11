@@ -1,0 +1,111 @@
+/* ==========================================================================
+   GRAFICA PERSONALIZZATA DEL TABELLONE
+   Attiva con la classe .grafica-tabellone sul body (js/tabellone-grafica.js),
+   solo se la grafica delle cartelle non è quella classica. I colori e i font
+   arrivano dalle variabili --tab-... impostate dal JS.
+   Leggera: lo sfondo del tema si vede solo nella cornice e sotto il titolo,
+   le celle restano piene e ben contrastate per la lettura da lontano.
+   ========================================================================== */
+
+/* Elementi nascosti con il tabellone classico */
+.sfondo-tabellone,
+.titolo-tabellone {
+    display: none;
+}
+
+/* --- CORNICE E SFONDO --- */
+.grafica-tabellone #tabellone-container {
+    border-color: var(--tab-primario);
+    background-color: var(--tab-secondario);
+    padding: clamp(6px, 1.2vmin, 16px) clamp(8px, 1.6vmin, 22px) clamp(8px, 1.6vmin, 22px);
+}
+
+.grafica-tabellone .sfondo-tabellone {
+    display: block;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+}
+
+/* --- TITOLO (a destra come sulle cartelle; a sinistra restano le decorazioni del tema) --- */
+.grafica-tabellone .titolo-tabellone {
+    display: block;
+    position: relative;
+    flex: none;
+    padding: 0 0.3em 0.12em;
+    font-family: var(--tab-font-titolo);
+    font-weight: var(--tab-peso-titolo);
+    font-size: clamp(1.4rem, 6vh, 4.2rem);
+    line-height: 1.15;
+    color: var(--tab-titolo);
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    -webkit-text-stroke: 0.1em var(--tab-contorno-titolo);
+    paint-order: stroke fill; /* Contorno dietro alle lettere, come sulle cartelle */
+}
+
+/* --- GRIGLIA E CELLE --- */
+/* Pannello quasi pieno sotto la griglia: lo sfondo non disturba i numeri */
+.grafica-tabellone .griglia {
+    padding: clamp(3px, 0.6vmin, 8px);
+    background-color: color-mix(in srgb, var(--tab-secondario) 88%, transparent);
+    border-radius: 8px;
+}
+
+.grafica-tabellone .cella {
+    background-color: var(--tab-secondario);
+    border-color: color-mix(in srgb, var(--tab-primario) 35%, var(--tab-secondario));
+    color: var(--tab-numeri);
+    font-family: var(--tab-font-numeri);
+    font-weight: var(--tab-peso-numeri);
+    text-shadow: none;
+}
+
+.grafica-tabellone .cella.estratto {
+    background-color: var(--tab-estratto);
+    border-color: color-mix(in srgb, var(--tab-estratto) 75%, #000000);
+    color: var(--tab-su-estratto);
+}
+
+/* --- NUMERO ESTRATTO A TUTTO SCHERMO --- */
+.grafica-tabellone #overlay-numero {
+    background-color: color-mix(in srgb, var(--tab-estratto) 95%, transparent);
+}
+
+.grafica-tabellone .overlay-num {
+    font-family: var(--tab-font-numeri);
+    font-weight: var(--tab-peso-numeri);
+    color: var(--tab-su-estratto);
+}
+
+.grafica-tabellone .overlay-smorfia {
+    color: color-mix(in srgb, var(--tab-su-estratto) 85%, var(--tab-estratto));
+}
+
+/* --- ULTIMI ESTRATTI NELLA BARRA, coerenti con le celle estratte --- */
+.grafica-tabellone .storico-badge {
+    background-color: var(--tab-estratto);
+    border-color: color-mix(in srgb, var(--tab-estratto) 75%, #000000);
+    color: var(--tab-su-estratto);
+    font-family: var(--tab-font-numeri);
+    font-weight: var(--tab-peso-numeri);
+}
+
+/* Cellulari: titolo più piccolo per lasciare spazio alla griglia */
+@media (max-width: 600px) {
+    .grafica-tabellone #tabellone-container {
+        padding: 4px 6px 6px;
+    }
+
+    .grafica-tabellone .titolo-tabellone {
+        font-size: 1.4rem;
+    }
+
+    .grafica-tabellone .griglia {
+        padding: 2px;
+    }
+}

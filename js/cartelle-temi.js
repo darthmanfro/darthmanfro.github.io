@@ -6,14 +6,16 @@
 
 // Font disponibili. "file" è il nome in DATI_FONT_CARTELLE (js/risorse/font-cartelle.js);
 // senza file si usa un font standard, presente su tutti i PC e nei PDF.
+// tabellone: false = troppo decorativo per i numeri visti da lontano: sul
+// tabellone i numeri usano il font classico (il titolo invece sì).
 const FONT_CARTELLE = {
     classico:   { nome: "Classico (Arial grassetto)", famiglia: "Arial, Helvetica, sans-serif", peso: "bold", file: null, pdf: { nome: "helvetica", stile: "bold" } },
     luckiest:   { nome: "Luckiest Guy (cicciotto)", famiglia: "\"Tombola Luckiest Guy\"", file: "LuckiestGuy-Regular.ttf" },
     titan:      { nome: "Titan One (tondo)", famiglia: "\"Tombola Titan One\"", file: "TitanOne-Regular.ttf" },
     chewy:      { nome: "Chewy (allegro)", famiglia: "\"Tombola Chewy\"", file: "Chewy-Regular.ttf" },
-    grandHotel: { nome: "Grand Hotel (corsivo)", famiglia: "\"Tombola Grand Hotel\"", file: "GrandHotel-Regular.ttf" },
+    grandHotel: { nome: "Grand Hotel (corsivo)", famiglia: "\"Tombola Grand Hotel\"", file: "GrandHotel-Regular.ttf", tabellone: false },
     cherry:     { nome: "Cherry Swash (elegante)", famiglia: "\"Tombola Cherry Swash\"", file: "CherrySwash-Bold.ttf" },
-    creepster:  { nome: "Creepster (Halloween)", famiglia: "\"Tombola Creepster\"", file: "Creepster-Regular.ttf" }
+    creepster:  { nome: "Creepster (Halloween)", famiglia: "\"Tombola Creepster\"", file: "Creepster-Regular.ttf", tabellone: false }
 };
 
 const TEMA_PREDEFINITO = "classico";

@@ -13,12 +13,17 @@
     <link rel="stylesheet" href="./css/vincite.css">   <!-- Lampadina e pannellino vincite -->
     <link rel="stylesheet" href="./css/cartelle.css">  <!-- Generatore cartelle -->
     <link rel="stylesheet" href="./css/cartelle-grafica.css"> <!-- Pannello grafica cartelle -->
+    <link rel="stylesheet" href="./css/tabellone-grafica.css"> <!-- Grafica personalizzata del tabellone -->
 </head>
 
 <body>
 
     <!-- BLOCCO 1: Tabellone -->
     <div id="tabellone-container">
+        <!-- Grafica personalizzata (js/tabellone-grafica.js): sfondo del tema nella cornice e titolo.
+             Con il tema Classico non si vedono e il tabellone resta quello di sempre. -->
+        <canvas id="sfondo-tabellone" class="sfondo-tabellone"></canvas>
+        <div id="titolo-tabellone" class="titolo-tabellone"></div>
         <div id="overlay-numero"></div>
         <div id="griglia" class="griglia"></div>
         <!-- Scintilla breve nell'angolo, sopra la lampadina, quando compare una possibile vincita -->
@@ -140,7 +145,7 @@
             <div class="cartelle-form-grid vista-principale">
                 <div class="config-sezione">
                     <label class="config-label" for="titoloCartella">Titolo Cartelle:</label>
-                    <input type="text" id="titoloCartella" class="input-text" value="Tombola" oninput="aggiornaAnteprimaCartella()">
+                    <input type="text" id="titoloCartella" class="input-text" value="Tombola" oninput="cambiaTitolo(this)">
                 </div>
 
                 <div class="config-sezione">
@@ -203,10 +208,21 @@
                         </div>
                     </div>
 
+                    <div class="config-sezione">
+                        <span class="config-label">Tabellone:</span>
+                        <div class="premi-checkbox-group">
+                            <label class="checkbox-item"><input type="checkbox" id="checkGraficaTabellone" data-campo-grafica="tabellone" onchange="cambiaGrafica(this)" checked> Applica anche al tabellone (titolo e sfondo leggero)</label>
+                        </div>
+                        <span class="nota-grafica">Con il tema Classico e i suoi colori il tabellone resta quello di sempre.</span>
+                    </div>
+
                     <div class="modal-azioni">
                         <button type="button" class="btn-azione btn-ripristina" onclick="ripristinaColoriTema()" title="Rimette colori e font del tema scelto">↺ Colori del tema</button>
+                        <button type="button" class="btn-azione btn-json" onclick="scaricaFileGrafica()" title="Scarica tema, colori, font e titolo in un file .JSON">⬇ Salva grafica</button>
+                        <button type="button" class="btn-azione btn-json" onclick="document.getElementById('inputFileGrafica').click()" title="Carica la grafica da un file .JSON (anche da un file partita)">⬆ Carica grafica</button>
                         <button type="button" class="btn-azione btn-chiudi" onclick="mostraPannelloGrafica(false)">← Torna alle cartelle</button>
                     </div>
+                    <input type="file" id="inputFileGrafica" accept=".json" class="input-nascosto" onchange="caricaFileGrafica(event)">
                 </div>
             </div>
 
@@ -352,6 +368,20 @@
         </div>
     </div>
 
+    <!-- SCELTA DI COSA CARICARE da un file .JSON con cartelle e grafica (js/configurazione.js) -->
+    <div id="modal-scelta-import" class="modal-overlay modal-sopra">
+        <div class="modal-contenuto modal-scelta-box">
+            <h2>Cosa vuoi caricare?</h2>
+            <p class="scelta-testo">Il file contiene sia le cartelle sia la grafica.</p>
+            <div class="scelta-opzioni">
+                <button type="button" class="btn-azione btn-genera" onclick="rispondiSceltaImport('entrambi')">Cartelle e grafica</button>
+                <button type="button" class="btn-azione btn-json" onclick="rispondiSceltaImport('cartelle')">Solo cartelle</button>
+                <button type="button" class="btn-azione btn-grafica" onclick="rispondiSceltaImport('grafica')">Solo grafica</button>
+                <button type="button" class="btn-azione btn-chiudi" onclick="rispondiSceltaImport(null)">Annulla</button>
+            </div>
+        </div>
+    </div>
+
     <!-- INCLUSIONE SCRIPT: l'ordine conta (prima dati e stato, app.js per ultimo) -->
     <script src="./js/lib/jspdf.umd.min.js"></script>
     <script src="./js/versione.js"></script>         <!-- Versione generata al commit -->
@@ -368,7 +398,8 @@
     <script src="./js/cartelle-sfondi.js"></script>  <!-- Disegni di sfondo dei temi -->
     <script src="./js/cartelle-temi.js"></script>    <!-- Temi e font (solo costanti) -->
     <script src="./js/cartelle-disegno.js"></script> <!-- Disegno cartella su canvas e PDF -->
-    <script src="./js/cartelle-grafica.js"></script> <!-- Pannello grafica e anteprima -->
+    <script src="./js/cartelle-grafica.js"></script> <!-- Pannello grafica, anteprima, file grafica -->
+    <script src="./js/tabellone-grafica.js"></script> <!-- Grafica delle cartelle applicata al tabellone -->
     <script src="./js/cartelle.js"></script>         <!-- Generatore cartelle ed esportazioni -->
     <script src="./js/menu-servizio.js"></script>    <!-- Menu ☰ dei comandi di servizio (cellulare) -->
     <script src="./js/app.js"></script>             <!-- Avvio e nuova partita -->

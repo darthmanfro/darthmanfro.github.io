@@ -125,27 +125,64 @@ function aggiornaPulsantiLingua() {
 
 // --- FILE PARTITA (.JSON) ---
 
-function caricaFilePartita(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+// Legge il file .JSON scelto in un <input type="file">; null se manca o non è leggibile
+function leggiFileJson(input) {
+    const file = input.files[0];
+    input.value = ""; // Permette di ricaricare lo stesso file una seconda volta
+    if (!file) return Promise.resolve(null);
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const dati = JSON.parse(e.target.result);
-            if (dati && Array.isArray(dati.cartelle)) {
-                impostaCartellePartita(dati.cartelle);
-                alert(`Partita caricata con successo! ${partita.cartelleCaricate.length} cartelle in ascolto per i premi.`);
-            } else {
-                alert('File JSON non valido per la Tombola.');
-            }
-        } catch (err) {
+    return file.text()
+        .then(testo => JSON.parse(testo))
+        .catch(() => {
             alert('Errore nella lettura del file JSON.');
-        }
-    };
-    reader.readAsText(file);
-    // Permette di ricaricare lo stesso file una seconda volta
-    event.target.value = "";
+            return null;
+        });
+}
+
+// Il file partita può contenere cartelle, grafica o entrambe (i file vecchi solo cartelle):
+// se le contiene tutte e due si chiede cosa caricare
+async function caricaFilePartita(event) {
+    const dati = await leggiFileJson(event.target);
+    if (!dati) return;
+
+    const haCartelle = Array.isArray(dati.cartelle) && dati.cartelle.length > 0;
+    const grafica = leggiGrafica(dati.grafica);
+    if (!haCartelle && !grafica) {
+        alert('File JSON non valido per la Tombola.');
+        return;
+    }
+
+    const scelta = haCartelle && grafica ? await chiediCosaCaricare() : (haCartelle ? "cartelle" : "grafica");
+    if (!scelta) return;
+
+    const caricato = [];
+    if (scelta !== "grafica") {
+        impostaCartellePartita(dati.cartelle);
+        caricato.push(`${partita.cartelleCaricate.length} cartelle in ascolto per i premi`);
+    }
+    if (scelta !== "cartelle") {
+        applicaGraficaCaricata(grafica, dati.titolo);
+        caricato.push(`grafica "${TEMI[grafica.tema].nome}" applicata`);
+    }
+    alert(`Caricamento completato: ${caricato.join(" e ")}.`);
+}
+
+// --- SCELTA DI COSA CARICARE ---
+
+let rispostaSceltaImport = null;
+
+// Apre la finestrella con le tre scelte; restituisce 'entrambi', 'cartelle', 'grafica' o null (Annulla)
+function chiediCosaCaricare() {
+    document.getElementById("modal-scelta-import").classList.add("visibile");
+    return new Promise(risolvi => {
+        rispostaSceltaImport = risolvi;
+    });
+}
+
+function rispondiSceltaImport(scelta) {
+    document.getElementById("modal-scelta-import").classList.remove("visibile");
+    if (rispostaSceltaImport) rispostaSceltaImport(scelta);
+    rispostaSceltaImport = null;
 }
 
 // Scritta accanto al pulsante di caricamento ("N cartelle caricate")

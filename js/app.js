@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
     aggiornaInterfacciaPremio();
     aggiornaPulsanteEstrai();
     inizializzaGraficaCartelle();
+    inizializzaGraficaTabellone();
 });
 
 // Azzera tabellone, storico e premi; le cartelle caricate restano in memoria

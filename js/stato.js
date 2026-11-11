@@ -30,7 +30,9 @@ const graficaCartelle = {
     coloreTitolo: null,         // Titolo della cartella
     coloreNumeroCartella: null, // Numero progressivo della cartella
     fontNumeri: null,
-    fontTitolo: null
+    fontTitolo: null,
+    tabellone: true,            // Applica la grafica anche al tabellone (se non è quella classica)
+    titolo: "Tombola"           // Titolo delle cartelle, mostrato anche sul tabellone
 };
 
 // Stato della partita in corso

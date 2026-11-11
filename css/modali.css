@@ -345,3 +345,27 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   SCELTA DI COSA CARICARE (file .JSON con cartelle e grafica)
+   Si apre sopra la configurazione, che resta aperta sotto.
+   ========================================================================== */
+.modal-overlay.modal-sopra {
+    z-index: 200;
+}
+
+.modal-contenuto.modal-scelta-box {
+    max-width: 340px;
+}
+
+.scelta-testo {
+    font-size: 0.95rem;
+    color: #495057;
+    text-align: center;
+}
+
+.scelta-opzioni {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}

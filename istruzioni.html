@@ -30,7 +30,7 @@
         <li><strong>Tempi Estrazione:</strong> per quanti secondi il pulsante <em>Estrai</em> resta bloccato dopo un clic, per evitare doppie estrazioni (predefinito 1, da 0 a 10), e per quanti secondi il numero estratto resta a tutto schermo (predefinito 3,5, da 0,5 a 30). Il tempo del numero a schermo deve essere maggiore o uguale a quello del blocco, altrimenti <em>Salva e Chiudi</em> avvisa e non salva.</li>
         <li><strong>Estrazione Automatica:</strong> trasforma il pulsante <em>Estrai</em> in Play/Pausa (vedi punto 1) e imposta i secondi tra un'estrazione e l'altra (predefinito 7, da 1 a 60). Devono essere maggiori o uguali al tempo del numero a schermo.</li>
         <li><strong>Premi in palio:</strong> spunta solo i premi che vuoi giocare. Quelli non spuntati vengono saltati.</li>
-        <li><strong>File Partita:</strong> da qui carichi il file .JSON delle cartelle per il controllo automatico delle vincite (vedi punto 4). Il caricamento è immediato e accanto al pulsante vedi quante cartelle sono caricate.</li>
+        <li><strong>File Partita:</strong> da qui carichi il file .JSON delle cartelle per il controllo automatico delle vincite (vedi punto 4). Se il file contiene anche la grafica, ti viene chiesto cosa caricare: <em>Cartelle e grafica</em>, <em>Solo cartelle</em> o <em>Solo grafica</em>. Un file con la sola grafica la applica subito; i file partita delle versioni precedenti (senza grafica) caricano le cartelle come sempre. Accanto al pulsante vedi quante cartelle sono caricate.</li>
         <li><strong>Uso Offline:</strong> dalla versione online, <em>Scarica l'app (.zip)</em> scarica tutti i file della Tombola. Estrai lo zip in una cartella e apri <strong>index.html</strong>: funziona senza internet. Dalla copia offline questa voce non compare.</li>
         <li><strong>Salva e Chiudi</strong> applica lingua, regola, tempi, estrazione automatica e premi. <strong>Chiudi</strong> esce senza salvare e annulla le modifiche fatte.</li>
     </ul>
@@ -45,14 +45,16 @@
                 <li><strong>Tema</strong>: Classico, Natale, Neve, Halloween, Notte stellata, San Valentino, Fiori, Estate al mare, Autunno. Ogni tema ha il suo sfondo decorato attorno alla griglia e propone colori e font adatti.</li>
                 <li><strong>Colori</strong>: bordo della griglia, fondo della griglia, numeri, titolo e numero della cartella. Si possono cambiare uno per uno dopo aver scelto il tema; <em>Colori del tema</em> rimette quelli originali.</li>
                 <li><strong>Font</strong>: per i numeri e per il titolo. I font sono inclusi nell'app, quindi escono uguali su qualunque computer, anche offline, e anche nel PDF.</li>
-                <li>La grafica scelta viene ricordata dal browser per la volta successiva. <em>Torna alle cartelle</em> riporta ai comandi normali.</li>
+                <li><strong>Tabellone</strong>: con <em>Applica anche al tabellone</em> (attivo di serie) il tabellone riprende la grafica in modo leggero: titolo in alto, sfondo del tema nella cornice, colori e font su celle e numero estratto. Con il tema Classico e i suoi colori il tabellone resta quello di sempre. Per la leggibilità, se un colore scelto si legge male sul tabellone si usa il bianco o il nero, e i font corsivi o decorativi (Grand Hotel, Creepster) non vengono usati per i numeri.</li>
+                <li><strong>⬇ Salva grafica</strong> scarica un piccolo file .JSON con tema, colori, font e titolo; <strong>⬆ Carica grafica</strong> la riprende (anche da un file partita completo, prendendo solo la grafica). Utile per riusare lo stesso stile in un'altra partita.</li>
+                <li>La grafica scelta e il titolo vengono ricordati dal browser per la volta successiva. <em>Torna alle cartelle</em> riporta ai comandi normali.</li>
             </ul>
         </li>
         <li>Dopo la generazione puoi scaricare:
             <ul>
                 <li><strong>PDF</strong>: in A4 escono 4 cartelle per foglio, in A3 ne escono 8. Il foglio A3 (orizzontale) è come due A4 affiancati: le cartelle hanno la stessa misura e, tagliandolo a metà, ottieni due fogli A4 in sequenza (1-4 a sinistra, 5-8 a destra).</li>
                 <li><strong>PNG</strong>: un'immagine per ogni foglio, nel formato scelto (A4 con 4 cartelle o A3 con 8), identica alla pagina del PDF.</li>
-                <li><strong>File Partita (.JSON)</strong>: serve per il controllo automatico delle vincite. Scaricalo sempre insieme al PDF o ai PNG che stampi.</li>
+                <li><strong>File Partita (.JSON)</strong>: serve per il controllo automatico delle vincite e contiene anche la grafica delle cartelle. Scaricalo sempre insieme al PDF o ai PNG che stampi.</li>
             </ul>
         </li>
         <li><strong>▶ Usa nella Partita</strong>: se giochi subito, senza chiudere la pagina, carica direttamente le cartelle appena generate per il controllo vincite, senza passare dal file .JSON.</li>

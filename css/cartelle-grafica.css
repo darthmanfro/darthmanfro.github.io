@@ -76,3 +76,9 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Nota sotto l'opzione del tabellone */
+.nota-grafica {
+    font-size: 0.8rem;
+    color: #6c757d;
+}
