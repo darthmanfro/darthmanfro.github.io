@@ -183,12 +183,107 @@
     color: #0056b3;
 }
 
+/* Menu di servizio: su schermi larghi i comandi restano in fila e il ☰ non si vede */
+.menu-servizio {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.menu-servizio-voci {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-icon.btn-menu-servizio,
+.voce-menu-testo {
+    display: none;
+}
+
 /* Cellulari e schermi piccoli */
 @media (max-width: 600px) {
+  /* Barra su due righe:
+     sopra Estrai, ultimi estratti e menu ☰; sotto premio e lampadina */
   .pannello-info {
+    position: relative; /* Riferimento per il pannellino vincite (css/vincite.css) */
+    flex-wrap: wrap;
     padding: 4px 8px;
-    gap: 6px;
+    gap: 4px 6px;
     border-radius: 20px;
+  }
+
+  /* I figli del gruppo comandi diventano elementi della barra, ordinabili uno per uno */
+  .comandi-gruppo {
+    display: contents;
+  }
+
+  .btn-icon.btn-estrai {
+    order: 1;
+  }
+
+  .comandi-separatore {
+    display: none;
+  }
+
+  .storico-container {
+    order: 2;
+    flex: 1 1 auto;
+    min-width: 0;
+    justify-content: center;
+  }
+
+  .menu-servizio {
+    order: 3;
+  }
+
+  .premio-gruppo {
+    order: 4;
+    flex-basis: 100%;
+    justify-content: center;
+  }
+
+  /* Pulsante ☰ e tendina che si apre verso l'alto (la barra è in fondo allo schermo) */
+  .btn-icon.btn-menu-servizio {
+    display: inline-flex;
+  }
+
+  .menu-servizio-voci {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 10px);
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 6px;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    z-index: 500;
+  }
+
+  .menu-servizio.aperto .menu-servizio-voci {
+    display: flex;
+  }
+
+  /* Nella tendina le voci hanno icona e testo */
+  .menu-servizio-voci .btn-icon.btn-servizio {
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    color: #495057;
+    opacity: 1;
+    white-space: nowrap;
+  }
+
+  .voce-menu-testo {
+    display: inline;
+    font-size: 0.95rem;
   }
 
   .storico-titolo {

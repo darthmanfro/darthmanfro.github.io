@@ -6,7 +6,10 @@
     position: relative;
     width: 100%;
     max-width: min(1300px, 95vw);
-    height: calc(100vh - 90px);
+    /* Occupa lo spazio lasciato dalla barra, qualunque sia la sua altezza
+       (su cellulare va su due righe e 100vh include la barra del browser) */
+    flex: 1 1 auto;
+    min-height: 0;
     background-color: #ffffff;
     border: 2px solid #333;
     border-radius: 8px;
@@ -99,7 +102,6 @@
 /* Cellulari e schermi piccoli */
 @media (max-width: 600px) {
   #tabellone-container {
-    height: calc(100vh - 70px);
     padding: 4px;
   }
 

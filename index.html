@@ -46,6 +46,17 @@
             <span class="comandi-separatore"></span>
 
             <!-- Comandi di servizio (attenuati) -->
+            <!-- Su schermi larghi sono in fila; su cellulare si raccolgono nel menu ☰ (css/barra.css, js/menu-servizio.js) -->
+            <div id="menu-servizio" class="menu-servizio">
+            <button type="button" class="btn-icon btn-servizio btn-menu-servizio" onclick="toggleMenuServizio()" title="Menu">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <line x1="4" y1="6" x2="20" y2="6"></line>
+                    <line x1="4" y1="12" x2="20" y2="12"></line>
+                    <line x1="4" y1="18" x2="20" y2="18"></line>
+                </svg>
+            </button>
+
+            <div class="menu-servizio-voci" onclick="chiudiMenuServizio()">
             <!-- Pulsante Generatore Cartelle -->
             <button id="btnCartelle" class="btn-icon btn-servizio btn-cartelle" onclick="apriModalCartelle()" title="Genera Cartelle">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -55,6 +66,7 @@
                     <line x1="9" y1="3" x2="9" y2="21"></line>
                     <line x1="15" y1="3" x2="15" y2="21"></line>
                 </svg>
+                <span class="voce-menu-testo">Genera cartelle</span>
             </button>
 
             <!-- Pulsante Apri Configurazione -->
@@ -63,6 +75,7 @@
                     <circle cx="12" cy="12" r="3"></circle>
                     <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
                 </svg>
+                <span class="voce-menu-testo">Configurazione</span>
             </button>
 
             <!-- Pulsante Reset -->
@@ -71,7 +84,10 @@
                     <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
                     <path d="M21 3v5h-5"></path>
                 </svg>
+                <span class="voce-menu-testo">Nuova partita</span>
             </button>
+            </div>
+            </div>
         </div>
 
         <!-- Ultimi Estratti -->
@@ -354,7 +370,8 @@
     <script src="./js/cartelle-disegno.js"></script> <!-- Disegno cartella su canvas e PDF -->
     <script src="./js/cartelle-grafica.js"></script> <!-- Pannello grafica e anteprima -->
     <script src="./js/cartelle.js"></script>         <!-- Generatore cartelle ed esportazioni -->
-    <script src="./js/app.js"></script>              <!-- Avvio e nuova partita -->
+    <script src="./js/menu-servizio.js"></script>    <!-- Menu ☰ dei comandi di servizio (cellulare) -->
+    <script src="./js/app.js"></script>             <!-- Avvio e nuova partita -->
 </body>
 
 </html>

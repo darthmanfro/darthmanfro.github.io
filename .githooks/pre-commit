@@ -2,7 +2,7 @@
 # Aggiorna js/versione.js con data e ora del commit ("compilazione")
 # e lo aggiunge al commit. Attivazione (una volta per clone):
 #   git config core.hooksPath .githooks
-BASE="1.2.0"
+BASE="1.2.1"
 TIMBRO=$(date +%Y%m%d.%H%M)
 cat > js/versione.js <<FINE
 // File generato automaticamente da .githooks/pre-commit: non modificarlo a mano.

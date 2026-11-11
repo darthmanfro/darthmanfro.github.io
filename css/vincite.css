@@ -269,3 +269,17 @@
     0%   { transform: rotate(var(--angolo)) translateY(0) scale(1); opacity: 1; }
     100% { transform: rotate(var(--angolo)) translateY(-52px) scale(0.3); opacity: 0; }
 }
+
+/* Cellulari: la lampadina è al centro della seconda riga della barra,
+   il pannellino si allinea alla barra intera per non uscire dallo schermo */
+@media (max-width: 600px) {
+  .spia-wrapper {
+    position: static;
+  }
+
+  .pannello-vincite {
+    left: 0;
+    right: 0;
+    width: auto;
+  }
+}
