@@ -25,6 +25,7 @@
 }
 
 .modal-contenuto {
+    position: relative; /* Riferimento per il pulsante info nell'angolo */
     background-color: #ffffff;
     border-radius: 12px;
     padding: 20px 24px;
@@ -256,10 +257,6 @@
 }
 
 /* Pulsante info (versione, autore, email) nell'angolo della configurazione */
-.modal-contenuto {
-    position: relative;
-}
-
 .btn-info-app {
     position: absolute;
     top: 18px;

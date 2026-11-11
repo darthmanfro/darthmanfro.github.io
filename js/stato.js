@@ -19,6 +19,20 @@ const impostazioni = {
     intervalloAutoSec: 7            // Secondi tra due estrazioni automatiche
 };
 
+// Grafica delle cartelle (tema, colori e font scelti nel pannello Grafica).
+// I valori iniziali li mette cartelle-grafica.js: quelli del tema predefinito
+// oppure quelli salvati nel browser l'ultima volta.
+const graficaCartelle = {
+    tema: null,
+    colorePrimario: null,       // Bordo e linee della griglia
+    coloreSecondario: null,     // Fondo della griglia
+    coloreNumeri: null,         // Numeri nella griglia
+    coloreTitolo: null,         // Titolo della cartella
+    coloreNumeroCartella: null, // Numero progressivo della cartella
+    fontNumeri: null,
+    fontTitolo: null
+};
+
 // Stato della partita in corso
 const partita = {
     numeriEstratti: new Set(),

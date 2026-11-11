@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="./css/modali.css">    <!-- Finestre e configurazione -->
     <link rel="stylesheet" href="./css/vincite.css">   <!-- Lampadina e pannellino vincite -->
     <link rel="stylesheet" href="./css/cartelle.css">  <!-- Generatore cartelle -->
+    <link rel="stylesheet" href="./css/cartelle-grafica.css"> <!-- Pannello grafica cartelle -->
 </head>
 
 <body>
@@ -67,8 +68,8 @@
             <!-- Pulsante Reset -->
             <button id="btnReset" class="btn-icon btn-servizio btn-reset" onclick="nuovaPartita()" title="Nuova Partita">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M21.5 2v6h-6"></path>
-                    <path d="M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                    <path d="M21 3v5h-5"></path>
                 </svg>
             </button>
         </div>
@@ -117,9 +118,10 @@
     <!-- MODALE GENERATORE CARTELLE -->
     <div id="modal-cartelle" class="modal-overlay">
         <div class="modal-contenuto modal-cartelle-box">
-            <h2>Generatore Cartelle</h2>
+            <h2><span class="vista-principale">Generatore Cartelle</span><span class="vista-grafica">Grafica Cartelle</span></h2>
 
-            <div class="cartelle-form-grid">
+            <!-- Il pulsante "Grafica" nasconde gli elementi .vista-principale e mostra .vista-grafica (css/cartelle-grafica.css) -->
+            <div class="cartelle-form-grid vista-principale">
                 <div class="config-sezione">
                     <label class="config-label" for="titoloCartella">Titolo Cartelle:</label>
                     <input type="text" id="titoloCartella" class="input-text" value="Tombola" oninput="aggiornaAnteprimaCartella()">
@@ -139,12 +141,61 @@
                 </div>
             </div>
 
+            <!-- Anteprima visibile in entrambe le viste: disegnata da js/cartelle-disegno.js -->
             <div class="anteprima-sezione">
                 <label class="config-label">Anteprima Modello:</label>
-                <div id="anteprima-cartella-container"></div>
+                <canvas id="anteprima-cartella" class="anteprima-cartella"></canvas>
             </div>
 
-            <div class="modal-azioni modal-azioni-cartelle">
+            <!-- PANNELLO GRAFICA: tema, colori e font (js/cartelle-grafica.js) -->
+            <div class="vista-grafica">
+                <div class="grafica-pannello">
+                    <div class="config-sezione">
+                        <label class="config-label" for="selTema">Tema:</label>
+                        <select id="selTema" class="select-text" onchange="selezionaTema(this.value)"></select>
+                    </div>
+
+                    <div class="config-sezione">
+                        <span class="config-label">Colori:</span>
+                        <div class="grafica-colori">
+                            <label class="colore-item">Bordo griglia
+                                <input type="color" data-campo-grafica="colorePrimario" oninput="cambiaGrafica(this)">
+                            </label>
+                            <label class="colore-item">Fondo griglia
+                                <input type="color" data-campo-grafica="coloreSecondario" oninput="cambiaGrafica(this)">
+                            </label>
+                            <label class="colore-item">Numeri
+                                <input type="color" data-campo-grafica="coloreNumeri" oninput="cambiaGrafica(this)">
+                            </label>
+                            <label class="colore-item">Titolo
+                                <input type="color" data-campo-grafica="coloreTitolo" oninput="cambiaGrafica(this)">
+                            </label>
+                            <label class="colore-item">Numero cartella
+                                <input type="color" data-campo-grafica="coloreNumeroCartella" oninput="cambiaGrafica(this)">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="cartelle-form-grid">
+                        <div class="config-sezione">
+                            <label class="config-label" for="selFontNumeri">Font numeri:</label>
+                            <select id="selFontNumeri" class="select-text" data-campo-grafica="fontNumeri" onchange="cambiaGrafica(this)"></select>
+                        </div>
+                        <div class="config-sezione">
+                            <label class="config-label" for="selFontTitolo">Font titolo:</label>
+                            <select id="selFontTitolo" class="select-text" data-campo-grafica="fontTitolo" onchange="cambiaGrafica(this)"></select>
+                        </div>
+                    </div>
+
+                    <div class="modal-azioni">
+                        <button type="button" class="btn-azione btn-ripristina" onclick="ripristinaColoriTema()" title="Rimette colori e font del tema scelto">↺ Colori del tema</button>
+                        <button type="button" class="btn-azione btn-chiudi" onclick="mostraPannelloGrafica(false)">← Torna alle cartelle</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-azioni modal-azioni-cartelle vista-principale">
+                <button type="button" class="btn-azione btn-grafica" onclick="mostraPannelloGrafica(true)" title="Tema, colori e font delle cartelle">🎨 Grafica</button>
                 <button id="btnGeneraDataset" class="btn-azione btn-genera" onclick="generaNuovoDatasetCartelle()">⚡ Genera Nuove Cartelle</button>
                 <button id="btnDownloadPdf" class="btn-azione btn-pdf" onclick="generaEScaricaPDF()" disabled>Download PDF</button>
                 <button id="btnDownloadPng" class="btn-azione btn-img" onclick="esportaComeImmagine()" disabled>Download Immagine (PNG)</button>
@@ -161,9 +212,6 @@
             <p class="firma">Raniero Manfroni · <a href="mailto:raniero.manfroni@gmail.com">raniero.manfroni@gmail.com</a></p>
         </div>
     </div>
-
-    <!-- AREA NASCOSTA PER LA STAMPA -->
-    <div id="area-stampa" class="area-stampa"></div>
 
     <!-- MODALE CONFIGURAZIONE PARTITA -->
     <div id="modal-config" class="modal-overlay">
@@ -300,6 +348,11 @@
     <script src="./js/avviso.js"></script>           <!-- Scintilla e suono per nuove vincite -->
     <script src="./js/configurazione.js"></script>   <!-- Finestra configurazione e file .JSON -->
     <script src="./js/scarica-offline.js"></script>  <!-- Download dell'app in .zip per uso offline -->
+    <script src="./js/risorse/font-cartelle.js"></script> <!-- Font delle cartelle (dati generati) -->
+    <script src="./js/cartelle-sfondi.js"></script>  <!-- Disegni di sfondo dei temi -->
+    <script src="./js/cartelle-temi.js"></script>    <!-- Temi e font (solo costanti) -->
+    <script src="./js/cartelle-disegno.js"></script> <!-- Disegno cartella su canvas e PDF -->
+    <script src="./js/cartelle-grafica.js"></script> <!-- Pannello grafica e anteprima -->
     <script src="./js/cartelle.js"></script>         <!-- Generatore cartelle ed esportazioni -->
     <script src="./js/app.js"></script>              <!-- Avvio e nuova partita -->
 </body>

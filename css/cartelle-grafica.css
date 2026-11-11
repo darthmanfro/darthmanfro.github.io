@@ -1,0 +1,78 @@
+/* ==========================================================================
+   PANNELLO GRAFICA CARTELLE
+   Due viste nella finestra del generatore: comandi normali (.vista-principale)
+   e impostazioni grafiche (.vista-grafica), scambiate dalla classe
+   .mostra-grafica sulla finestra. L'anteprima resta visibile in entrambe.
+   ========================================================================== */
+.vista-grafica {
+    display: none;
+}
+
+#modal-cartelle.mostra-grafica .vista-principale {
+    display: none;
+}
+
+#modal-cartelle.mostra-grafica .vista-grafica {
+    display: revert; /* div torna blocco, span torna in linea */
+}
+
+.grafica-pannello {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* Selettori di colore: due colonne di "descrizione + quadratino colore" */
+.grafica-colori {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 16px;
+    padding: 10px 14px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.colore-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #212529;
+    cursor: pointer;
+}
+
+.colore-item input[type="color"] {
+    width: 42px;
+    height: 28px;
+    padding: 2px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    background-color: #ffffff;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Anteprima: il canvas si adatta alla larghezza della finestra */
+.anteprima-cartella {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 6px 0;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.btn-grafica { background-color: #e8590c; }
+.btn-grafica:hover { background-color: #c94d0a; }
+
+.btn-ripristina { background-color: #17a2b8; }
+.btn-ripristina:hover { background-color: #138496; }
+
+/* Cellulari: colori su una colonna sola */
+@media (max-width: 600px) {
+    .grafica-colori {
+        grid-template-columns: 1fr;
+    }
+}

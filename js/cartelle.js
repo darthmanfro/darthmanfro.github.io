@@ -1,3 +1,12 @@
+// ==========================================================================
+// GENERATORE CARTELLE
+// Creazione di cartelle regolamentari e tutte diverse, anteprima nella
+// finestra e esportazioni: PDF (jsPDF), immagini PNG e file partita (.JSON).
+// ==========================================================================
+
+const MIN_CARTELLE = 1;
+const MAX_CARTELLE = 100;
+
 // --- STATE & UTILS PER LE CARTELLE ---
 let anteprimaCartellaDati = null;
 let cartelleGenerateState = null; // Memorizza la partita corrente generata
@@ -121,7 +130,11 @@ function generaNuovoDatasetCartelle() {
         if (!conferma) return;
     }
 
-    const num = parseInt(document.getElementById('numCartelle').value, 10) || 20;
+    // Quantità riportata tra 1 e 100 (valore non numerico: 20) e riscritta nel campo
+    const campoNum = document.getElementById('numCartelle');
+    const letto = parseInt(campoNum.value, 10);
+    const num = isNaN(letto) ? 20 : Math.min(MAX_CARTELLE, Math.max(MIN_CARTELLE, letto));
+    campoNum.value = num;
     cartelleGenerateState = generaListaCartelleUniche(num);
     
     // Mostra la prima cartella generata come anteprima
@@ -170,50 +183,16 @@ function apriModalCartelle() {
 
 function chiudiModalCartelle() {
     document.getElementById('modal-cartelle').classList.remove('visibile');
+    mostraPannelloGrafica(false); // Alla prossima apertura si riparte dai comandi normali
 }
 
+// Ridisegna l'anteprima con la prima cartella, il titolo e la grafica attuali
 function aggiornaAnteprimaCartella() {
-    const container = document.getElementById('anteprima-cartella-container');
-    if (!container || !anteprimaCartellaDati) return;
+    const canvas = document.getElementById('anteprima-cartella');
+    if (!canvas || !anteprimaCartellaDati) return;
     const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-
-    container.innerHTML = creaHTMLCartella(anteprimaCartellaDati, 1, titolo);
-}
-
-// Rende il testo sicuro da inserire nell'HTML (es. un titolo con < o &)
-function escapeHTML(testo) {
-    return String(testo)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-}
-
-function creaHTMLCartella(griglia, numeroProgressivo, titolo) {
-    let html = `
-        <div class="cartella-box">
-            <div class="cartella-header">
-                <span class="cartella-titolo">${escapeHTML(titolo)}</span>
-                <span class="cartella-numero">Cartella N. ${numeroProgressivo}</span>
-            </div>
-            <div class="cartella-griglia">
-    `;
-
-    for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 9; c++) {
-            const val = griglia[r][c];
-            html += val !== null 
-                ? `<div class="cartella-cell numero">${val}</div>` 
-                : `<div class="cartella-cell vuota"></div>`;
-        }
-    }
-
-    html += `
-            </div>
-        </div>
-    `;
-    return html;
+    const imp = calcolaImpaginazione('A4');
+    disegnaAnteprimaCartella(canvas, anteprimaCartellaDati, titolo, imp.larghezzaCartella, imp.altezzaCartella);
 }
 
 // --- ESPORTAZIONE FILE PARTITA (.JSON) ---
@@ -280,8 +259,6 @@ const ALTEZZA_A4_MM = 297;
 const MARGINE_MM = 12;
 const SPAZIO_CARTELLE_MM = 8;
 const CARTELLE_PER_COLONNA = 4;
-const ALTEZZA_INTESTAZIONE_MM = 9;
-const MM_PER_PUNTO = 25.4 / 72;       // Dimensione dei caratteri: da punti tipografici a mm
 const PIXEL_PER_MM_PNG = 1600 / 210;  // Risoluzione delle immagini PNG (A4 = 1600 px di larghezza)
 
 function calcolaImpaginazione(formato) {
@@ -317,161 +294,104 @@ function nomeFileDaTitolo(titolo) {
 }
 
 // --- ESPORTAZIONE PDF OFFLINE ---
-function generaEScaricaPDF() {
+// Grafica vettoriale (numeri e linee nitidi in stampa) con i font inclusi nell'app
+async function generaEScaricaPDF() {
     if (!cartelleGenerateState) return;
-
-    const titolo = document.getElementById('titoloCartella').value || 'Tombola';
-    const formato = (document.getElementById('formatoStampa').value || 'A4').toUpperCase();
-    const listaCartelle = cartelleGenerateState;
 
     if (!window.jspdf) {
         alert('Libreria jsPDF non trovata offline in ./js/lib/jspdf.umd.min.js');
         return;
     }
 
-    const { jsPDF } = window.jspdf;
-    const imp = calcolaImpaginazione(formato);
-    const doc = new jsPDF({
-        orientation: imp.orientamento,
-        unit: 'mm',
-        format: formato === 'A3' ? 'a3' : 'a4'
+    const titolo = document.getElementById('titoloCartella').value || 'Tombola';
+    const formato = (document.getElementById('formatoStampa').value || 'A4').toUpperCase();
+    const listaCartelle = cartelleGenerateState;
+    const stile = stileCartelleCorrente();
+
+    await eseguiEsportazione('btnDownloadPdf', async () => {
+        await preparaFontGrafica(stile);
+
+        const { jsPDF } = window.jspdf;
+        const imp = calcolaImpaginazione(formato);
+        const doc = new jsPDF({
+            orientation: imp.orientamento,
+            unit: 'mm',
+            format: formato === 'A3' ? 'a3' : 'a4'
+        });
+        registraFontPdf(doc, stile);
+        const sup = superficiePdf(doc);
+
+        const perFoglio = imp.posizioni.length;
+        listaCartelle.forEach((griglia, idx) => {
+            if (idx > 0 && idx % perFoglio === 0) doc.addPage();
+            const pos = imp.posizioni[idx % perFoglio];
+            disegnaCartella(sup, griglia, idx + 1, titolo, stile, pos.x, pos.y, imp.larghezzaCartella, imp.altezzaCartella);
+        });
+
+        doc.save(`cartelle-${nomeFileDaTitolo(titolo)}-${formato.toLowerCase()}.pdf`);
     });
-
-    const perFoglio = imp.posizioni.length;
-    listaCartelle.forEach((griglia, idx) => {
-        if (idx > 0 && idx % perFoglio === 0) doc.addPage();
-        const pos = imp.posizioni[idx % perFoglio];
-        disegnaCartellaSuPDF(doc, griglia, idx + 1, titolo, pos.x, pos.y, imp.larghezzaCartella, imp.altezzaCartella);
-    });
-
-    doc.save(`cartelle-${nomeFileDaTitolo(titolo)}-${formato.toLowerCase()}.pdf`);
-}
-
-function disegnaCartellaSuPDF(doc, griglia, numProg, titolo, x, y, w, h) {
-    doc.setDrawColor(33, 37, 41);
-    doc.setLineWidth(0.6);
-    doc.rect(x, y, w, h);
-
-    const headerH = ALTEZZA_INTESTAZIONE_MM;
-    doc.setFillColor(33, 37, 41);
-    doc.rect(x, y, w, headerH, 'F');
-
-    doc.setTextColor(255, 193, 7);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text(titolo.toUpperCase(), x + 4, y + 6);
-
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(9);
-    doc.text(`Cartella N. ${numProg}`, x + w - 4, y + 6, { align: 'right' });
-
-    const gridY = y + headerH;
-    const cellW = w / 9;
-    const cellH = (h - headerH) / 3;
-
-    doc.setTextColor(11, 11, 11);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-
-    for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 9; c++) {
-            const cx = x + c * cellW;
-            const cy = gridY + r * cellH;
-            const val = griglia[r][c];
-
-            if (val !== null) {
-                doc.setFillColor(255, 255, 255);
-                doc.rect(cx, cy, cellW, cellH, 'FD');
-                doc.text(val.toString(), cx + cellW / 2, cy + cellH / 2 + 2, { align: 'center' });
-            } else {
-                doc.setFillColor(233, 236, 239);
-                doc.rect(cx, cy, cellW, cellH, 'FD');
-            }
-        }
-    }
 }
 
 // --- ESPORTAZIONE IMMAGINI PNG ---
 // Un'immagine per foglio nel formato scelto (A4: 4 cartelle, A3: 8 cartelle),
 // con la stessa impaginazione del PDF
-function esportaComeImmagine() {
+async function esportaComeImmagine() {
     if (!cartelleGenerateState) return;
 
     const titolo = document.getElementById('titoloCartella').value || 'Tombola';
     const formato = (document.getElementById('formatoStampa').value || 'A4').toUpperCase();
     const listaCartelle = cartelleGenerateState;
+    const stile = stileCartelleCorrente();
 
-    const imp = calcolaImpaginazione(formato);
-    const perFoglio = imp.posizioni.length;
-    const totaleFogli = Math.ceil(listaCartelle.length / perFoglio);
-    const s = PIXEL_PER_MM_PNG;
+    await eseguiEsportazione('btnDownloadPng', async () => {
+        await preparaFontGrafica(stile);
 
-    for (let f = 0; f < totaleFogli; f++) {
-        const canvas = document.createElement('canvas');
-        canvas.width = Math.round(imp.larghezza * s);
-        canvas.height = Math.round(imp.altezza * s);
-        const ctx = canvas.getContext('2d');
+        const imp = calcolaImpaginazione(formato);
+        const perFoglio = imp.posizioni.length;
+        const totaleFogli = Math.ceil(listaCartelle.length / perFoglio);
+        const s = PIXEL_PER_MM_PNG;
 
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let f = 0; f < totaleFogli; f++) {
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.round(imp.larghezza * s);
+            canvas.height = Math.round(imp.altezza * s);
+            const ctx = canvas.getContext('2d');
 
-        listaCartelle.slice(f * perFoglio, (f + 1) * perFoglio).forEach((griglia, idxInFoglio) => {
-            const pos = imp.posizioni[idxInFoglio];
-            disegnaCartellaSuCanvas(ctx, griglia, f * perFoglio + idxInFoglio + 1, titolo,
-                pos.x * s, pos.y * s, imp.larghezzaCartella * s, imp.altezzaCartella * s, s);
-        });
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const sup = superficieCanvas(ctx, s);
 
-        const link = document.createElement('a');
-        link.download = `cartelle-${nomeFileDaTitolo(titolo)}-${formato.toLowerCase()}-foglio-${f + 1}.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }
+            listaCartelle.slice(f * perFoglio, (f + 1) * perFoglio).forEach((griglia, idxInFoglio) => {
+                const pos = imp.posizioni[idxInFoglio];
+                disegnaCartella(sup, griglia, f * perFoglio + idxInFoglio + 1, titolo, stile,
+                    pos.x, pos.y, imp.larghezzaCartella, imp.altezzaCartella);
+            });
+
+            const link = document.createElement('a');
+            link.download = `cartelle-${nomeFileDaTitolo(titolo)}-${formato.toLowerCase()}-foglio-${f + 1}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    });
 }
 
-// Stesso disegno del PDF: le misure in mm diventano pixel con 's' (pixel per mm)
-function disegnaCartellaSuCanvas(ctx, griglia, numProg, titolo, x, y, w, h, s) {
-    const font = punti => `bold ${punti * MM_PER_PUNTO * s}px Helvetica, Arial, sans-serif`;
-
-    ctx.lineWidth = 0.6 * s;
-    ctx.strokeStyle = '#212529';
-    ctx.strokeRect(x, y, w, h);
-
-    const headerH = ALTEZZA_INTESTAZIONE_MM * s;
-    ctx.fillStyle = '#212529';
-    ctx.fillRect(x, y, w, headerH);
-
-    ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = '#ffc107';
-    ctx.font = font(11);
-    ctx.textAlign = 'left';
-    ctx.fillText(titolo.toUpperCase(), x + 4 * s, y + 6 * s);
-
-    ctx.fillStyle = '#ffffff';
-    ctx.font = font(9);
-    ctx.textAlign = 'right';
-    ctx.fillText(`Cartella N. ${numProg}`, x + w - 4 * s, y + 6 * s);
-
-    const gridY = y + headerH;
-    const cellW = w / 9;
-    const cellH = (h - headerH) / 3;
-
-    ctx.font = font(14);
-    ctx.textAlign = 'center';
-
-    for (let r = 0; r < 3; r++) {
-        for (let c = 0; c < 9; c++) {
-            const cx = x + c * cellW;
-            const cy = gridY + r * cellH;
-            const val = griglia[r][c];
-
-            ctx.fillStyle = val !== null ? '#ffffff' : '#e9ecef';
-            ctx.fillRect(cx, cy, cellW, cellH);
-            ctx.strokeRect(cx, cy, cellW, cellH);
-
-            if (val !== null) {
-                ctx.fillStyle = '#0b0b0b';
-                ctx.fillText(val.toString(), cx + cellW / 2, cy + cellH / 2 + 2 * s);
-            }
+// Pulsante disattivato con "attendere" durante l'esportazione, errori mostrati a video
+async function eseguiEsportazione(idPulsante, lavoro) {
+    const btn = document.getElementById(idPulsante);
+    const testoOriginale = btn ? btn.textContent : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Attendere…';
+    }
+    try {
+        await lavoro();
+    } catch (err) {
+        console.error(err);
+        alert(`Errore durante l'esportazione: ${err.message || err}`);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = testoOriginale;
         }
     }
 }

@@ -11,7 +11,7 @@ const NOME_ZIP = "tombola-offline.zip";
 const CARTELLA_ZIP = "tombola/";
 
 // File non collegati direttamente da index.html ma necessari all'app
-const FILE_EXTRA = ["index.html", "istruzioni.html", "css/istruzioni.css"];
+const FILE_EXTRA = ["index.html", "istruzioni.html", "css/istruzioni.css", "fonts/LICENZE-FONT.txt"];
 
 const TESTO_LEGGIMI = [
     "TOMBOLA - VERSIONE OFFLINE",

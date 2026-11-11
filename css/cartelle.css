@@ -68,71 +68,12 @@
 .btn-azione:disabled.btn-usa { background-color: #6f42c1; }
 
 /* ==========================================================================
-   2. GRAFICA CARTELLA ORIZZONTALE (ANTEPRIMA E STAMPA) - STILE DAL NEGRO
+   2. ANTEPRIMA (la cartella è disegnata su canvas: vedi css/cartelle-grafica.css)
    ========================================================================== */
 .anteprima-sezione {
     display: flex;
     flex-direction: column;
     gap: 6px;
-}
-
-.cartella-box {
-    border: 2px solid #212529;
-    border-radius: 6px;
-    background-color: #ffffff;
-    overflow: hidden;
-    margin: 6px 0;
-    width: 100%;
-}
-
-.cartella-header {
-    background-color: #212529;
-    color: #ffffff;
-    padding: 6px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.cartella-titolo {
-    font-weight: 800;
-    color: #ffc107;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.cartella-numero {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #e9ecef;
-}
-
-/* Griglia 3 righe per 9 colonne orizzontali */
-.cartella-griglia {
-    display: grid;
-    grid-template-columns: repeat(9, 1fr);
-    grid-template-rows: repeat(3, 1fr);
-    border-top: 1px solid #212529;
-}
-
-.cartella-cell {
-    border: 1px solid #333333;
-    height: 42px; /* Proporzione larga e bassa */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1.15rem;
-    color: #111111;
-}
-
-.cartella-cell.vuota {
-    background-color: #e9ecef;
-}
-
-.area-stampa {
-    display: none;
 }
 
 /* Adattamento Mobile */
@@ -142,9 +83,5 @@
   }
   .modal-azioni-cartelle {
     flex-direction: column;
-  }
-  .cartella-cell {
-    height: 32px;
-    font-size: 0.95rem;
   }
 }
