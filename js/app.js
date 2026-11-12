@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     aggiornaPulsanteEstrai();
     inizializzaGraficaCartelle();
     inizializzaGraficaTabellone();
+    inizializzaSchermo();
     proponiRipresaPartita();
 });
 

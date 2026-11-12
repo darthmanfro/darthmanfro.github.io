@@ -348,3 +348,13 @@
     white-space: nowrap;
     font-variant-numeric: tabular-nums; /* Le cifre non fanno "ballare" la barra */
 }
+
+/* Pulsante Schermo intero: icona "entra" o "esci" (classe .attivo da js/schermo.js) */
+.btn-schermo-intero .icona-esci-schermo,
+.btn-schermo-intero.attivo .icona-entra-schermo {
+    display: none;
+}
+
+.btn-schermo-intero.attivo .icona-esci-schermo {
+    display: block;
+}
