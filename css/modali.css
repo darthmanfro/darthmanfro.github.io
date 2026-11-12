@@ -402,3 +402,52 @@
 .btn-azione.btn-pericolo:hover {
     background-color: #c82333;
 }
+
+/* ==========================================================================
+   RIEPILOGO DEI NUMERI ESTRATTI (js/riepilogo.js)
+   ========================================================================== */
+.modal-contenuto.modal-riepilogo-box {
+    max-width: 640px;
+}
+
+.riepilogo-numeri {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 6px;
+}
+
+/* Numero estratto con la sua posizione di uscita sopra */
+.riepilogo-voce {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4px 0;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.riepilogo-ordine {
+    font-size: 0.65rem;
+    color: #868e96;
+}
+
+.riepilogo-numero {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1e7e34;
+    font-variant-numeric: tabular-nums;
+}
+
+.riepilogo-vincite {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 10px;
+    border-top: 1px solid #dee2e6;
+}
+
+.riepilogo-vincita {
+    font-size: 0.9rem;
+    color: #212529;
+}

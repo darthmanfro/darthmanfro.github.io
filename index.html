@@ -116,13 +116,14 @@
         </div>
 
         <!-- Ultimi Estratti -->
-        <div id="storico-container" class="storico-container">
+        <!-- Cliccando si apre il riepilogo di tutti gli estratti (js/riepilogo.js) -->
+        <div id="storico-container" class="storico-container" onclick="apriRiepilogo()" title="Tutti i numeri estratti">
             <span class="storico-titolo">Ultimi:</span>
             <div id="storico-numeri" class="storico-numeri">
                 <span class="storico-empty">Nessuno</span>
             </div>
             <!-- Quanti numeri sono usciti finora -->
-            <span id="contatore-estratti" class="contatore-estratti" title="Numeri estratti">/ 0</span>
+            <button type="button" id="contatore-estratti" class="contatore-estratti" title="Tutti i numeri estratti">/ 0</button>
         </div>
 
         <div class="premio-gruppo">
@@ -410,6 +411,19 @@
         </div>
     </div>
 
+    <!-- RIEPILOGO DI TUTTI I NUMERI ESTRATTI (js/riepilogo.js) -->
+    <div id="modal-riepilogo" class="modal-overlay" data-esc="btnChiudiRiepilogo">
+        <div class="modal-contenuto modal-riepilogo-box">
+            <h2 id="riepilogo-titolo">Numeri estratti</h2>
+            <div id="riepilogo-numeri" class="riepilogo-numeri"></div>
+            <div id="riepilogo-vincite" class="riepilogo-vincite nascosto"></div>
+            <div class="modal-azioni">
+                <button type="button" id="btnOrdineRiepilogo" class="btn-azione btn-json" onclick="cambiaOrdineRiepilogo()">Ordine 1-90</button>
+                <button type="button" id="btnChiudiRiepilogo" class="btn-azione btn-chiudi" onclick="chiudiRiepilogo()">Chiudi</button>
+            </div>
+        </div>
+    </div>
+
     <!-- AVVISI E CONFERME dell'app, al posto di alert/confirm del browser (js/dialoghi.js) -->
     <div id="modal-dialogo" class="modal-overlay modal-dialogo">
         <div class="modal-contenuto modal-dialogo-box" role="alertdialog" aria-modal="true" aria-labelledby="dialogo-titolo" aria-describedby="dialogo-testo">
@@ -431,6 +445,7 @@
     <script src="./js/stato.js"></script>            <!-- Stato partita e impostazioni -->
     <script src="./js/tabellone.js"></script>        <!-- Tabellone, estrazione, ultimi estratti -->
     <script src="./js/auto-estrazione.js"></script>  <!-- Estrazione automatica (Play/Pausa) -->
+    <script src="./js/riepilogo.js"></script>        <!-- Riepilogo di tutti gli estratti -->
     <script src="./js/premi.js"></script>            <!-- Premio in palio -->
     <script src="./js/vincite.js"></script>          <!-- Controllo vincite e lampadina -->
     <script src="./js/avviso.js"></script>           <!-- Scintilla e suono per nuove vincite -->
