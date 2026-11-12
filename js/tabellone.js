@@ -64,6 +64,40 @@ function registraEstrazione(numero) {
     verificaVinciteAutomatiche();
 }
 
+// Toglie un numero dagli estratti (correzione di un errore) e ricalcola tutto
+function togliEstrazione(numero) {
+    if (!partita.numeriEstratti.delete(numero)) return;
+
+    const cella = document.getElementById(`cella-${numero}`);
+    if (cella) cella.classList.remove("estratto");
+
+    if (numeroInOverlay === numero) nascondiOverlayNumero();
+    aggiornaStorico();
+    ricalcolaVinciteDopoCorrezione();
+}
+
+// Pulsante "Annulla ultima estrazione": chiede conferma e toglie l'ultimo numero uscito
+async function annullaUltimaEstrazione() {
+    const ultimo = Array.from(partita.numeriEstratti).pop();
+    if (ultimo === undefined) {
+        avvisa("Non ci sono numeri estratti da annullare.");
+        return;
+    }
+    const conferma = await chiedi(`Annullare l'ultimo numero estratto, il ${ultimo}?\nTorna tra quelli da estrarre. I premi già confermati restano assegnati.`,
+        { titolo: "Annulla estrazione", si: `Annulla il ${ultimo}`, no: "Lascia", pericolo: true });
+    if (conferma) togliEstrazione(ultimo);
+}
+
+let numeroInOverlay = null;
+
+function nascondiOverlayNumero() {
+    clearTimeout(timerOverlay);
+    timerOverlay = null;
+    numeroInOverlay = null;
+    const overlay = document.getElementById("overlay-numero");
+    if (overlay) overlay.classList.remove("mostra");
+}
+
 // Mostra il numero a tutto schermo; ogni nuovo numero riparte con la durata piena
 function mostraOverlayNumero(num) {
     const overlay = document.getElementById("overlay-numero");
@@ -73,6 +107,7 @@ function mostraOverlayNumero(num) {
         clearTimeout(timerOverlay);
         timerOverlay = null;
     }
+    numeroInOverlay = num;
 
     const infoSmorfia = smorfia[num] ? smorfia[num][impostazioni.lingua] : "";
 
@@ -82,10 +117,7 @@ function mostraOverlayNumero(num) {
     `;
     overlay.classList.add("mostra");
 
-    timerOverlay = setTimeout(() => {
-        overlay.classList.remove("mostra");
-        timerOverlay = null;
-    }, impostazioni.durataNumeroSec * 1000);
+    timerOverlay = setTimeout(nascondiOverlayNumero, impostazioni.durataNumeroSec * 1000);
 }
 
 // Aggiorna gli ultimi numeri estratti nella barra (dal più recente)

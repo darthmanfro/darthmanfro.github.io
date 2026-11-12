@@ -50,8 +50,17 @@ function chiaveScarto(cartellaId, premio) {
     return `${cartellaId}-${premio}`;
 }
 
-// Ricalcola le possibili vincite per il premio in palio e aggiorna la lampadina
-function verificaVinciteAutomatiche() {
+// Dopo aver tolto un numero estratto: le vincite che non ci sono più vanno
+// dimenticate, così se si ripresentano scintilla e suono tornano a farsi sentire.
+// Quelle ancora valide non vengono annunciate di nuovo.
+function ricalcolaVinciteDopoCorrezione() {
+    partita.vinciteGiaSegnalate.clear();
+    verificaVinciteAutomatiche({ silenzioso: true });
+}
+
+// Ricalcola le possibili vincite per il premio in palio e aggiorna la lampadina.
+// silenzioso: registra le vincite trovate senza scintilla, suono e pausa
+function verificaVinciteAutomatiche({ silenzioso = false } = {}) {
     partita.possibiliVincite = [];
 
     const premio = premioInPalio();
@@ -74,7 +83,7 @@ function verificaVinciteAutomatiche() {
             nuove = true;
         }
     });
-    if (nuove) segnalaNuovaVincita();
+    if (nuove && !silenzioso) segnalaNuovaVincita();
 }
 
 // --- LAMPADINA ---
