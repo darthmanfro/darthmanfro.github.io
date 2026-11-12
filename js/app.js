@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     aggiornaPulsanteEstrai();
     inizializzaGraficaCartelle();
     inizializzaGraficaTabellone();
+    proponiRipresaPartita();
 });
 
 // Azzera tabellone, storico e premi; le cartelle caricate restano in memoria

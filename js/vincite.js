@@ -101,6 +101,9 @@ function verificaVinciteAutomatiche({ silenzioso = false } = {}) {
         }
     });
     if (nuove && !silenzioso) segnalaNuovaVincita();
+
+    // Ogni cambiamento della partita passa da qui: è il punto in cui salvarla (js/salvataggio.js)
+    salvaPartitaNelBrowser();
 }
 
 // --- LAMPADINA ---
