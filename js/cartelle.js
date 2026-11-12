@@ -24,12 +24,7 @@ function generaDatiCartellaSingola() {
             const max = col === 8 ? 90 : col * 10 + 9;
             const disponibili = [];
             for (let n = min; n <= max; n++) disponibili.push(n);
-
-            for (let i = disponibili.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [disponibili[i], disponibili[j]] = [disponibili[j], disponibili[i]];
-            }
-            numeriColonna.push(disponibili);
+            numeriColonna.push(mescola(disponibili));
         }
 
         const conteggioColonna = Array(9).fill(0);
@@ -44,12 +39,7 @@ function generaDatiCartellaSingola() {
                 break;
             }
 
-            for (let i = opzioniColonna.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [opzioniColonna[i], opzioniColonna[j]] = [opzioniColonna[j], opzioniColonna[i]];
-            }
-
-            opzioniColonna.slice(0, 5).forEach(c => conteggioColonna[c]++);
+            mescola(opzioniColonna).slice(0, 5).forEach(c => conteggioColonna[c]++);
         }
 
         const sommaNumeri = conteggioColonna.reduce((a, b) => a + b, 0);
@@ -65,12 +55,7 @@ function generaDatiCartellaSingola() {
 
                 for (let col = 0; col < 9; col++) {
                     const occ = conteggioColonna[col];
-                    const righeDisponibili = [0, 1, 2];
-                    for (let i = righeDisponibili.length - 1; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [righeDisponibili[i], righeDisponibili[j]] = [righeDisponibili[j], righeDisponibili[i]];
-                    }
-                    righeDisponibili.slice(0, occ).forEach(r => maschera[r][col] = true);
+                    mescola([0, 1, 2]).slice(0, occ).forEach(r => maschera[r][col] = true);
                 }
 
                 if (maschera.every(r => r.filter(c => c).length === 5)) {

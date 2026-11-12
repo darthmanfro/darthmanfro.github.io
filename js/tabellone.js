@@ -43,12 +43,12 @@ function estraiNumero() {
         if (btnEstrai) btnEstrai.disabled = false;
     }, impostazioni.bloccoEstrazioneSec * 1000);
 
-    let numero;
-    do {
-        numero = Math.floor(Math.random() * 90) + 1;
-    } while (partita.numeriEstratti.has(numero));
-
-    registraEstrazione(numero);
+    // Si sceglie tra i numeri rimasti (js/casuale.js)
+    const rimasti = [];
+    for (let n = 1; n <= 90; n++) {
+        if (!partita.numeriEstratti.has(n)) rimasti.push(n);
+    }
+    registraEstrazione(rimasti[interoCasuale(rimasti.length)]);
 }
 
 function registraEstrazione(numero) {
