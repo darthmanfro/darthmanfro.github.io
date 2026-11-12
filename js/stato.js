@@ -44,6 +44,11 @@ const partita = {
     premiAttivi: [...PREMI],        // Premi spuntati nella configurazione
     indicePremioAttuale: 0,         // Indice in premiAttivi
     premiAssegnati: new Set(),      // Premi già confermati (es. 'AMBO')
+    vincitori: [],                  // [{ premio, cartellaId }] vincite confermate, anche divise
+    // Premio diviso: dopo la prima conferma, se altre cartelle hanno vinto lo
+    // stesso premio con lo stesso numero, il premio resta aperto solo per loro.
+    // { premio, estratti } con estratti = quanti numeri erano usciti in quel momento
+    premioInChiusura: null,
 
     // Controllo automatico vincite
     cartelleCaricate: [],             // Cartelle da file .JSON o dal generatore

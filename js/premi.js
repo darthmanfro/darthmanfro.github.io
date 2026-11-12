@@ -12,7 +12,8 @@ function premioInPalio() {
 
 function avanzaPremio() {
     if (partita.premiAttivi.length === 0) return;
-    partita.indicePremioAttuale = (partita.indicePremioAttuale + 1) % partita.premiAttivi.length;
+    partita.premioInChiusura = null; // Cambiando premio a mano un eventuale premio diviso si chiude
+    partita.indicePremioAttuale =(partita.indicePremioAttuale + 1) % partita.premiAttivi.length;
     aggiornaInterfacciaPremio();
 }
 

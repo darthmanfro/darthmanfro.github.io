@@ -22,6 +22,8 @@ async function nuovaPartita() {
 
     partita.numeriEstratti.clear();
     partita.premiAssegnati.clear();
+    partita.vincitori = [];
+    partita.premioInChiusura = null;
     partita.cartelleScartatePerPremio.clear();
     partita.vinciteGiaSegnalate.clear();
     partita.indicePremioAttuale = 0;
