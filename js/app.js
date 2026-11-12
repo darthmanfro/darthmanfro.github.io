@@ -12,8 +12,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Azzera tabellone, storico e premi; le cartelle caricate restano in memoria
-function nuovaPartita() {
-    if (!confirm("Vuoi iniziare una nuova partita resettando il tabellone e azzerando i premi in palio?")) return;
+async function nuovaPartita() {
+    const conferma = await chiedi("Vuoi iniziare una nuova partita? Il tabellone e i premi in palio vengono azzerati.",
+        { titolo: "Nuova partita", si: "Nuova partita", pericolo: true });
+    if (!conferma) return;
 
     pausaAutoEstrazione(); // Reset fa anche da Stop
 

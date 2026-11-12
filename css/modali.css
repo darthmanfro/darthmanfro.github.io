@@ -369,3 +369,36 @@
     flex-direction: column;
     gap: 8px;
 }
+
+/* ==========================================================================
+   AVVISI E CONFERME (js/dialoghi.js)
+   Sopra tutte le altre finestre, anche sopra "Cosa vuoi caricare?".
+   ========================================================================== */
+.modal-overlay.modal-dialogo {
+    z-index: 300;
+}
+
+.modal-contenuto.modal-dialogo-box {
+    max-width: 420px;
+}
+
+.dialogo-testo {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #343a40;
+    white-space: pre-line; /* Gli "a capo" del messaggio restano */
+    overflow-wrap: anywhere;
+}
+
+.dialogo-azioni .btn-azione {
+    min-width: 96px;
+}
+
+/* Conferma di un'azione che cancella qualcosa (es. nuova partita) */
+.btn-azione.btn-pericolo {
+    background-color: #dc3545;
+}
+
+.btn-azione.btn-pericolo:hover {
+    background-color: #c82333;
+}

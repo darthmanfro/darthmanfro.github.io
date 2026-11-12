@@ -201,11 +201,11 @@ async function caricaFileGrafica(event) {
     if (!dati) return;
     const grafica = leggiGrafica(dati.grafica);
     if (!grafica) {
-        alert("Questo file non contiene una grafica della Tombola.");
+        avvisa("Questo file non contiene una grafica della Tombola.");
         return;
     }
     applicaGraficaCaricata(grafica, dati.titolo);
-    alert(`Grafica "${TEMI[grafica.tema].nome}" caricata.`);
+    avvisa(`Grafica "${TEMI[grafica.tema].nome}" caricata.`);
 }
 
 // --- ANTEPRIMA ---

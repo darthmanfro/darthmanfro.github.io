@@ -109,9 +109,10 @@ function generaListaCartelleUniche(quantita) {
 }
 
 // --- FUNZIONE DI GENERAZIONE CON POPUP E ABILITAZIONE PULSANTI ---
-function generaNuovoDatasetCartelle() {
+async function generaNuovoDatasetCartelle() {
     if (cartelleGenerateState !== null) {
-        const conferma = confirm("Attenzione: hai già generato un set di cartelle.\nVuoi rigenerare un nuovo dataset? I file precedentemente scaricati non saranno più coerenti con il nuovo set.");
+        const conferma = await chiedi("Hai già generato un set di cartelle.\nVuoi generarne uno nuovo? I file scaricati prima non saranno più coerenti con il nuovo set.",
+            { titolo: "Nuove cartelle", si: "Genera nuove" });
         if (!conferma) return;
     }
 
@@ -131,7 +132,7 @@ function generaNuovoDatasetCartelle() {
     // Abilita i tre pulsanti di download graficamente e funzionalmente
     impostaStatoPulsantiDownload(false);
 
-    alert(`Generate con successo ${cartelleGenerateState.length} cartelle! I pulsanti di download sono ora attivi.`);
+    avvisa(`Generate con successo ${cartelleGenerateState.length} cartelle! I pulsanti di download sono ora attivi.`);
 }
 
 function impostaStatoPulsantiDownload(disabilitati) {
@@ -210,16 +211,17 @@ function costruisciDatiPartita() {
 }
 
 // --- USA LE CARTELLE GENERATE DIRETTAMENTE NELLA PARTITA (senza file .JSON) ---
-function usaCartelleNellaPartita() {
+async function usaCartelleNellaPartita() {
     if (!cartelleGenerateState) return;
 
     if (partita.cartelleCaricate.length > 0) {
-        const conferma = confirm(`Ci sono già ${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nVuoi sostituirle con quelle appena generate?`);
+        const conferma = await chiedi(`Ci sono già ${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nVuoi sostituirle con quelle appena generate?`,
+            { titolo: "Usa nella partita", si: "Sostituisci" });
         if (!conferma) return;
     }
 
     impostaCartellePartita(costruisciDatiPartita().cartelle);
-    alert(`${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nRicorda di scaricare anche il file .JSON se vuoi riusarle in un altro momento.`);
+    avvisa(`${partita.cartelleCaricate.length} cartelle in uso per il controllo vincite.\nRicorda di scaricare anche il file .JSON se vuoi riusarle in un altro momento.`);
 }
 
 function esportaFileJSONPartita() {
@@ -289,7 +291,7 @@ async function generaEScaricaPDF() {
     if (!cartelleGenerateState) return;
 
     if (!window.jspdf) {
-        alert('Libreria jsPDF non trovata offline in ./js/lib/jspdf.umd.min.js');
+        avvisa('Libreria jsPDF non trovata offline in ./js/lib/jspdf.umd.min.js');
         return;
     }
 
@@ -377,7 +379,7 @@ async function eseguiEsportazione(idPulsante, lavoro) {
         await lavoro();
     } catch (err) {
         console.error(err);
-        alert(`Errore durante l'esportazione: ${err.message || err}`);
+        avvisa(`Errore durante l'esportazione: ${err.message || err}`);
     } finally {
         if (btn) {
             btn.disabled = false;

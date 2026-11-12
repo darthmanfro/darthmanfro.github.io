@@ -382,9 +382,22 @@
         </div>
     </div>
 
+    <!-- AVVISI E CONFERME dell'app, al posto di alert/confirm del browser (js/dialoghi.js) -->
+    <div id="modal-dialogo" class="modal-overlay modal-dialogo">
+        <div class="modal-contenuto modal-dialogo-box" role="alertdialog" aria-modal="true" aria-labelledby="dialogo-titolo" aria-describedby="dialogo-testo">
+            <h2 id="dialogo-titolo"></h2>
+            <p id="dialogo-testo" class="dialogo-testo"></p>
+            <div class="modal-azioni dialogo-azioni">
+                <button type="button" id="btnDialogoNo" class="btn-azione btn-chiudi"></button>
+                <button type="button" id="btnDialogoSi" class="btn-azione btn-genera"></button>
+            </div>
+        </div>
+    </div>
+
     <!-- INCLUSIONE SCRIPT: l'ordine conta (prima dati e stato, app.js per ultimo) -->
     <script src="./js/lib/jspdf.umd.min.js"></script>
     <script src="./js/versione.js"></script>         <!-- Versione generata al commit -->
+    <script src="./js/dialoghi.js"></script>         <!-- Finestre di avviso e conferma -->
     <script src="./js/casuale.js"></script>          <!-- Numeri casuali (crypto) per estrazione e cartelle -->
     <script src="./js/smorfia.js"></script>          <!-- Dizionario Smorfia (solo dati) -->
     <script src="./js/stato.js"></script>            <!-- Stato partita e impostazioni -->

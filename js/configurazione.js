@@ -61,16 +61,16 @@ function salvaChiudiConfig() {
     const blocco = leggiSecondi("inputBloccoEstrazione", impostazioni.bloccoEstrazioneSec);
     const durata = leggiSecondi("inputDurataNumero", impostazioni.durataNumeroSec);
     if (durata < blocco) {
-        alert(`Il tempo del numero a schermo (${durata} s) deve essere maggiore o uguale al blocco del pulsante Estrai (${blocco} s).`);
-        document.getElementById("inputDurataNumero").focus();
+        avvisa(`Il tempo del numero a schermo (${durata} s) deve essere maggiore o uguale al blocco del pulsante Estrai (${blocco} s).`)
+            .then(() => document.getElementById("inputDurataNumero").focus());
         return;
     }
 
     // Tra due estrazioni automatiche il numero deve fare in tempo a restare a schermo
     const intervallo = leggiSecondi("inputIntervalloAuto", impostazioni.intervalloAutoSec);
     if (intervallo < durata) {
-        alert(`I secondi tra un'estrazione automatica e l'altra (${intervallo} s) devono essere maggiori o uguali al tempo del numero a schermo (${durata} s).`);
-        document.getElementById("inputIntervalloAuto").focus();
+        avvisa(`I secondi tra un'estrazione automatica e l'altra (${intervallo} s) devono essere maggiori o uguali al tempo del numero a schermo (${durata} s).`)
+            .then(() => document.getElementById("inputIntervalloAuto").focus());
         return;
     }
 
@@ -134,7 +134,7 @@ function leggiFileJson(input) {
     return file.text()
         .then(testo => JSON.parse(testo))
         .catch(() => {
-            alert('Errore nella lettura del file JSON.');
+            avvisa('Errore nella lettura del file JSON.');
             return null;
         });
 }
@@ -148,19 +148,19 @@ async function caricaFilePartita(event) {
     const haCartelle = Array.isArray(dati.cartelle) && dati.cartelle.length > 0;
     const grafica = leggiGrafica(dati.grafica);
     if (!haCartelle && !grafica) {
-        alert('File JSON non valido per la Tombola.');
+        avvisa('File JSON non valido per la Tombola.');
         return;
     }
 
     // Cartelle rovinate o modificate a mano si scartano subito, prima di chiedere cosa caricare
     const controllo = haCartelle ? controllaCartelle(dati.cartelle) : null;
     if (controllo && controllo.errore && !grafica) {
-        alert(`File JSON non valido: ${controllo.errore}`);
+        avvisa(`File JSON non valido: ${controllo.errore}`);
         return;
     }
     const cartelleValide = controllo && !controllo.errore;
     if (controllo && controllo.errore) {
-        alert(`Le cartelle del file non sono valide (${controllo.errore}): verrà caricata solo la grafica.`);
+        await avvisa(`Le cartelle del file non sono valide (${controllo.errore}): verrà caricata solo la grafica.`);
     }
 
     const scelta = cartelleValide && grafica ? await chiediCosaCaricare() : (cartelleValide ? "cartelle" : "grafica");
@@ -175,7 +175,7 @@ async function caricaFilePartita(event) {
         applicaGraficaCaricata(grafica, dati.titolo);
         caricato.push(`grafica "${TEMI[grafica.tema].nome}" applicata`);
     }
-    alert(`Caricamento completato: ${caricato.join(" e ")}.`);
+    avvisa(`Caricamento completato: ${caricato.join(" e ")}.`);
 }
 
 // --- CONTROLLO DELLE CARTELLE DEL FILE ---

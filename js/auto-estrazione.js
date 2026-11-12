@@ -29,7 +29,7 @@ function premiPulsanteEstrai() {
 
 function avviaAutoEstrazione() {
     if (partita.numeriEstratti.size >= 90) {
-        alert("Tutti i 90 numeri sono stati estratti!");
+        avvisa("Tutti i 90 numeri sono stati estratti!");
         return;
     }
     autoEstrazioneInCorso = true;

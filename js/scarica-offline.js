@@ -43,7 +43,7 @@ function elencoFileApp() {
 
 async function scaricaAppOffline() {
     if (!downloadOfflineDisponibile()) {
-        alert("Stai già usando la versione salvata sul computer: non serve scaricarla di nuovo.");
+        avvisa("Stai già usando la versione salvata sul computer: non serve scaricarla di nuovo.");
         return;
     }
 
@@ -72,7 +72,7 @@ async function scaricaAppOffline() {
         link.remove();
         setTimeout(() => URL.revokeObjectURL(link.href), 10000);
     } catch (err) {
-        alert(`Impossibile preparare il download: file non raggiungibile.\n${err.message}`);
+        avvisa(`Impossibile preparare il download: file non raggiungibile.\n${err.message}`);
     } finally {
         if (btn) {
             btn.disabled = false;
