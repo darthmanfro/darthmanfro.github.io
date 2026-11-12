@@ -17,6 +17,15 @@ function avanzaPremio() {
     aggiornaInterfacciaPremio();
 }
 
+// Premio precedente (freccia ← da tastiera)
+function arretraPremio() {
+    const totale = partita.premiAttivi.length;
+    if (totale === 0) return;
+    partita.premioInChiusura = null;
+    partita.indicePremioAttuale = (partita.indicePremioAttuale - 1 + totale) % totale;
+    aggiornaInterfacciaPremio();
+}
+
 // Dopo una vincita confermata: salta i premi già assegnati
 function avanzaAlPremioDaAssegnare() {
     const totale = partita.premiAttivi.length;

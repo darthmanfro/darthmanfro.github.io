@@ -73,8 +73,8 @@ function aggiornaPulsanteEstrai() {
     btn.classList.toggle("in-corso", impostazioni.autoEstrazione && autoEstrazioneInCorso);
     btn.classList.toggle("in-pausa-vincita", impostazioni.autoEstrazione && pausaPerVincita);
 
-    if (!impostazioni.autoEstrazione) btn.title = "Estrai Numero";
-    else if (autoEstrazioneInCorso) btn.title = "Metti in pausa l'estrazione automatica";
-    else if (pausaPerVincita) btn.title = "In pausa per una possibile vincita: premi per riprendere";
-    else btn.title = "Avvia l'estrazione automatica";
+    if (!impostazioni.autoEstrazione) btn.title = "Estrai Numero (Spazio)";
+    else if (autoEstrazioneInCorso) btn.title = "Metti in pausa l'estrazione automatica (Spazio)";
+    else if (pausaPerVincita) btn.title = "In pausa per una possibile vincita: premi per riprendere (Spazio)";
+    else btn.title = "Avvia l'estrazione automatica (Spazio)";
 }
