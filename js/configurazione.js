@@ -25,6 +25,7 @@ function apriConfig() {
     document.getElementById("inputDurataNumero").value = impostazioni.durataNumeroSec;
     document.getElementById("checkAutoEstrazione").checked = impostazioni.autoEstrazione;
     document.getElementById("inputIntervalloAuto").value = impostazioni.intervalloAutoSec;
+    document.getElementById("checkInserimentoManuale").checked = impostazioni.inserimentoManuale;
 
     // Niente estrazioni mentre si cambiano le impostazioni
     pausaAutoEstrazione();
@@ -87,6 +88,8 @@ function salvaChiudiConfig() {
     impostazioni.intervalloAutoSec = intervallo;
     impostazioni.autoEstrazione = document.getElementById("checkAutoEstrazione").checked;
     aggiornaPulsanteEstrai();
+    impostazioni.inserimentoManuale = document.getElementById("checkInserimentoManuale").checked;
+    aggiornaInserimentoManuale();
 
     const attivi = Array.from(document.querySelectorAll(SELETTORE_CHECK_PREMI))
         .filter(cb => cb.checked)

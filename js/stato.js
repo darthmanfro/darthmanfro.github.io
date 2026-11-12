@@ -16,7 +16,8 @@ const impostazioni = {
     bloccoEstrazioneSec: 1,         // Pulsante "Estrai" bloccato dopo il clic (evita doppi clic)
     durataNumeroSec: 3.5,           // Quanto resta a schermo il numero estratto
     autoEstrazione: false,          // Pulsante Estrai come Play/Pausa
-    intervalloAutoSec: 7            // Secondi tra due estrazioni automatiche
+    intervalloAutoSec: 7,           // Secondi tra due estrazioni automatiche
+    inserimentoManuale: false       // Clic su una casella del tabellone per segnare il numero
 };
 
 // Grafica delle cartelle (tema, colori e font scelti nel pannello Grafica).

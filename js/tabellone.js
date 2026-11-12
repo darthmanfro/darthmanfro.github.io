@@ -88,6 +88,37 @@ async function annullaUltimaEstrazione() {
     if (conferma) togliEstrazione(ultimo);
 }
 
+// --- INSERIMENTO MANUALE ---
+// Per chi estrae dal sacchetto vero: con l'opzione attiva in configurazione,
+// un clic su una casella segna quel numero (con numero a schermo e Smorfia);
+// un clic su una casella già segnata, dopo una conferma, la toglie.
+
+// Un solo ascoltatore sulla griglia: le celle vengono ricreate a ogni nuova partita
+function inizializzaClicTabellone() {
+    const griglia = document.getElementById("griglia");
+    if (griglia) griglia.addEventListener("click", clicSuCasella);
+}
+
+async function clicSuCasella(evento) {
+    if (!impostazioni.inserimentoManuale) return;
+    const cella = evento.target.closest(".cella");
+    if (!cella) return;
+    const numero = parseInt(cella.textContent, 10);
+
+    if (!partita.numeriEstratti.has(numero)) {
+        registraEstrazione(numero);
+        return;
+    }
+    const conferma = await chiedi(`Il ${numero} è già segnato. Vuoi toglierlo dagli estratti?\nI premi già confermati restano assegnati.`,
+        { titolo: "Togli numero", si: `Togli il ${numero}`, no: "Lascia", pericolo: true });
+    if (conferma) togliEstrazione(numero);
+}
+
+// Le caselle sembrano cliccabili solo quando l'opzione è attiva (css/tabellone.css)
+function aggiornaInserimentoManuale() {
+    document.body.classList.toggle("inserimento-manuale", impostazioni.inserimentoManuale);
+}
+
 let numeroInOverlay = null;
 
 function nascondiOverlayNumero() {

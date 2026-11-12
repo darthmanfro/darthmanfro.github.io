@@ -115,3 +115,13 @@
     border-radius: 2px;
   }
 }
+
+/* Inserimento manuale attivo (configurazione): le caselle si cliccano */
+.inserimento-manuale .cella {
+    cursor: pointer;
+    user-select: none;
+}
+
+.inserimento-manuale .cella:not(.estratto):hover {
+    border-color: #28a745;
+}

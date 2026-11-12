@@ -5,6 +5,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     creaTabellone();
+    inizializzaClicTabellone();
     aggiornaInterfacciaPremio();
     aggiornaPulsanteEstrai();
     inizializzaGraficaCartelle();
