@@ -152,12 +152,23 @@ async function caricaFilePartita(event) {
         return;
     }
 
-    const scelta = haCartelle && grafica ? await chiediCosaCaricare() : (haCartelle ? "cartelle" : "grafica");
+    // Cartelle rovinate o modificate a mano si scartano subito, prima di chiedere cosa caricare
+    const controllo = haCartelle ? controllaCartelle(dati.cartelle) : null;
+    if (controllo && controllo.errore && !grafica) {
+        alert(`File JSON non valido: ${controllo.errore}`);
+        return;
+    }
+    const cartelleValide = controllo && !controllo.errore;
+    if (controllo && controllo.errore) {
+        alert(`Le cartelle del file non sono valide (${controllo.errore}): verrà caricata solo la grafica.`);
+    }
+
+    const scelta = cartelleValide && grafica ? await chiediCosaCaricare() : (cartelleValide ? "cartelle" : "grafica");
     if (!scelta) return;
 
     const caricato = [];
     if (scelta !== "grafica") {
-        impostaCartellePartita(dati.cartelle);
+        impostaCartellePartita(controllo.cartelle);
         caricato.push(`${partita.cartelleCaricate.length} cartelle in ascolto per i premi`);
     }
     if (scelta !== "cartelle") {
@@ -165,6 +176,57 @@ async function caricaFilePartita(event) {
         caricato.push(`grafica "${TEMI[grafica.tema].nome}" applicata`);
     }
     alert(`Caricamento completato: ${caricato.join(" e ")}.`);
+}
+
+// --- CONTROLLO DELLE CARTELLE DEL FILE ---
+
+// Prima e ultima decina di ogni colonna: 1-9, 10-19, ..., 80-90
+function limitiColonna(col) {
+    return { min: col === 0 ? 1 : col * 10, max: col === 8 ? 90 : col * 10 + 9 };
+}
+
+// Controlla che ogni cartella sia regolamentare (3 righe x 9 colonne, 5 numeri
+// per riga, ogni numero nella sua decina, nessun doppione) e con un numero
+// progressivo intero e unico. Restituisce { cartelle } ricostruite dalla sola
+// griglia (l'elenco "numeri" viene ricalcolato), oppure { errore } con il motivo.
+function controllaCartelle(cartelle) {
+    const idUsati = new Set();
+    const risultato = [];
+
+    for (let i = 0; i < cartelle.length; i++) {
+        const c = cartelle[i];
+        const nome = c && c.id !== undefined ? `cartella ${c.id}` : `cartella in posizione ${i + 1}`;
+
+        if (!c || !Number.isInteger(c.id) || c.id < 1) return { errore: `${nome}: numero di cartella mancante o non valido` };
+        if (idUsati.has(c.id)) return { errore: `la cartella ${c.id} compare due volte` };
+        idUsati.add(c.id);
+
+        const griglia = c.griglia;
+        if (!Array.isArray(griglia) || griglia.length !== 3
+            || !griglia.every(r => Array.isArray(r) && r.length === 9)) {
+            return { errore: `${nome}: la griglia deve avere 3 righe da 9 caselle` };
+        }
+
+        const numeri = [];
+        for (let r = 0; r < 3; r++) {
+            let nellaRiga = 0;
+            for (let col = 0; col < 9; col++) {
+                const n = griglia[r][col];
+                if (n === null) continue;
+                const { min, max } = limitiColonna(col);
+                if (!Number.isInteger(n) || n < min || n > max) {
+                    return { errore: `${nome}: il valore ${JSON.stringify(n)} non può stare nella colonna ${col + 1}` };
+                }
+                numeri.push(n);
+                nellaRiga++;
+            }
+            if (nellaRiga !== 5) return { errore: `${nome}: la riga ${r + 1} ha ${nellaRiga} numeri invece di 5` };
+        }
+        if (new Set(numeri).size !== 15) return { errore: `${nome}: contiene numeri ripetuti` };
+
+        risultato.push({ id: c.id, numeri, griglia: griglia.map(r => [...r]) });
+    }
+    return { cartelle: risultato };
 }
 
 // --- SCELTA DI COSA CARICARE ---
