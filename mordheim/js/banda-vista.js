@@ -136,11 +136,22 @@ function statisticheUnita(tipo, unita) {
     return `
         <ul class="unita-statistiche">
             <li>Combatte con <strong>${escapeHtml(v.configurazione.descrizione.toLowerCase())}</strong></li>
-            <li>Contro il bersaglio: ${quantita(a.dadi, 'dado', 'dadi')}, ${quantita(a.colpiAttesi, 'colpo', 'colpi')}, ${quantita(a.feriteAttese, 'ferita', 'ferite')},
+            <li>Contro il bersaglio: ${quantita(a.dadi, 'dado', 'dadi')} (colpisce al ${tiroMinimo(a.serveColpire)}), ${quantita(a.colpiAttesi, 'colpo', 'colpi')},
+                ${quantita(a.feriteAttese, 'ferita', 'ferite')} (ferisce al ${risultatiPerArma(a.colpi.map(p => p.serveFerire))}),
                 fuori combattimento <strong>${percentuale(a.pFuori)}</strong> a turno${gruppo}</li>
             <li>Il bersaglio lo mette fuori combattimento: ${percentuale(v.subito.pFuori)} a turno</li>
             ${tiro}
         </ul>`;
+}
+
+// "4+" per un risultato minimo, "impossibile" se non si può
+function tiroMinimo(serve) {
+    return serve ? Math.max(2, serve) + '+' : 'impossibile';
+}
+
+// Risultati minimi delle armi usate: "4+" se uguali, altrimenti "4+/3+"
+function risultatiPerArma(valori) {
+    return [...new Set(valori.map(tiroMinimo))].join('/');
 }
 
 // Fuori combattimento attesi in un turno da tutta la banda: { corpo, tiro }
