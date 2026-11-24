@@ -12,6 +12,11 @@ const OBIETTIVI = {
     equilibrio: 'Equilibrio: attacco × resistenza',
     attacco: 'Massimo attacco'
 };
+const PESI_CAMPAGNA = {
+    0: 'Prima partita: nessun bonus',
+    0.15: 'Campagna: +15% a chi guadagna esperienza',
+    0.3: 'Campagna lunga: +30% a chi guadagna esperienza'
+};
 const PESI_TIRO = {
     0: 'Non conta',
     0.5: 'Conta la metà del corpo a corpo',
@@ -21,7 +26,7 @@ const PESI_TIRO = {
 // Le proposte valgono solo per la banda, le corone, il bersaglio e le opzioni con cui sono state calcolate
 function chiaveCalcolo() {
     return JSON.stringify([statoBanda.bandaId, statoBanda.corone, impostazioni.bersaglio,
-        impostazioni.personalizzato, opzioniCalcolo(), impostazioni.obiettivo, impostazioni.pesoTiro]);
+        impostazioni.personalizzato, opzioniCalcolo(), impostazioni.obiettivo, impostazioni.pesoTiro, impostazioni.pesoCampagna]);
 }
 
 function disegnaOttimizzatore() {
@@ -41,6 +46,10 @@ function disegnaOttimizzatore() {
                 <span>Tiro</span>
                 <select data-azione="pesoTiro">${opzioni(PESI_TIRO, impostazioni.pesoTiro)}</select>
             </label>
+            <label class="campo-riga">
+                <span>Campagna</span>
+                <select data-azione="pesoCampagna">${opzioni(PESI_CAMPAGNA, impostazioni.pesoCampagna)}</select>
+            </label>
             <button type="button" class="btn btn-primario" data-azione="ottimizza" ${calcoloInCorso ? 'disabled' : ''}>
                 ${calcoloInCorso ? 'Calcolo in corso…' : 'Calcola la banda migliore'}
             </button>
@@ -59,7 +68,10 @@ function disegnaProposte(banda) {
             combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta). <strong>Resistenza</strong>:
             turni di attacchi del bersaglio che servono in media per mettere fuori combattimento ogni modello, sommati.
             <strong>Equilibrio</strong> moltiplica i due valori: conta quanto colpisci e quanto a lungo resti in campo,
-            per questo spesso conviene avere tanti modelli.</p>`;
+            per questo spesso conviene avere tanti modelli. <strong>Campagna</strong>: eroi e truppa che guadagnano
+            esperienza cresceranno partita dopo partita, gli animali (Ratti giganti, Mastini, Zombi, Lupi Neri...) no
+            e non possono comprare armi; con il bonus campagna i primi valgono di più (attacco, resistenza e indice
+            delle proposte lo comprendono, i fuori combattimento a turno delle righe no).</p>`;
         return;
     }
     if (proposte.length === 0) {
@@ -106,7 +118,7 @@ async function avviaOttimizzazione() {
     const chiave = chiaveCalcolo();
     const barra = () => document.getElementById('avanzamento');
     const risultato = await ottimizzaBanda(bandaCorrente(), bersaglioCorrente(),
-        { ...opzioniCalcolo(), corone: statoBanda.corone, obiettivo: impostazioni.obiettivo, pesoTiro: Number(impostazioni.pesoTiro) },
+        { ...opzioniCalcolo(), corone: statoBanda.corone, obiettivo: impostazioni.obiettivo, pesoTiro: Number(impostazioni.pesoTiro), pesoCampagna: Number(impostazioni.pesoCampagna) },
         frazione => { if (barra()) barra().value = frazione; });
     calcoloInCorso = false;
     proposte = risultato;
@@ -128,6 +140,7 @@ function gestisciComandoOttimizzatore(elemento) {
     switch (elemento.dataset.azione) {
         case 'obiettivo': impostazioni.obiettivo = elemento.value; return true;
         case 'pesoTiro': impostazioni.pesoTiro = Number(elemento.value); return true;
+        case 'pesoCampagna': impostazioni.pesoCampagna = Number(elemento.value); return true;
         case 'ottimizza': avviaOttimizzazione(); return true;
         case 'usaProposta': usaProposta(Number(elemento.dataset.indice)); return true;
         default: return false;

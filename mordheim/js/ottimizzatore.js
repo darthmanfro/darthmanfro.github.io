@@ -15,6 +15,9 @@
 //    resistenza totale, come nella legge di Lanchester: conta sia quanto
 //    colpisci sia quanto a lungo resti in campo. Con l'obiettivo
 //    "attacco" conta solo l'attacco totale.
+//    Opzione campagna: i modelli che guadagnano esperienza (eroi e truppa non
+//    animale) hanno attacco e resistenza aumentati della percentuale scelta,
+//    perché cresceranno; gli animali (Ratti giganti, Mastini, Zombi...) no.
 // 4. Ricerca: ricottura simulata (aggiunte, rimozioni, cambi di
 //    equipaggiamento) da più partenze, con numeri casuali da un seme fisso:
 //    con gli stessi dati il risultato è sempre lo stesso.
@@ -72,7 +75,14 @@ function combinazioniCorpo(acquistabili) {
 }
 
 // Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, corpo, tiro }]
+// attacco e resistenza comprendono il bonus campagna; corpo e tiro no.
 async function candidatiDelTipo(banda, tipo, eroe, bersaglio, opzioni) {
+    const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
+    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: c.resistenza * crescita });
+    return (await candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni)).map(conCrescita);
+}
+
+async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
     const costoDi = equip => equip.reduce((s, id) => s + costoOggetto(banda, tipo, eroe, id), tipo.costo);
     const valuta = equip => {
         const v = valutaModello(modelloPerMotore(tipo, equip), bersaglio, opzioni);
@@ -264,7 +274,7 @@ function firma(stato, candidati) {
     return stato.map(u => `${u.n}x${u.tipoId}:${candidati[u.tipoId][u.c].equip.slice().sort().join('+')}`).sort().join('|');
 }
 
-// opzioni: { corone, obiettivo: 'equilibrio'|'attacco', pesoTiro, turno, lungaGittata, copertura }
+// opzioni: { corone, obiettivo: 'equilibrio'|'attacco', pesoTiro, pesoCampagna, turno, lungaGittata, copertura, muovere }
 // avanzamento(frazione): chiamata durante il calcolo
 // Restituisce fino a 3 proposte diverse, la migliore per prima:
 // [{ unita: [{ tipoId, numero, equip }], attacco, resistenza, costo, modelli, indice }]
