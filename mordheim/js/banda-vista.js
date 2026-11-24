@@ -136,7 +136,7 @@ function statisticheUnita(tipo, unita) {
     return `
         <ul class="unita-statistiche">
             <li>Combatte con <strong>${escapeHtml(v.configurazione.descrizione.toLowerCase())}</strong></li>
-            <li>Contro il bersaglio: ${formatta(a.dadi)} dadi, ${formatta(a.colpiAttesi)} colpi, ${formatta(a.feriteAttese)} ferite,
+            <li>Contro il bersaglio: ${quantita(a.dadi, 'dado', 'dadi')}, ${quantita(a.colpiAttesi, 'colpo', 'colpi')}, ${quantita(a.feriteAttese, 'ferita', 'ferite')},
                 fuori combattimento <strong>${percentuale(a.pFuori)}</strong> a turno${gruppo}</li>
             <li>Il bersaglio lo mette fuori combattimento: ${percentuale(v.subito.pFuori)} a turno</li>
             ${tiro}

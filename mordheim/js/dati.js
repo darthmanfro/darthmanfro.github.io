@@ -96,6 +96,12 @@ function formatta(numero, cifre = 2) {
     return Number(numero.toFixed(cifre)).toLocaleString('it-IT');
 }
 
+// "1 colpo", "1,5 colpi", "0 colpi": singolare solo per esattamente 1 (dopo l'arrotondamento)
+function quantita(numero, singolare, plurale) {
+    const testo = formatta(numero);
+    return testo + ' ' + (testo === '1' ? singolare : plurale);
+}
+
 function percentuale(p) {
     return formatta(p * 100, p < 0.1 ? 1 : 0) + '%';
 }
