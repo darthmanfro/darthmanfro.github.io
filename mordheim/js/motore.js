@@ -255,33 +255,37 @@ function sequenzaColpi(colpi, feriteBersaglio, elmo) {
         stati = nuovi;
     }
     const esiti = [0, 0, 0, 0];
-    let feriteAttese = 0;
+    let feriteAttese = 0, pFerito = 0;
     for (const [chiave, p] of stati) {
         const [, , esito, inflitte] = chiave.split('|').map(Number);
         esiti[esito] += p;
         feriteAttese += p * inflitte;
+        if (inflitte > 0) pFerito += p;
     }
-    return { esiti, feriteAttese };
+    // pFerito: probabilità di infliggere almeno una ferita (dopo il tiro salvezza)
+    return { esiti, feriteAttese, pFerito };
 }
 
 // Somma pesata di due risultati di sequenzaColpi
 function accumula(totale, parziale, peso) {
     for (let x = 0; x < 4; x++) totale.esiti[x] += parziale.esiti[x] * peso;
     totale.feriteAttese += parziale.feriteAttese * peso;
+    totale.pFerito += parziale.pFerito * peso;
 }
 
 // --------------------------------------------------------------------------
 // Un turno di corpo a corpo
 // --------------------------------------------------------------------------
 
-// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, feriteAttese, esiti[4], pFuori, colpi: [par] }
+// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, colpiParati, feriteAttese, pFerito, esiti[4], pFuori, colpi: [par] }
+// esiti: probabilità che nel turno il bersaglio resti senza conseguenze, sia atterrato, stordito, fuori combattimento
 function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
     const difB = difesa(bersaglio, confB, true);
     const serve = serveColpireCC(attaccante.profilo.AC, bersaglio.profilo.AC);
     const pc = probD6(serve);
     const parametri = confA.armi.map(arma => parametriColpo(attaccante, arma, bersaglio, difB, primoTurno));
     const n = confA.armi.length;
-    const totale = { esiti: [0, 0, 0, 0], feriteAttese: 0 };
+    const totale = { esiti: [0, 0, 0, 0], feriteAttese: 0, pFerito: 0 };
     let colpiParati = 0;
 
     if (difB.parata === 0) {
@@ -320,6 +324,7 @@ function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
         colpiAttesi: n * pc - colpiParati,
         colpiParati,
         feriteAttese: totale.feriteAttese,
+        pFerito: totale.pFerito,
         esiti: totale.esiti,
         pFuori: totale.esiti[ESITO_FUORI],
         colpi: parametri
@@ -343,6 +348,7 @@ function turnoMedio(attaccante, confA, bersaglio, confB) {
         colpiAttesi: media(primo.colpiAttesi, dopo.colpiAttesi),
         colpiParati: media(primo.colpiParati, dopo.colpiParati),
         feriteAttese: media(primo.feriteAttese, dopo.feriteAttese),
+        pFerito: media(primo.pFerito, dopo.pFerito),
         esiti: primo.esiti.map((p, x) => media(p, dopo.esiti[x])),
         pFuori: media(primo.pFuori, dopo.pFuori)
     };
@@ -375,6 +381,8 @@ function tiro(attaccante, arma, bersaglio, opzioni = {}) {
         pColpo: pc,
         colpo: par,
         pFuoriPerTiro: uno.esiti[ESITO_FUORI],
+        esitiPerTiro: uno.esiti,
+        pFeritoPerTiro: uno.pFerito,
         feritePerTiro: uno.feriteAttese,
         tiriPerTurno: colpiPerTurno,
         fuoriPerTurno: uno.esiti[ESITO_FUORI] * colpiPerTurno

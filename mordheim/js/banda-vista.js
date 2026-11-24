@@ -48,8 +48,8 @@ function disegnaRiepilogo(banda) {
             <span class="riepilogo-etichetta">Eroi</span>
             <span class="riepilogo-valore">${eroi}</span>
         </div>
-        <div class="riepilogo-voce" title="Bersagli messi fuori combattimento in un turno se tutti i modelli combattono">
-            <span class="riepilogo-etichetta">Fuori comb. a turno</span>
+        <div class="riepilogo-voce">
+            <span class="riepilogo-etichetta">Fuori comb. a turno ${iconaInfo('rendimentoBanda')}</span>
             <span class="riepilogo-valore">${formatta(rendimento.corpo)}${rendimento.tiro > 0 ? ` <small>+ ${formatta(rendimento.tiro)} al tiro</small>` : ''}</span>
         </div>`;
 }
@@ -125,21 +125,25 @@ function schedaUnita(banda, unita) {
         </article>`;
 }
 
-// Rendimento dell'unità contro il bersaglio (js/motore.js)
+// Rendimento dell'unità contro il bersaglio (js/motore.js); ogni riga ha la sua icona i
 function statisticheUnita(tipo, unita) {
     const v = valutaModello(modelloPerMotore(tipo, unita.equip), bersaglioCorrente(), opzioniCalcolo());
     const a = v.attacco;
-    const gruppo = unita.numero > 1 ? ` · gruppo: <strong>${formatta(a.pFuori * unita.numero)}</strong>` : '';
-    const tiro = v.tiro
-        ? `<li>Tiro con ${escapeHtml(v.tiro.arma.nome.toLowerCase())}: fuori combattimento ${formatta(v.tiro.fuoriPerTurno * unita.numero)} per turno</li>`
+    const info = chiave => iconaInfo(chiave, `data-uid="${unita.uid}"`);
+    const gruppo = unita.numero > 1
+        ? ` · gruppo di ${unita.numero}: <strong>${formatta(a.pFuori * unita.numero)}</strong> fuori combattimento` : '';
+    const t = v.tiro;
+    const tiro = t
+        ? `<li><span>Tiro con ${escapeHtml(t.arma.nome.toLowerCase())} (colpisce al ${tiroMinimo(t.serveColpire)}, ferisce al ${tiroMinimo(t.colpo.serveFerire)}):
+            ferisce il ${percentuale(t.pFeritoPerTiro)} dei tiri, fuori combattimento ${formatta(t.fuoriPerTurno * unita.numero)} a turno</span>${info('tiro')}</li>`
         : '';
     return `
         <ul class="unita-statistiche">
-            <li>Combatte con <strong>${escapeHtml(v.configurazione.descrizione.toLowerCase())}</strong></li>
-            <li>Contro il bersaglio: ${quantita(a.dadi, 'dado', 'dadi')} (colpisce al ${tiroMinimo(a.serveColpire)}), ${quantita(a.colpiAttesi, 'colpo', 'colpi')},
-                ${quantita(a.feriteAttese, 'ferita', 'ferite')} (ferisce al ${risultatiPerArma(a.colpi.map(p => p.serveFerire))}),
-                fuori combattimento <strong>${percentuale(a.pFuori)}</strong> a turno${gruppo}</li>
-            <li>Il bersaglio lo mette fuori combattimento: ${percentuale(v.subito.pFuori)} a turno</li>
+            <li><span>Combatte con <strong>${escapeHtml(v.configurazione.descrizione.toLowerCase())}</strong></span>${info('combatte')}</li>
+            <li><span>Contro il bersaglio: ${quantita(a.dadi, 'dado', 'dadi')} (colpisce al ${tiroMinimo(a.serveColpire)}), ${quantita(a.colpiAttesi, 'colpo', 'colpi')},
+                ${quantita(a.feriteAttese, 'ferita', 'ferite')} (ferisce al ${risultatiPerArma(a.colpi.map(p => p.serveFerire))})</span>${info('attacco')}</li>
+            <li><span>A turno: ${testoEsiti(a.pFerito, a.esiti, true)}${gruppo}</span>${info('esiti')}</li>
+            <li><span>Il bersaglio contro di lui: ${testoEsiti(v.subito.pFerito, v.subito.esiti)}</span>${info('subito')}</li>
             ${tiro}
         </ul>`;
 }

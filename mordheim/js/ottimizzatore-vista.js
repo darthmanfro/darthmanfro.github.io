@@ -38,18 +38,18 @@ function disegnaOttimizzatore() {
         <p class="nota">Contro il bersaglio <strong>${escapeHtml(bersaglioCorrente().nome)}</strong>
             (si cambia in alto; il turno di corpo a corpo e le opzioni di tiro sono quelle della scheda Probabilità).</p>
         <div class="ottimizzatore-scelte">
-            <label class="campo-riga">
-                <span>Obiettivo</span>
-                <select data-azione="obiettivo">${opzioni(OBIETTIVI, impostazioni.obiettivo)}</select>
-            </label>
-            <label class="campo-riga">
-                <span>Tiro</span>
-                <select data-azione="pesoTiro">${opzioni(PESI_TIRO, impostazioni.pesoTiro)}</select>
-            </label>
-            <label class="campo-riga">
-                <span>Campagna</span>
-                <select data-azione="pesoCampagna">${opzioni(PESI_CAMPAGNA, impostazioni.pesoCampagna)}</select>
-            </label>
+            <div class="campo-riga">
+                <span>Obiettivo ${iconaInfo('obiettivo')}</span>
+                <select data-azione="obiettivo" aria-label="Obiettivo">${opzioni(OBIETTIVI, impostazioni.obiettivo)}</select>
+            </div>
+            <div class="campo-riga">
+                <span>Tiro ${iconaInfo('pesoTiro')}</span>
+                <select data-azione="pesoTiro" aria-label="Tiro">${opzioni(PESI_TIRO, impostazioni.pesoTiro)}</select>
+            </div>
+            <div class="campo-riga">
+                <span>Campagna ${iconaInfo('campagna')}</span>
+                <select data-azione="pesoCampagna" aria-label="Campagna">${opzioni(PESI_CAMPAGNA, impostazioni.pesoCampagna)}</select>
+            </div>
             <button type="button" class="btn btn-primario" data-azione="ottimizza" ${calcoloInCorso ? 'disabled' : ''}>
                 ${calcoloInCorso ? 'Calcolo in corso…' : 'Calcola la banda migliore'}
             </button>
@@ -89,6 +89,7 @@ function disegnaProposte(banda) {
                 <span>Attacco <strong>${formatta(p.attacco)}</strong></span>
                 <span>Resistenza <strong>${formatta(p.resistenza, 1)}</strong></span>
                 <span>Indice <strong>${formatta(p.indice)}</strong></span>
+                ${iconaInfo('valoriProposta')}
             </div>
             <table class="proposta-unita">
                 <thead><tr><th>Modelli</th><th>Equipaggiamento</th><th>Corone</th><th>Fuori comb. a turno</th></tr></thead>

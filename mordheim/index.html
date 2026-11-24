@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./css/banda.css">  <!-- Scheda Banda: catalogo e unità -->
     <link rel="stylesheet" href="./css/probabilita.css"> <!-- Scheda Probabilità: bersaglio e confronto -->
     <link rel="stylesheet" href="./css/ottimizzatore.css"> <!-- Scheda Ottimizzatore: proposte -->
+    <link rel="stylesheet" href="./css/spiegazioni.css">   <!-- Icone i e finestra delle spiegazioni -->
 </head>
 
 <body>
@@ -71,9 +72,21 @@
         </section>
     </main>
 
+    <!-- Spiegazione di una riga: si apre con le icone i (js/spiegazioni.js) -->
+    <dialog id="spiegazione" class="spiegazione" aria-labelledby="spiegazione-titolo">
+        <div class="spiegazione-riquadro">
+            <header class="spiegazione-testata">
+                <h2 id="spiegazione-titolo"></h2>
+                <button type="button" id="spiegazione-chiudi" class="btn-piccolo" title="Chiudi (Esc)">✕</button>
+            </header>
+            <div id="spiegazione-testo" class="spiegazione-testo"></div>
+        </div>
+    </dialog>
+
     <script src="./js/dati.js"></script>         <!-- Caricamento dei file JSON -->
     <script src="./js/motore.js"></script>       <!-- Calcolo delle probabilità -->
     <script src="./js/banda.js"></script>        <!-- Stato, costi e controlli della banda -->
+    <script src="./js/spiegazioni.js"></script>  <!-- Icone i e testi delle spiegazioni -->
     <script src="./js/bersaglio.js"></script>    <!-- Bersaglio e impostazioni -->
     <script src="./js/banda-vista.js"></script>  <!-- Disegno della scheda Banda -->
     <script src="./js/probabilita.js"></script>  <!-- Scheda Probabilità -->

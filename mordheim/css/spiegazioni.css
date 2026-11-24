@@ -1,0 +1,133 @@
+/* ==========================================================================
+   SPIEGAZIONI
+   Icone "i" accanto alle righe e finestra con la spiegazione.
+   ========================================================================== */
+
+/* Icona i: piccola, rotonda, discreta */
+.info {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 17px;
+    height: 17px;
+    margin-left: 4px;
+    padding: 0;
+    border: 1px solid var(--attenuato);
+    border-radius: 50%;
+    background: var(--carta);
+    color: var(--attenuato);
+    font: italic bold 11px Georgia, 'Times New Roman', serif;
+    line-height: 1;
+    vertical-align: middle;
+    cursor: pointer;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.info:hover,
+.info:focus-visible {
+    border-color: var(--accento);
+    background: var(--accento);
+    color: #fff;
+}
+
+/* Righe delle statistiche delle unità: testo a sinistra, icona a destra */
+.unita-statistiche li {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 6px;
+}
+
+.unita-statistiche .info {
+    margin-top: 1px;
+}
+
+/* --- Finestra --- */
+.spiegazione {
+    width: min(640px, calc(100vw - 32px));
+    max-height: calc(100vh - 40px);
+    margin: auto;
+    padding: 0;
+    border: none;
+    border-radius: var(--raggio);
+    background: var(--carta);
+    color: var(--inchiostro);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+}
+
+.spiegazione::backdrop {
+    background: rgba(30, 22, 15, 0.55);
+}
+
+.spiegazione-riquadro {
+    padding: 14px 18px 18px;
+}
+
+.spiegazione-testata {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    border-bottom: 2px solid var(--bordo);
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+}
+
+.spiegazione-testata h2 {
+    font-size: 1.15rem;
+    color: var(--accento);
+}
+
+.spiegazione-testo {
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.spiegazione-testo p,
+.spiegazione-testo ul,
+.spiegazione-testo table {
+    margin-bottom: 8px;
+}
+
+.spiegazione-testo ul {
+    padding-left: 20px;
+}
+
+.spiegazione-testo li + li {
+    margin-top: 4px;
+}
+
+.spiegazione-caso {
+    margin-top: 10px;
+    padding: 8px 10px;
+    border-left: 4px solid var(--oro);
+    border-radius: 4px;
+    background: #f6ecd3;
+}
+
+.spiegazione-tabella {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.spiegazione-tabella th,
+.spiegazione-tabella td {
+    border: 1px solid var(--bordo);
+    padding: 4px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.spiegazione-tabella th {
+    background: var(--carta-scura);
+    font-weight: normal;
+    color: var(--attenuato);
+}
+
+@media (max-width: 600px) {
+    .spiegazione-riquadro {
+        padding: 12px;
+    }
+}

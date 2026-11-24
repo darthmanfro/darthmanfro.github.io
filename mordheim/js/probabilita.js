@@ -7,6 +7,24 @@
 
 const NOMI_GRUPPI = ['A', 'B'];
 
+// Spiegazione (js/spiegazioni.js) di ogni riga del confronto
+const CHIAVI_RIGHE = {
+    'Costo': 'costo',
+    'Combatte con': 'combatte',
+    'Dadi (attacchi)': 'attacco',
+    'Per colpire': 'attacco',
+    'Colpi attesi': 'colpiAttesi',
+    'Per ferire': 'attacco',
+    'Tiri per ferire riusciti': 'tiriFerire',
+    'Tiro salvezza del bersaglio': 'tsBersaglio',
+    'Ferite inflitte (critici compresi, dopo il tiro salvezza)': 'feriteInflitte',
+    'Esito a turno (a modello)': 'esiti',
+    'Fuori combattimento attesi': 'fuoriAttesi',
+    'Fuori combattimento ogni 100 corone': 'fuoriCorone',
+    'Il bersaglio contro un modello (a turno)': 'subito',
+    'Tiro (fuori combattimento per turno)': 'tiro'
+};
+
 // Confronto valido per la banda corrente (altrimenti si riparte dai predefiniti)
 function confrontoCorrente() {
     const banda = bandaCorrente();
@@ -61,7 +79,7 @@ function disegnaPannelloBersaglio() {
         return `<optgroup label="${NOMI_TIPI_OGGETTO[tipo]}">${voci}</optgroup>`;
     }).join('');
     document.getElementById('pannello-bersaglio').innerHTML = `
-        <h2>Bersaglio: ${escapeHtml(d.nome)}</h2>
+        <h2>Bersaglio: ${escapeHtml(d.nome)} ${iconaInfo('bersaglio')}</h2>
         <p class="nota">È anche l'avversario che attacca i tuoi modelli. Cambiando un valore diventa <em>Personalizzato</em>.</p>
         <div class="profilo-modificabile">${campi}</div>
         <div class="bersaglio-spunte">
@@ -86,13 +104,13 @@ function disegnaOpzioni() {
     document.getElementById('pannello-opzioni').innerHTML = `
         <h2>Opzioni</h2>
         <fieldset class="opzioni-gruppo">
-            <legend>Turno di corpo a corpo</legend>
+            <legend>Turno di corpo a corpo ${iconaInfo('turno')}</legend>
             ${radio('media', 'Media tra primo turno e successivi')}
             ${radio('primo', 'Primo turno (flagello e mazzafrusto con il bonus di Forza)')}
             ${radio('successivi', 'Turni successivi')}
         </fieldset>
         <fieldset class="opzioni-gruppo">
-            <legend>Tiro</legend>
+            <legend>Tiro ${iconaInfo('opzioniTiro')}</legend>
             <label><input type="checkbox" data-azione="lungaGittata" ${impostazioni.lungaGittata ? 'checked' : ''}> Gittata lunga (-1)</label>
             <label><input type="checkbox" data-azione="copertura" ${impostazioni.copertura ? 'checked' : ''}> Bersaglio al riparo (-1)</label>
             <label><input type="checkbox" data-azione="muovere" ${impostazioni.muovere ? 'checked' : ''}> Il tiratore ha mosso (-1; balestra, archibugio e moschetto non tirano)</label>
@@ -168,6 +186,7 @@ function disegnaConfronto() {
         }, 'alto'],
         ['Tiro salvezza del bersaglio', (r) => ({ testo: perArma(r.valutazione.configurazione, r.valutazione.attacco.colpi, par => par.serveTS ? par.serveTS + '+' : 'nessuno') }), null],
         ['Ferite inflitte (critici compresi, dopo il tiro salvezza)', (r, g) => ({ testo: formatta(r.valutazione.attacco.feriteAttese * g.numero), valore: r.valutazione.attacco.feriteAttese * g.numero }), 'alto'],
+        ['Esito a turno (a modello)', (r) => ({ testo: testoEsiti(r.valutazione.attacco.pFerito, r.valutazione.attacco.esiti).replace(/ · /g, '<br>') }), null],
         ['Fuori combattimento attesi', (r, g) => ({
             testo: `<strong>${formatta(r.valutazione.attacco.pFuori * g.numero)}</strong> <span class="nota">(${percentuale(r.valutazione.attacco.pFuori)} a modello)</span>`,
             valore: r.valutazione.attacco.pFuori * g.numero
@@ -176,7 +195,7 @@ function disegnaConfronto() {
             const v = r.costo > 0 ? r.valutazione.attacco.pFuori * g.numero / r.costo * 100 : 0;
             return { testo: formatta(v), valore: v };
         }, 'alto'],
-        ['Il bersaglio lo mette fuori combattimento', (r) => ({ testo: percentuale(r.valutazione.subito.pFuori) + ' a turno', valore: r.valutazione.subito.pFuori }), 'basso'],
+        ['Il bersaglio contro un modello (a turno)', (r) => ({ testo: testoEsiti(r.valutazione.subito.pFerito, r.valutazione.subito.esiti).replace(/ · /g, '<br>'), valore: r.valutazione.subito.pFuori }), 'basso'],
         ['Tiro (fuori combattimento per turno)', (r, g) => {
             const t = r.valutazione.tiro;
             if (!t) return { testo: '—', valore: 0 };
@@ -194,11 +213,11 @@ function disegnaConfronto() {
             const primoMeglio = meglio === 'alto' ? celle[0].valore > celle[1].valore : celle[0].valore < celle[1].valore;
             migliore = primoMeglio ? 0 : 1;
         }
-        return `<tr><th scope="row">${etichetta}</th>${celle.map((c, k) => `<td class="${k === migliore ? 'migliore' : ''}">${c.testo}</td>`).join('')}</tr>`;
+        return `<tr><th scope="row">${etichetta} ${iconaInfo(CHIAVI_RIGHE[etichetta])}</th>${celle.map((c, k) => `<td class="${k === migliore ? 'migliore' : ''}">${c.testo}</td>`).join('')}</tr>`;
     }).join('');
 
     document.getElementById('confronto').innerHTML = `
-        <h2>Confronto contro il bersaglio</h2>
+        <h2>Confronto contro il bersaglio ${iconaInfo('confronto')}</h2>
         <p class="nota">Ogni modello attacca un bersaglio diverso, per un turno di corpo a corpo. In verde il gruppo che rende di più.</p>
         <table class="tabella-confronto">
             <thead><tr><th></th>${NOMI_GRUPPI.map(n => `<th scope="col">Gruppo ${n}</th>`).join('')}</tr></thead>

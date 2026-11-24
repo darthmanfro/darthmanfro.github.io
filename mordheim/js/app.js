@@ -37,6 +37,11 @@ function mostraCorone() {
 
 // Pulsanti con data-azione della scheda Banda e del confronto
 function gestisciClic(evento) {
+    const info = evento.target.closest('button[data-info]');
+    if (info) {
+        apriSpiegazione(info);
+        return;
+    }
     const schedaPulsante = evento.target.closest('button[data-scheda]');
     if (schedaPulsante) {
         impostazioni.scheda = schedaPulsante.dataset.scheda;
@@ -113,6 +118,7 @@ function collegaComandi() {
         aggiornaTutto();
     });
     document.getElementById('btnSvuota').addEventListener('click', premiSvuota);
+    collegaSpiegazioni();
     document.addEventListener('click', gestisciClic);
     document.addEventListener('change', gestisciCambio);
 }
