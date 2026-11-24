@@ -1,0 +1,42 @@
+{
+    "id": "posseduti",
+    "nome": "Culto dei Posseduti",
+    "corone": 500,
+    "maxModelli": 20,
+    "_nota": "Dati ricostruiti dal regolamento base: controllali sulla tua copia. animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando. Le mutazioni non sono gestite.",
+    "liste": {
+        "culto": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "armaDueMani": 15, "mazzafrusto": 15, "lancia": 10, "arco": 10, "arcoCorto": 5, "armaturaLeggera": 20, "armaturaPesante": 50, "scudo": 5, "elmo": 10 }
+    },
+    "eroi": [
+        {
+            "id": "magister", "nome": "Magister", "costo": 70, "min": 1, "max": 1, "capo": true, "esperienza": 20, "lista": "culto",
+            "profilo": { "M": 4, "AC": 4, "AB": 4, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 8 },
+            "regole": ["Capo.","Stregone: magia del Caos (incantesimi non calcolati)."]
+        },
+        {
+            "id": "posseduto", "nome": "Posseduto", "costo": 90, "min": 0, "max": 2, "esperienza": 8, "animale": true,
+            "profilo": { "M": 5, "AC": 4, "AB": 0, "F": 4, "R": 4, "Fe": 2, "I": 4, "A": 2, "Cd": 7 },
+            "regole": ["Paura. Non usa equipaggiamento: combatte con armi naturali e mutazioni."]
+        },
+        {
+            "id": "mutante", "nome": "Mutante", "costo": 25, "min": 0, "max": 2, "esperienza": 0, "lista": "culto",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 },
+            "regole": ["Deve comprare almeno una mutazione (non gestite)."]
+        }
+    ],
+    "truppe": [
+        {
+            "id": "animaOscura", "nome": "Anima oscura", "costo": 35, "min": 0, "lista": "culto",
+            "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 4, "R": 4, "Fe": 1, "I": 3, "A": 1, "Cd": 6 },
+            "regole": ["Folle: immune alla psicologia."]
+        },
+        {
+            "id": "confratello", "nome": "Confratello", "costo": 25, "min": 0, "lista": "culto",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        },
+        {
+            "id": "uomoBestia", "nome": "Uomo bestia", "costo": 45, "min": 0, "max": 3, "lista": "culto",
+            "profilo": { "M": 4, "AC": 4, "AB": 3, "F": 3, "R": 4, "Fe": 2, "I": 3, "A": 1, "Cd": 7 }
+        }
+    ]
+}

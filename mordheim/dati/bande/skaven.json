@@ -3,7 +3,7 @@
     "nome": "Skaven del Clan Eshin",
     "corone": 500,
     "maxModelli": 20,
-    "_nota": "animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando. Gli eroi si comprano uno per uno, le truppe in gruppi da 1 a 5 modelli tutti con lo stesso equipaggiamento.",
+    "_nota": "Dati ricostruiti dal regolamento base: controllali sulla tua copia. animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando. Gli eroi si comprano uno per uno, le truppe in gruppi da 1 a 5 modelli tutti con lo stesso equipaggiamento.",
     "liste": {
         "skaven": {
             "pugnale": 2, "mazza": 3, "spada": 10, "mazzafrusto": 15, "lancia": 10, "alabarda": 10,

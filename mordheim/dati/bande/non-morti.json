@@ -1,0 +1,43 @@
+{
+    "id": "nonMorti",
+    "nome": "Non Morti",
+    "corone": 500,
+    "maxModelli": 20,
+    "_nota": "Dati ricostruiti dal regolamento base: controllali sulla tua copia. animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando.",
+    "liste": {
+        "nonMorti": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "armaDueMani": 15, "lancia": 10, "alabarda": 10, "arco": 10, "arcoCorto": 5, "balestra": 25, "armaturaLeggera": 20, "armaturaPesante": 50, "scudo": 5, "elmo": 10 }
+    },
+    "eroi": [
+        {
+            "id": "vampiro", "nome": "Vampiro", "costo": 110, "min": 1, "max": 1, "capo": true, "esperienza": 20, "lista": "nonMorti",
+            "profilo": { "M": 6, "AC": 4, "AB": 4, "F": 4, "R": 4, "Fe": 2, "I": 5, "A": 2, "Cd": 8 },
+            "regole": ["Capo. Paura, immune a psicologia e veleno, nessun dolore (non calcolati)."]
+        },
+        {
+            "id": "negromante", "nome": "Negromante", "costo": 35, "min": 0, "max": 1, "esperienza": 8, "lista": "nonMorti",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 },
+            "regole": ["Stregone: necromanzia (incantesimi non calcolati)."]
+        },
+        {
+            "id": "feccia", "nome": "Feccia", "costo": 20, "min": 0, "max": 3, "esperienza": 0, "lista": "nonMorti",
+            "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        }
+    ],
+    "truppe": [
+        {
+            "id": "zombi", "nome": "Zombi", "costo": 15, "min": 0, "animale": true,
+            "profilo": { "M": 4, "AC": 2, "AB": 0, "F": 3, "R": 3, "Fe": 1, "I": 1, "A": 1, "Cd": 5 },
+            "regole": ["Paura, immune alla psicologia, lento. Niente equipaggiamento."]
+        },
+        {
+            "id": "ghoul", "nome": "Ghoul", "costo": 40, "min": 0, "animale": true,
+            "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 3, "R": 4, "Fe": 1, "I": 3, "A": 2, "Cd": 5 },
+            "regole": ["Paura. Niente equipaggiamento."]
+        },
+        {
+            "id": "lupoCrudele", "nome": "Lupo crudele", "costo": 50, "min": 0, "max": 5, "animale": true,
+            "profilo": { "M": 9, "AC": 3, "AB": 0, "F": 4, "R": 3, "Fe": 1, "I": 2, "A": 1, "Cd": 4 },
+            "regole": ["Carica selvaggia: +1 attacco in carica (non calcolato). Paura, animale."]
+        }
+    ]
+}

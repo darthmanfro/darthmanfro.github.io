@@ -225,6 +225,21 @@ function rifinisci(stato, banda, candidati, opzioni) {
         }
         if (migliore && migliore.v >= valore(attuale) * 0.99) attuale = migliore.prova;
     }
+    // Poi due gruppi alla volta: uno prende l'equipaggiamento dell'altro (indice -0,5% al massimo)
+    for (let unito = true; unito;) {
+        unito = false;
+        const truppe = attuale.filter(u => !u.eroe);
+        for (const a of truppe) {
+            for (const b of truppe) {
+                if (unito || a === b || a.tipoId !== b.tipoId) continue;
+                const prova = compatta(attuale.map(u => (u === b ? { ...u, c: a.c } : u)));
+                if (statoValido(prova, banda, candidati, opzioni.corone, true) && valore(prova) >= valore(attuale) * 0.995) {
+                    attuale = prova;
+                    unito = true;
+                }
+            }
+        }
+    }
     // Corone avanzate
     for (let giri = 0; giri < 20; giri++) {
         let migliore = null;

@@ -1,0 +1,44 @@
+{
+    "id": "cacciatoriStreghe",
+    "nome": "Cacciatori di Streghe",
+    "corone": 500,
+    "maxModelli": 12,
+    "_nota": "Dati ricostruiti dal regolamento base: controllali sulla tua copia. animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando.",
+    "liste": {
+        "cacciatori": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "armaDueMani": 15, "mazzafrusto": 15, "pistola": 15, "coppiaPistole": 30, "balestra": 25, "arcoCorto": 5, "armaturaLeggera": 20, "armaturaPesante": 50, "scudo": 5, "brocchiere": 5, "elmo": 10 },
+        "zeloti": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "armaDueMani": 15, "lancia": 10, "arco": 10, "arcoCorto": 5, "armaturaLeggera": 20, "scudo": 5, "elmo": 10 },
+        "flagellanti": { "pugnale": 2, "mazza": 3, "mazzafrusto": 15, "stellaDelMattino": 15, "armaDueMani": 15 }
+    },
+    "eroi": [
+        {
+            "id": "capitanoCacciatore", "nome": "Capitano cacciatore di streghe", "costo": 60, "min": 1, "max": 1, "capo": true, "esperienza": 20, "lista": "cacciatori",
+            "profilo": { "M": 4, "AC": 4, "AB": 4, "F": 3, "R": 3, "Fe": 1, "I": 4, "A": 1, "Cd": 8 },
+            "regole": ["Capo. Odio per i Posseduti e i Non Morti (non calcolato)."]
+        },
+        {
+            "id": "sacerdoteGuerriero", "nome": "Sacerdote guerriero", "costo": 40, "min": 0, "max": 1, "esperienza": 12, "lista": "cacciatori",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 8 },
+            "regole": ["Preghiere di Sigmar (non calcolate)."]
+        },
+        {
+            "id": "cacciatoreStreghe", "nome": "Cacciatore di streghe", "costo": 25, "min": 0, "max": 3, "esperienza": 8, "lista": "cacciatori",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        }
+    ],
+    "truppe": [
+        {
+            "id": "zelota", "nome": "Zelota", "costo": 20, "min": 0, "lista": "zeloti",
+            "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        },
+        {
+            "id": "flagellante", "nome": "Flagellante", "costo": 40, "min": 0, "lista": "flagellanti",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 4, "R": 4, "Fe": 1, "I": 3, "A": 1, "Cd": 10 },
+            "regole": ["Fanatico: immune alla psicologia, non fugge mai."]
+        },
+        {
+            "id": "mastino", "nome": "Mastino da guerra", "costo": 15, "min": 0, "max": 5, "animale": true,
+            "profilo": { "M": 6, "AC": 4, "AB": 0, "F": 4, "R": 3, "Fe": 1, "I": 4, "A": 1, "Cd": 5 },
+            "regole": ["Animale: niente equipaggiamento, non guadagna esperienza."]
+        }
+    ]
+}

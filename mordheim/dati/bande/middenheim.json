@@ -1,0 +1,41 @@
+{
+    "id": "middenheim",
+    "nome": "Mercenari di Middenheim",
+    "corone": 500,
+    "maxModelli": 15,
+    "_nota": "Dati ricostruiti dal regolamento base: controllali sulla tua copia. animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando.",
+    "liste": {
+        "mercenari": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "stellaDelMattino": 15, "armaDueMani": 15, "lancia": 10, "alabarda": 10, "balestra": 25, "pistola": 15, "coppiaPistole": 30, "pistolaDaDuello": 25, "coppiaPistoleDaDuello": 50, "arco": 10, "armaturaLeggera": 20, "armaturaPesante": 50, "scudo": 5, "brocchiere": 5, "elmo": 10 },
+        "tiratori": { "pugnale": 2, "mazza": 3, "ascia": 5, "spada": 10, "balestra": 25, "pistola": 15, "coppiaPistole": 30, "arco": 10, "arcoLungo": 15, "archibugio": 35, "fucileHochland": 200, "armaturaLeggera": 20, "scudo": 5, "elmo": 10 }
+    },
+    "eroi": [
+        {
+            "id": "capitano", "nome": "Capitano mercenario", "costo": 60, "min": 1, "max": 1, "capo": true, "esperienza": 20, "lista": "mercenari",
+            "profilo": { "M": 4, "AC": 4, "AB": 4, "F": 4, "R": 3, "Fe": 1, "I": 4, "A": 1, "Cd": 8 },
+            "regole": ["Capo: i modelli entro 6\" usano il suo Comando."]
+        },
+        {
+            "id": "campione", "nome": "Campione", "costo": 35, "min": 0, "max": 2, "esperienza": 8, "lista": "mercenari",
+            "profilo": { "M": 4, "AC": 4, "AB": 3, "F": 4, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        },
+        {
+            "id": "giovane", "nome": "Giovane leva", "costo": 15, "min": 0, "max": 2, "esperienza": 0, "lista": "mercenari",
+            "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 6 }
+        }
+    ],
+    "truppe": [
+        {
+            "id": "guerriero", "nome": "Guerriero", "costo": 25, "min": 0, "lista": "mercenari",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        },
+        {
+            "id": "tiratore", "nome": "Tiratore", "costo": 25, "min": 0, "max": 7, "lista": "tiratori",
+            "profilo": { "M": 4, "AC": 3, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 }
+        },
+        {
+            "id": "spadaccino", "nome": "Spadaccino", "costo": 35, "min": 0, "max": 5, "lista": "mercenari",
+            "profilo": { "M": 4, "AC": 4, "AB": 3, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 7 },
+            "regole": ["Spadaccino esperto: in carica con la spada ripete i tiri per colpire falliti (non calcolato)."]
+        }
+    ]
+}
