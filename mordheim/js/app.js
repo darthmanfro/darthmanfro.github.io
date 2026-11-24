@@ -1,12 +1,13 @@
 // ==========================================================================
 // APP
 // Avvio: carica i dati, sceglie la banda, collega i comandi e disegna la
-// scheda aperta (Banda o Probabilità).
+// scheda aperta (Banda, Probabilità o Ottimizzatore).
 // ==========================================================================
 
 const SCHEDE = {
     banda: disegnaBanda,
-    probabilita: disegnaProbabilita
+    probabilita: disegnaProbabilita,
+    ottimizzatore: disegnaOttimizzatore
 };
 
 // Salva e ridisegna la scheda aperta
@@ -52,7 +53,7 @@ function gestisciClic(evento) {
         case 'piu': cambiaNumero(uid, +1); break;
         case 'togliEquip': rimuoviEquip(uid, Number(pulsante.dataset.indice)); break;
         default:
-            if (!gestisciComandoProbabilita(pulsante, evento)) return;
+            if (!gestisciComandoProbabilita(pulsante, evento) && !gestisciComandoOttimizzatore(pulsante)) return;
     }
     aggiornaTutto();
 }
@@ -64,7 +65,7 @@ function gestisciCambio(evento) {
     if (elemento.dataset.azione === 'aggiungiEquip') {
         if (!elemento.value) return;
         aggiungiEquip(Number(elemento.dataset.uid), elemento.value);
-    } else if (!gestisciComandoProbabilita(elemento, evento)) {
+    } else if (!gestisciComandoProbabilita(elemento, evento) && !gestisciComandoOttimizzatore(elemento)) {
         return;
     }
     if (impostazioni.bersaglio === 'personalizzato') riempiSceltaBersaglio();

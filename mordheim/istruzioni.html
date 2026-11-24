@@ -32,7 +32,17 @@
         <li><strong>Non calcolati:</strong> incantesimi, abilità e regole speciali che non sono negli oggetti (paura, odio, frenesia, armi sacre...), colpi automatici contro modelli già a terra o storditi, ordine di attacco per Iniziativa.</li>
     </ul>
 
-    <h2>3. I dati</h2>
+    <h2>3. Ottimizzatore</h2>
+    <ul>
+        <li><strong>Cosa fa:</strong> cerca la banda (modelli ed equipaggiamento) che rende di più contro il bersaglio scelto, con le corone indicate in alto e senza superarle. Rispetta capo obbligatorio, limiti per tipo, numero massimo di modelli e liste di equipaggiamento della banda.</li>
+        <li><strong>Come ragiona:</strong> per ogni tipo di modello prova tutte le combinazioni di equipaggiamento (fino a due armi da corpo a corpo, un'arma da tiro, armatura, scudo o brocchiere, elmo) e scarta quelle che un'altra batte su costo, attacco e resistenza insieme. <em>Attacco</em> di un modello: bersagli messi fuori combattimento in un turno (più il tiro con il peso scelto). <em>Resistenza</em>: quanti turni di attacchi del bersaglio servono in media per metterlo fuori combattimento (al massimo 50).</li>
+        <li><strong>Obiettivo:</strong> <em>Equilibrio</em> (predefinito) moltiplica attacco totale e resistenza totale della banda: conta sia quanto colpisci sia quanto a lungo resti in campo, quindi premia anche il numero di modelli. <em>Massimo attacco</em> guarda solo i bersagli messi fuori combattimento.</li>
+        <li><strong>Tiro:</strong> scegli quanto conta il tiro rispetto al corpo a corpo (niente, la metà, uguale). Il turno di corpo a corpo e le opzioni di tiro sono quelle della scheda <em>Probabilità</em>.</li>
+        <li><strong>Proposte:</strong> <em>Calcola la banda migliore</em> mostra fino a tre proposte diverse, la migliore per prima, con corone, modelli, attacco, resistenza e indice, e per ogni riga equipaggiamento, costo e fuori combattimento a turno. Le truppe dello stesso tipo hanno lo stesso equipaggiamento quando la differenza è minima. <em>Usa questa banda</em> la copia nella scheda Banda (sostituendo quella attuale), con i gruppi di truppe divisi da 5, e lì puoi ritoccarla a mano. Con gli stessi dati il risultato è sempre lo stesso.</li>
+        <li><strong>Limiti:</strong> l'ottimizzatore vede solo i numeri del calcolo: non valuta incantesimi, abilità, movimento, paura, esperienza iniziale degli eroi. Usalo come punto di partenza.</li>
+    </ul>
+
+    <h2>4. I dati</h2>
     <ul>
         <li>Tabelle dei tiri, equipaggiamento e bande sono file JSON nella cartella <code>dati/</code>: <code>regole.json</code>, <code>equipaggiamento.json</code>, <code>bersagli.json</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.json</code>). Per correggere un profilo o un costo basta modificare il file.</li>
         <li>La pagina legge i file JSON, quindi va aperta dal sito pubblicato o da un server locale (per esempio <code>npx serve</code>): con il doppio clic sul file il browser blocca la lettura e compare un avviso.</li>

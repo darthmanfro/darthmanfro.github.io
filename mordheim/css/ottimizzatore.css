@@ -1,0 +1,124 @@
+/* ==========================================================================
+   SCHEDA OTTIMIZZATORE
+   Scelte del calcolo, avanzamento e proposte di banda.
+   ========================================================================== */
+
+#ottimizzatore-comandi h2 {
+    font-size: 1.15rem;
+}
+
+.ottimizzatore-scelte {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px 16px;
+    margin-top: 10px;
+}
+
+.campo-riga {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.75rem;
+    color: var(--attenuato);
+}
+
+.campo-riga select {
+    font: inherit;
+    font-size: 0.92rem;
+    padding: 5px 8px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--inchiostro);
+    max-width: 100%;
+}
+
+.avanzamento {
+    width: 100%;
+    height: 10px;
+    margin-top: 10px;
+}
+
+.ottimizzatore-proposte {
+    margin-top: 12px;
+}
+
+.spiegazione {
+    background: var(--carta);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    line-height: 1.5;
+}
+
+/* --- Proposte --- */
+.proposta {
+    background: var(--carta);
+    border: 1px solid var(--bordo);
+    border-top: 4px solid var(--accento);
+    border-radius: var(--raggio);
+    padding: 10px 14px;
+    margin-bottom: 12px;
+}
+
+.proposta-testata {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 14px;
+}
+
+.proposta-testata h3 {
+    font-size: 1.1rem;
+    color: var(--accento);
+}
+
+.proposta-testata span {
+    flex: 1;
+    color: var(--attenuato);
+}
+
+.proposta-valori {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 20px;
+    margin: 6px 0;
+    font-size: 0.9rem;
+}
+
+.proposta-unita {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.proposta-unita th,
+.proposta-unita td {
+    text-align: left;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--bordo);
+    vertical-align: top;
+}
+
+.proposta-unita th {
+    font-weight: normal;
+    font-size: 0.78rem;
+    color: var(--attenuato);
+}
+
+@media (max-width: 600px) {
+    .proposta {
+        padding: 8px;
+    }
+
+    .proposta-unita {
+        font-size: 0.8rem;
+    }
+
+    .proposta-unita th,
+    .proposta-unita td {
+        padding: 4px 3px;
+    }
+}

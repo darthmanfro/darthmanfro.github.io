@@ -388,12 +388,25 @@ function configurazioneBersaglio(bersaglio) {
 // La configurazione scelta è quella con il miglior rapporto tra bersagli messi fuori
 // combattimento e probabilità di finire fuori combattimento.
 // opzioni: { turno: 'media'|'primo'|'successivi', lungaGittata, copertura }
+// I risultati restano memorizzati nel bersaglio (_memoria): l'attacco dipende solo
+// dal profilo e dalle armi usate, la difesa solo dal profilo e da armatura, scudo,
+// parata ed elmo. L'ottimizzatore valuta così migliaia di equipaggiamenti.
 function valutaModello(modello, bersaglio, opzioni = {}) {
     const confB = configurazioneBersaglio(bersaglio);
+    const memoria = bersaglio._memoria || (bersaglio._memoria = new Map());
+    const p = modello.profilo;
+    const chiaveProfilo = [p.AC, p.F, p.R, p.Fe, p.A, modello.modTS || 0, opzioni.turno || 'media'].join(',');
+    const ricorda = (chiave, calcola) => {
+        if (!memoria.has(chiave)) memoria.set(chiave, calcola());
+        return memoria.get(chiave);
+    };
     let migliore = null;
     for (const conf of configurazioniCC(modello)) {
-        const attacco = turnoScelto(modello, conf, bersaglio, confB, opzioni.turno);
-        const subito = turnoScelto(bersaglio, confB, modello, conf, opzioni.turno);
+        const attacco = ricorda(chiaveProfilo + '|A|' + conf.armi.map(a => a.id).join(','),
+            () => turnoScelto(modello, conf, bersaglio, confB, opzioni.turno));
+        const d = difesa(modello, conf, true);
+        const subito = ricorda(chiaveProfilo + '|D|' + [d.ts, d.parata, d.elmo].join(','),
+            () => turnoScelto(bersaglio, confB, modello, conf, opzioni.turno));
         const rapporto = attacco.pFuori / Math.max(0.005, subito.pFuori);
         if (!migliore || rapporto > migliore.rapporto) {
             migliore = { configurazione: conf, attacco, subito, rapporto };

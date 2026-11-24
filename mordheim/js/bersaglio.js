@@ -16,7 +16,9 @@ let impostazioni = {
     lungaGittata: false,
     copertura: false,
     scheda: 'banda',
-    confronto: null            // vedi js/probabilita.js
+    confronto: null,           // vedi js/probabilita.js
+    obiettivo: 'equilibrio',   // ottimizzatore: equilibrio | attacco
+    pesoTiro: 0.5              // ottimizzatore: peso del tiro rispetto al corpo a corpo
 };
 
 let bersaglioInUso = null;     // modello per il motore, rifatto quando cambia il bersaglio
