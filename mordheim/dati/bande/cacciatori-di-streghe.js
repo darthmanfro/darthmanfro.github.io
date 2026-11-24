@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("banda:cacciatoriDiStreghe", {
     "id": "cacciatoriDiStreghe",
     "nome": "Cacciatori di Streghe",
     "corone": 500,
@@ -43,4 +45,4 @@
             "regole": ["Animali: non usano armi né armature, non guadagnano esperienza."]
         }
     ]
-}
+});

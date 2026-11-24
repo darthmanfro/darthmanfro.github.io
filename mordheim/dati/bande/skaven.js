@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("banda:skaven", {
     "id": "skaven",
     "nome": "Skaven del Clan Eshin",
     "corone": 500,
@@ -46,4 +48,4 @@
             "regole": ["Paura. Stupidità, a meno che non ci sia un Eroe Skaven entro 6\".","Grossa creatura: chiunque può tirargli anche se non è il bersaglio più vicino."]
         }
     ]
-}
+});

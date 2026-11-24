@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("banda:sorelleSigmarite", {
     "id": "sorelleSigmarite",
     "nome": "Sorelle Sigmarite",
     "corone": 500,
@@ -34,4 +36,4 @@
             "profilo": { "M": 4, "AC": 2, "AB": 2, "F": 3, "R": 3, "Fe": 1, "I": 3, "A": 1, "Cd": 6 }
         }
     ]
-}
+});

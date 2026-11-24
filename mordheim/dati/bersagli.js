@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("bersagli", {
     "_nota": "Bersagli di riferimento per il calcolo delle probabilità. Il bersaglio è anche l'avversario che attacca i tuoi modelli. 'equip' non comprende il pugnale gratuito; 'animale' = armi naturali, niente equipaggiamento; 'grosso' = bersaglio grosso (+1 per colpirlo al tiro).",
     "bersagli": [
         { "id": "umano", "nome": "Guerriero umano (spada)",
@@ -23,4 +25,4 @@
           "profilo": { "M": 6, "AC": 3, "AB": 0, "F": 5, "R": 5, "Fe": 3, "I": 3, "A": 3, "Cd": 5 },
           "equip": [] }
     ]
-}
+});

@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("equipaggiamento", {
     "_nota": "Equipaggiamento del regolamento (capitoli Armi ed armature e bande). 'costo' è il prezzo base: valgono i prezzi delle liste delle bande. Campi letti dal motore: forzaBonus (aggiunto alla Forza di chi la usa), forzaFissa (Forza dell'arma), pesante (bonus di Forza solo nel primo turno di corpo a corpo), dueMani (nessun'altra arma né scudo), esclusiva (nessun'altra arma né scudo), coppia (+1 Attacco, nessun'altra arma), parata, parataRipetuta (ripete la parata fallita), concussione (ferite gravi 2-4 = stordito), modTS (penalità al TA oltre a quella della Forza), piuUnoTA (il bersaglio ha +1 al TA, 6+ se non ha armatura), veleno (lotoNero: con un 6 per colpire ferisce in automatico; cerbottana: idem ma senza critici), maiCritici, nonParabile, tiriPerTurno, modColpire (positivo = più difficile), daLancio (niente penalità per gittata lunga e movimento), muoviOTira.",
     "oggetti": [
         { "id": "pugnale", "nome": "Pugnale", "tipo": "corpo", "costo": 2, "piuUnoTA": true,
@@ -74,4 +76,4 @@
         { "id": "elmo", "nome": "Elmo", "tipo": "elmo", "costo": 10,
           "regole": "Evita lo stordimento: con 4+ un risultato Stordito diventa Atterrato." }
     ]
-}
+});

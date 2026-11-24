@@ -45,8 +45,8 @@
     <h2>4. I dati</h2>
     <ul>
         <li><strong>Bande disponibili</strong>: Mercenari del Reikland, di Middenheim e di Marienburg (600 corone), Culto dei Posseduti, Cacciatori di Streghe, Sorelle Sigmarite, Nonmorti, Skaven del Clan Eshin. Profili, costi, limiti, numero massimo di modelli, esperienza iniziale e liste di equipaggiamento (anche quelle separate: Tiratori, Fanatici, Flagellanti, Uominibestia e Anime Perdute, Truppa Skaven) vengono dalla sezione Bande del regolamento, con i suoi nomi. Mutazioni, incantesimi, preghiere e abilità non sono gestiti.</li>
-        <li>Tabelle dei tiri, equipaggiamento e bande sono file JSON nella cartella <code>dati/</code>: <code>regole.json</code>, <code>equipaggiamento.json</code>, <code>bersagli.json</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.json</code>). Per correggere un profilo o un costo basta modificare il file.</li>
-        <li>La pagina legge i file JSON, quindi va aperta dal sito pubblicato o da un server locale (per esempio <code>npx serve</code>): con il doppio clic sul file il browser blocca la lettura e compare un avviso.</li>
+        <li>Tabelle dei tiri, equipaggiamento, bersagli e bande sono nella cartella <code>dati/</code>: <code>regole.js</code>, <code>equipaggiamento.js</code>, <code>bersagli.js</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.js</code>). Ogni file contiene i dati in formato JSON dentro <code>registraDati("nome", { ... });</code>: per correggere un profilo o un costo modifica il valore rispettando virgolette doppie e virgole.</li>
+        <li><strong>Funziona in locale:</strong> basta aprire <code>index.html</code> con il doppio clic, senza connessione e senza server (i dati si caricano come script). Se un file di dati ha un errore di scrittura, la pagina lo dice indicando quale.</li>
     </ul>
 
     <a class="btn-back" href="index.html">Torna alla banda</a>

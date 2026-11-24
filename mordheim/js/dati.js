@@ -1,36 +1,58 @@
 // ==========================================================================
 // DATI
-// Carica i file JSON di dati/ (regole, equipaggiamento, bande) e offre
+// Carica i file di dati/ (regole, equipaggiamento, bersagli, bande) e offre
 // piccole funzioni per leggerli.
+//
+// Ogni file di dati è un .js che contiene JSON dentro registraDati("nome", {...}):
+// si carica con un tag <script>, che funziona anche aprendo la pagina con il
+// doppio clic (file://), dove il browser blocca la lettura dei file .json.
 // ==========================================================================
 
 const Dati = {
-    regole: null,     // dati/regole.json
-    equip: {},        // oggetti di dati/equipaggiamento.json per id
-    indice: [],       // elenco bande di dati/bande/indice.json
+    regole: null,     // dati/regole.js
+    equip: {},        // oggetti di dati/equipaggiamento.js per id
+    indice: [],       // elenco bande di dati/bande/indice.js
     bande: {},        // bande per id
-    bersagli: []      // bersagli di riferimento di dati/bersagli.json
+    bersagli: []      // bersagli di riferimento di dati/bersagli.js
 };
 
-async function caricaJSON(percorso) {
-    const risposta = await fetch(percorso, { cache: 'no-cache' });
-    if (!risposta.ok) throw new Error(percorso + ': errore ' + risposta.status);
-    return risposta.json();
+const datiRegistrati = {};
+
+// Chiamata dai file di dati
+function registraDati(nome, contenuto) {
+    datiRegistrati[nome] = contenuto;
+}
+
+// Carica un file .js con un tag <script>; si risolve quando è stato eseguito
+function caricaScript(percorso) {
+    return new Promise((risolvi, rifiuta) => {
+        const script = document.createElement('script');
+        script.src = percorso;
+        script.onload = risolvi;
+        script.onerror = () => rifiuta(new Error('File mancante o non leggibile: ' + percorso));
+        document.head.appendChild(script);
+    });
+}
+
+function richiesto(nome, percorso) {
+    if (!datiRegistrati[nome]) throw new Error(percorso + ': il file non registra "' + nome + '" (controlla le virgole e le virgolette)');
+    return datiRegistrati[nome];
 }
 
 async function caricaDati() {
-    const [regole, equip, indice, bersagli] = await Promise.all([
-        caricaJSON('dati/regole.json'),
-        caricaJSON('dati/equipaggiamento.json'),
-        caricaJSON('dati/bande/indice.json'),
-        caricaJSON('dati/bersagli.json')
-    ]);
-    Dati.regole = regole;
-    Dati.bersagli = bersagli.bersagli;
-    equip.oggetti.forEach(o => { Dati.equip[o.id] = o; });
-    Dati.indice = indice.bande;
-    const bande = await Promise.all(indice.bande.map(b => caricaJSON('dati/bande/' + b.file)));
-    bande.forEach(b => { Dati.bande[b.id] = b; });
+    await Promise.all(['regole', 'equipaggiamento', 'bersagli', 'bande/indice'].map(f => caricaScript('dati/' + f + '.js')));
+    const indice = richiesto('indice', 'dati/bande/indice.js');
+    await Promise.all(indice.bande.map(b => caricaScript('dati/bande/' + b.file)));
+    applicaDati();
+}
+
+// Riempie Dati con quanto registrato dai file
+function applicaDati() {
+    Dati.regole = richiesto('regole', 'dati/regole.js');
+    Dati.bersagli = richiesto('bersagli', 'dati/bersagli.js').bersagli;
+    richiesto('equipaggiamento', 'dati/equipaggiamento.js').oggetti.forEach(o => { Dati.equip[o.id] = o; });
+    Dati.indice = richiesto('indice', 'dati/bande/indice.js').bande;
+    Dati.indice.forEach(b => { Dati.bande[b.id] = richiesto('banda:' + b.id, 'dati/bande/' + b.file); });
 }
 
 // Tipo di modello (eroe o truppa) di una banda: { tipo, eroe } oppure null

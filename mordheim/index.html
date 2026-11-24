@@ -33,12 +33,11 @@
         </div>
     </header>
 
-    <!-- Dati non caricati (di solito: pagina aperta con doppio clic, senza server) -->
+    <!-- Dati non caricati: un file di dati/ manca o ha un errore di scrittura -->
     <div id="errore-caricamento" class="errore-caricamento nascosto">
         <h2>Non riesco a caricare i dati</h2>
-        <p>I dati di Mordheim sono file JSON e il browser li legge solo se la pagina arriva da un server:
-            aprila dal sito pubblicato oppure da un piccolo server locale (per esempio
-            <code>npx serve</code> nella cartella del sito), non con il doppio clic sul file.</p>
+        <p>Un file della cartella <code>dati/</code> manca oppure contiene un errore (di solito una virgola
+            o una virgoletta di troppo o di meno dopo una modifica a mano). Il file è indicato qui sotto.</p>
         <p class="errore-dettaglio" id="errore-dettaglio"></p>
     </div>
 

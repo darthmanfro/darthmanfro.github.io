@@ -1,6 +1,6 @@
 // ==========================================================================
 // BERSAGLIO E IMPOSTAZIONI
-// Il bersaglio di riferimento (da dati/bersagli.json, dai modelli delle
+// Il bersaglio di riferimento (da dati/bersagli.js, dai modelli delle
 // bande o personalizzato) contro cui si calcolano le probabilità: è anche
 // l'avversario che attacca i tuoi modelli. Le impostazioni (bersaglio,
 // turno, opzioni di tiro, scheda aperta, confronto) restano nel browser.

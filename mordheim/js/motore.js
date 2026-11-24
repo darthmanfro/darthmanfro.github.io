@@ -2,7 +2,7 @@
 // MOTORE DELLE PROBABILITÀ
 // Calcolo esatto (niente simulazioni casuali) di un turno di corpo a corpo
 // o di un tiro tra un modello che attacca e un bersaglio, con le tabelle di
-// dati/regole.json e i flag di dati/equipaggiamento.json.
+// dati/regole.js e i flag di dati/equipaggiamento.js.
 //
 // Un "modello" per il motore è:
 //   { nome, profilo: { AC, AB, F, R, Fe, A, ... }, equip: [id, ...],
@@ -26,7 +26,7 @@ const ESITO_NESSUNO = 0, ESITO_A_TERRA = 1, ESITO_STORDITO = 2, ESITO_FUORI = 3;
 const PUGNALE_GRATUITO_ID = 'pugnale';
 const ARMI_NATURALI = { id: 'naturali', nome: 'Armi naturali', tipo: 'corpo' };
 
-let regoleMotore = null;   // dati/regole.json
+let regoleMotore = null;   // dati/regole.js
 let equipMotore = {};      // oggetti per id
 
 function impostaDatiMotore(regole, equipPerId) {

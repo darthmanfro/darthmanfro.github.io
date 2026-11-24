@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("regole", {
     "_nota": "Tabelle del regolamento di Mordheim (Corpo a corpo e Tiro). Indici: riga = valore di chi attacca (1-10), colonna = valore del bersaglio (1-10). null = impossibile (la lineetta del regolamento).",
     "colpireCorpoACorpo": {
         "_nota": "Riga: AC dell'attaccante. Colonna: AC del difensore. Valore: risultato minimo del D6.",
@@ -60,4 +62,4 @@
             { "da": 5, "a": 6, "nome": "Colpo da maestro!", "ferite": 2, "ignoraArmatura": true, "bonusFeriteGravi": 2 }
         ]
     }
-}
+});

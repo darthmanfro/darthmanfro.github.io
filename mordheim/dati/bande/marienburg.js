@@ -1,4 +1,6 @@
-{
+// Dati di Mordheim. Il contenuto tra registraDati(...) è JSON: si modifica come un file .json
+// (virgolette doppie, niente virgola dopo l'ultimo elemento). Caricato da js/dati.js.
+registraDati("banda:marienburg", {
     "id": "marienburg",
     "nome": "Mercenari di Marienburg",
     "corone": 600,
@@ -39,4 +41,4 @@
             "regole": ["Spadaccini esperti: armati di spada ripetono i tiri per colpire falliti nel turno in cui caricano (non calcolato)."]
         }
     ]
-}
+});
