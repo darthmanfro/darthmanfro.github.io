@@ -21,9 +21,20 @@
         <li><strong>Salvataggio:</strong> la banda viene salvata nel browser a ogni modifica, una per ogni fazione: cambiando banda e tornando indietro la ritrovi. <em>Svuota banda</em> (con un secondo clic di conferma) ricomincia da zero.</li>
     </ul>
 
-    <h2>2. I dati</h2>
+    <h2>2. Bersaglio e probabilità</h2>
     <ul>
-        <li>Tabelle dei tiri, equipaggiamento e bande sono file JSON nella cartella <code>dati/</code>: <code>regole.json</code>, <code>equipaggiamento.json</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.json</code>). Per correggere un profilo o un costo basta modificare il file.</li>
+        <li><strong>Bersaglio:</strong> in alto scegli contro chi calcolare: un bersaglio di riferimento (guerriero umano, umano corazzato, campione, zombi, bestia grossa...) oppure un qualsiasi modello delle bande. Il bersaglio è anche l'avversario che attacca i tuoi modelli, per capire quanto resistono. Nella scheda <em>Probabilità</em> puoi cambiarne profilo ed equipaggiamento: diventa <em>Personalizzato</em> e resta salvato.</li>
+        <li><strong>Come si calcola un turno di corpo a corpo:</strong> ogni attacco tira per colpire (AC contro AC dalla tabella), il bersaglio con spada o brocchiere para il colpo più alto (con spada e brocchiere ripete la parata fallita; un 6 non si para), poi si tira per ferire (Forza contro Resistenza). Un 6 per ferire è un critico (uno per modello a turno: 2 ferite, oppure ignora l'armatura, oppure entrambe con +2 alle ferite gravi). Il bersaglio tira salvezza con armatura e scudo, peggiorato dalla Forza e dalle armi (ascia -1, pugnale +1 per lui). Finite le Ferite si tira sulle ferite gravi: 1-2 a terra, 3-4 stordito, 5-6 fuori combattimento (mazza: 2-4 stordito; elmo: 4+ e lo stordito diventa a terra). Le probabilità sono calcolate in modo esatto, non simulate.</li>
+        <li><strong>Armi:</strong> ogni modello combatte nel modo migliore con ciò che ha: due armi a una mano (+1 attacco con la seconda, compreso il pugnale gratuito), un'arma con scudo o brocchiere, un'arma a due mani, oppure armi in coppia. Lancia e stella del mattino solo da sole o con lo scudo. Mazzafrusto e stella del mattino hanno il bonus di Forza solo nel primo turno: nelle <em>Opzioni</em> scegli primo turno, turni successivi o la media dei due (predefinito).</li>
+        <li><strong>Tiro:</strong> per colpire serve 7 meno l'AB (gittata lunga e copertura -1, bersaglio grosso +1; oltre il 6 serve un 6 e poi un altro tiro). Pistole e archibugi sparano un turno sì e uno no; con la coppia di pistole ogni turno.</li>
+        <li><strong>Nella scheda Banda</strong> ogni unità mostra con cosa combatte, dadi, colpi, ferite e probabilità di mettere fuori combattimento il bersaglio in un turno (per un gruppo anche il totale), quanto rischia a sua volta e il rendimento al tiro. Nel riepilogo, i bersagli messi fuori combattimento a turno da tutta la banda.</li>
+        <li><strong>Confronto:</strong> nella scheda <em>Probabilità</em> scegli due gruppi (modello, quanti, equipaggiamento) e vedi passo per passo dadi, colpi attesi (e parati), per ferire, tiri per ferire riusciti, tiro salvezza del bersaglio, ferite inflitte, fuori combattimento attesi (ognuno contro un bersaglio diverso), fuori combattimento ogni 100 corone e quanto il bersaglio li mette fuori combattimento. In verde il gruppo migliore per ogni riga.</li>
+        <li><strong>Non calcolati:</strong> incantesimi, abilità e regole speciali che non sono negli oggetti (paura, odio, frenesia, armi sacre...), colpi automatici contro modelli già a terra o storditi, ordine di attacco per Iniziativa.</li>
+    </ul>
+
+    <h2>3. I dati</h2>
+    <ul>
+        <li>Tabelle dei tiri, equipaggiamento e bande sono file JSON nella cartella <code>dati/</code>: <code>regole.json</code>, <code>equipaggiamento.json</code>, <code>bersagli.json</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.json</code>). Per correggere un profilo o un costo basta modificare il file.</li>
         <li>La pagina legge i file JSON, quindi va aperta dal sito pubblicato o da un server locale (per esempio <code>npx serve</code>): con il doppio clic sul file il browser blocca la lettura e compare un avviso.</li>
     </ul>
 

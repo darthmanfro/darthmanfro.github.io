@@ -8,7 +8,8 @@ const Dati = {
     regole: null,     // dati/regole.json
     equip: {},        // oggetti di dati/equipaggiamento.json per id
     indice: [],       // elenco bande di dati/bande/indice.json
-    bande: {}         // bande per id
+    bande: {},        // bande per id
+    bersagli: []      // bersagli di riferimento di dati/bersagli.json
 };
 
 async function caricaJSON(percorso) {
@@ -18,12 +19,14 @@ async function caricaJSON(percorso) {
 }
 
 async function caricaDati() {
-    const [regole, equip, indice] = await Promise.all([
+    const [regole, equip, indice, bersagli] = await Promise.all([
         caricaJSON('dati/regole.json'),
         caricaJSON('dati/equipaggiamento.json'),
-        caricaJSON('dati/bande/indice.json')
+        caricaJSON('dati/bande/indice.json'),
+        caricaJSON('dati/bersagli.json')
     ]);
     Dati.regole = regole;
+    Dati.bersagli = bersagli.bersagli;
     equip.oggetti.forEach(o => { Dati.equip[o.id] = o; });
     Dati.indice = indice.bande;
     const bande = await Promise.all(indice.bande.map(b => caricaJSON('dati/bande/' + b.file)));
@@ -51,6 +54,27 @@ function oggettiAcquistabili(banda, tipo, eroe) {
             return { id, costo, soloEroi, oggetto: Dati.equip[id] };
         })
         .filter(v => v.oggetto && (eroe || !v.soloEroi));
+}
+
+// Modello per il motore delle probabilità (js/motore.js) da un tipo e dal suo equipaggiamento
+function modelloPerMotore(tipo, equip) {
+    return {
+        nome: tipo.nome,
+        profilo: tipo.profilo,
+        equip: tipo.animale ? [] : equip,
+        animale: !!tipo.animale,
+        grosso: !!tipo.grosso,
+        modTS: tipo.modTS || 0
+    };
+}
+
+// Numero con la virgola e al massimo "cifre" decimali
+function formatta(numero, cifre = 2) {
+    return Number(numero.toFixed(cifre)).toLocaleString('it-IT');
+}
+
+function percentuale(p) {
+    return formatta(p * 100, p < 0.1 ? 1 : 0) + '%';
 }
 
 function escapeHtml(testo) {

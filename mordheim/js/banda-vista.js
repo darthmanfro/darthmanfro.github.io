@@ -28,6 +28,7 @@ function disegnaRiepilogo(banda) {
     const modelli = contaModelli(statoBanda.unita);
     const eroi = statoBanda.unita.filter(u => tipoDi(banda, u.tipoId).eroe).length;
     const classe = restano < 0 ? 'riepilogo-valore sforato' : 'riepilogo-valore';
+    const rendimento = rendimentoBanda(banda);
     document.getElementById('riepilogo').innerHTML = `
         <div class="riepilogo-voce">
             <span class="riepilogo-etichetta">Spesa</span>
@@ -46,6 +47,10 @@ function disegnaRiepilogo(banda) {
         <div class="riepilogo-voce">
             <span class="riepilogo-etichetta">Eroi</span>
             <span class="riepilogo-valore">${eroi}</span>
+        </div>
+        <div class="riepilogo-voce" title="Bersagli messi fuori combattimento in un turno se tutti i modelli combattono">
+            <span class="riepilogo-etichetta">Fuori comb. a turno</span>
+            <span class="riepilogo-valore">${formatta(rendimento.corpo)}${rendimento.tiro > 0 ? ` <small>+ ${formatta(rendimento.tiro)} al tiro</small>` : ''}</span>
         </div>`;
 }
 
@@ -98,7 +103,7 @@ function tabellaProfilo(profilo) {
 function schedaUnita(banda, unita) {
     const { tipo, eroe } = tipoDi(banda, unita.tipoId);
     const costoUno = costoModello(banda, unita);
-    const numero = eroe ? '' : `
+    const numero = eroe || tipo.max === 1 ? '' : `
         <div class="numero">
             <button type="button" class="btn-piccolo" data-azione="meno" data-uid="${unita.uid}" title="Un modello in meno">−</button>
             <span class="numero-valore">${unita.numero}</span>
@@ -116,8 +121,37 @@ function schedaUnita(banda, unita) {
             ${tabellaProfilo(tipo.profilo)}
             ${elencoEquip(banda, tipo, eroe, unita)}
             ${tipo.regole ? `<ul class="unita-regole">${tipo.regole.map(r => `<li>${escapeHtml(r)}</li>`).join('')}</ul>` : ''}
-            <div class="unita-statistiche" data-uid="${unita.uid}"></div>
+            ${statisticheUnita(tipo, unita)}
         </article>`;
+}
+
+// Rendimento dell'unità contro il bersaglio (js/motore.js)
+function statisticheUnita(tipo, unita) {
+    const v = valutaModello(modelloPerMotore(tipo, unita.equip), bersaglioCorrente(), opzioniCalcolo());
+    const a = v.attacco;
+    const gruppo = unita.numero > 1 ? ` · gruppo: <strong>${formatta(a.pFuori * unita.numero)}</strong>` : '';
+    const tiro = v.tiro
+        ? `<li>Tiro con ${escapeHtml(v.tiro.arma.nome.toLowerCase())}: fuori combattimento ${formatta(v.tiro.fuoriPerTurno * unita.numero)} per turno</li>`
+        : '';
+    return `
+        <ul class="unita-statistiche">
+            <li>Combatte con <strong>${escapeHtml(v.configurazione.descrizione.toLowerCase())}</strong></li>
+            <li>Contro il bersaglio: ${formatta(a.dadi)} dadi, ${formatta(a.colpiAttesi)} colpi, ${formatta(a.feriteAttese)} ferite,
+                fuori combattimento <strong>${percentuale(a.pFuori)}</strong> a turno${gruppo}</li>
+            <li>Il bersaglio lo mette fuori combattimento: ${percentuale(v.subito.pFuori)} a turno</li>
+            ${tiro}
+        </ul>`;
+}
+
+// Fuori combattimento attesi in un turno da tutta la banda: { corpo, tiro }
+function rendimentoBanda(banda) {
+    return statoBanda.unita.reduce((totale, u) => {
+        const { tipo } = tipoDi(banda, u.tipoId);
+        const v = valutaModello(modelloPerMotore(tipo, u.equip), bersaglioCorrente(), opzioniCalcolo());
+        totale.corpo += v.attacco.pFuori * u.numero;
+        totale.tiro += v.tiro ? v.tiro.fuoriPerTurno * u.numero : 0;
+        return totale;
+    }, { corpo: 0, tiro: 0 });
 }
 
 function elencoEquip(banda, tipo, eroe, unita) {
@@ -132,20 +166,21 @@ function elencoEquip(banda, tipo, eroe, unita) {
             <li class="equip-voce gratuito">Pugnale <span class="equip-costo">gratis</span></li>
             ${voci}
         </ul>
-        ${selettoreEquip(banda, tipo, eroe, unita)}`;
+        ${selettoreEquip(banda, tipo, eroe, unita.equip, `data-azione="aggiungiEquip" data-uid="${unita.uid}"`)}`;
 }
 
-function selettoreEquip(banda, tipo, eroe, unita) {
+// Menu per aggiungere un oggetto; "attributi" dice a chi va (data-azione, data-uid...)
+function selettoreEquip(banda, tipo, eroe, equip, attributi) {
     const acquistabili = oggettiAcquistabili(banda, tipo, eroe);
     const gruppi = Object.keys(NOMI_TIPI_OGGETTO).map(tipoOggetto => {
         const opzioni = acquistabili
             .filter(v => v.oggetto.tipo === tipoOggetto)
-            .map(v => `<option value="${v.id}" ${oggettoAggiungibile(unita.equip, v.id) ? '' : 'disabled'}>${escapeHtml(v.oggetto.nome)} (${v.costo})</option>`)
+            .map(v => `<option value="${v.id}" ${oggettoAggiungibile(equip, v.id) ? '' : 'disabled'}>${escapeHtml(v.oggetto.nome)} (${v.costo})</option>`)
             .join('');
         return opzioni ? `<optgroup label="${NOMI_TIPI_OGGETTO[tipoOggetto]}">${opzioni}</optgroup>` : '';
     }).join('');
     return `
-        <select class="equip-aggiungi" data-azione="aggiungiEquip" data-uid="${unita.uid}" aria-label="Aggiungi equipaggiamento">
+        <select class="equip-aggiungi" ${attributi} aria-label="Aggiungi equipaggiamento">
             <option value="">+ Equipaggiamento…</option>
             ${gruppi}
         </select>`;

@@ -7,6 +7,7 @@
     <title>Mordheim - Banda</title>
     <link rel="stylesheet" href="./css/base.css">   <!-- Pagina, testata, comandi comuni -->
     <link rel="stylesheet" href="./css/banda.css">  <!-- Scheda Banda: catalogo e unità -->
+    <link rel="stylesheet" href="./css/probabilita.css"> <!-- Scheda Probabilità: bersaglio e confronto -->
 </head>
 
 <body>
@@ -22,6 +23,10 @@
                 <span>Corone</span>
                 <input type="number" id="corone" min="0" step="5">
             </label>
+            <label class="campo campo-bersaglio">
+                <span>Bersaglio</span>
+                <select id="sceltaBersaglio"></select>
+            </label>
             <button type="button" id="btnSvuota" class="btn">Svuota banda</button>
             <a class="btn btn-link" href="istruzioni.html">Istruzioni</a>
         </div>
@@ -36,6 +41,11 @@
         <p class="errore-dettaglio" id="errore-dettaglio"></p>
     </div>
 
+    <nav class="schede" id="schede">
+        <button type="button" class="scheda-pulsante" data-scheda="banda">Banda</button>
+        <button type="button" class="scheda-pulsante" data-scheda="probabilita">Probabilità</button>
+    </nav>
+
     <main>
         <section id="scheda-banda" class="scheda">
             <div id="riepilogo" class="riepilogo"></div>
@@ -45,11 +55,22 @@
                 <div id="elenco-unita" class="elenco-unita"></div>
             </div>
         </section>
+
+        <section id="scheda-probabilita" class="scheda">
+            <div class="prob-pannelli">
+                <div id="pannello-bersaglio" class="pannello"></div>
+                <div id="pannello-opzioni" class="pannello"></div>
+            </div>
+            <div id="confronto" class="pannello confronto"></div>
+        </section>
     </main>
 
     <script src="./js/dati.js"></script>         <!-- Caricamento dei file JSON -->
+    <script src="./js/motore.js"></script>       <!-- Calcolo delle probabilità -->
     <script src="./js/banda.js"></script>        <!-- Stato, costi e controlli della banda -->
+    <script src="./js/bersaglio.js"></script>    <!-- Bersaglio e impostazioni -->
     <script src="./js/banda-vista.js"></script>  <!-- Disegno della scheda Banda -->
+    <script src="./js/probabilita.js"></script>  <!-- Scheda Probabilità -->
     <script src="./js/app.js"></script>          <!-- Avvio e comandi -->
 </body>
 

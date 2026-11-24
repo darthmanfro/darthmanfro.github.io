@@ -3,7 +3,7 @@
     "nome": "Skaven del Clan Eshin",
     "corone": 500,
     "maxModelli": 20,
-    "_nota": "Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando. Gli eroi si comprano uno per uno, le truppe in gruppi da 1 a 5 modelli tutti con lo stesso equipaggiamento.",
+    "_nota": "animale = armi naturali e niente equipaggiamento; grosso = bersaglio grosso. Profili: M Movimento, AC Abilità di combattimento, AB Abilità balistica, F Forza, R Resistenza, Fe Ferite, I Iniziativa, A Attacchi, Cd Comando. Gli eroi si comprano uno per uno, le truppe in gruppi da 1 a 5 modelli tutti con lo stesso equipaggiamento.",
     "liste": {
         "skaven": {
             "pugnale": 2, "mazza": 3, "spada": 10, "mazzafrusto": 15, "lancia": 10, "alabarda": 10,
@@ -49,7 +49,7 @@
             "regole": ["Animale: niente equipaggiamento, non guadagna esperienza."]
         },
         {
-            "id": "rattoOgre", "nome": "Ratto Ogre", "costo": 210, "min": 0, "max": 1, "animale": true,
+            "id": "rattoOgre", "nome": "Ratto Ogre", "costo": 210, "min": 0, "max": 1, "animale": true, "grosso": true,
             "profilo": { "M": 6, "AC": 3, "AB": 3, "F": 5, "R": 5, "Fe": 3, "I": 4, "A": 3, "Cd": 4 },
             "regole": ["Animale: niente equipaggiamento.", "Paura, bersaglio grosso, stupidità se non ci sono Skaven entro 6\"."]
         }

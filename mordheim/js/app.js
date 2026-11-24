@@ -1,11 +1,25 @@
 // ==========================================================================
 // APP
-// Avvio: carica i dati, sceglie la banda e collega i comandi.
+// Avvio: carica i dati, sceglie la banda, collega i comandi e disegna la
+// scheda aperta (Banda o Probabilità).
 // ==========================================================================
 
+const SCHEDE = {
+    banda: disegnaBanda,
+    probabilita: disegnaProbabilita
+};
+
+// Salva e ridisegna la scheda aperta
 function aggiornaTutto() {
     salvaBanda();
-    disegnaBanda();
+    salvaImpostazioni();
+    document.querySelectorAll('.scheda-pulsante').forEach(p => {
+        p.classList.toggle('attiva', p.dataset.scheda === impostazioni.scheda);
+    });
+    Object.keys(SCHEDE).forEach(nome => {
+        document.getElementById('scheda-' + nome).classList.toggle('attiva', nome === impostazioni.scheda);
+    });
+    SCHEDE[impostazioni.scheda]();
 }
 
 function riempiSceltaBanda() {
@@ -20,8 +34,14 @@ function mostraCorone() {
     document.getElementById('corone').value = statoBanda.corone;
 }
 
-// Comandi delle schede (pulsanti e menu con data-azione)
+// Pulsanti con data-azione della scheda Banda e del confronto
 function gestisciClic(evento) {
+    const schedaPulsante = evento.target.closest('button[data-scheda]');
+    if (schedaPulsante) {
+        impostazioni.scheda = schedaPulsante.dataset.scheda;
+        aggiornaTutto();
+        return;
+    }
     const pulsante = evento.target.closest('button[data-azione]');
     if (!pulsante) return;
     const uid = Number(pulsante.dataset.uid);
@@ -31,15 +51,23 @@ function gestisciClic(evento) {
         case 'meno': cambiaNumero(uid, -1); break;
         case 'piu': cambiaNumero(uid, +1); break;
         case 'togliEquip': rimuoviEquip(uid, Number(pulsante.dataset.indice)); break;
-        default: return;
+        default:
+            if (!gestisciComandoProbabilita(pulsante, evento)) return;
     }
     aggiornaTutto();
 }
 
+// Menu, caselle e campi numerici
 function gestisciCambio(evento) {
-    const menu = evento.target.closest('select[data-azione="aggiungiEquip"]');
-    if (!menu || !menu.value) return;
-    aggiungiEquip(Number(menu.dataset.uid), menu.value);
+    const elemento = evento.target;
+    if (!elemento.dataset.azione && elemento.name !== 'turno') return;
+    if (elemento.dataset.azione === 'aggiungiEquip') {
+        if (!elemento.value) return;
+        aggiungiEquip(Number(elemento.dataset.uid), elemento.value);
+    } else if (!gestisciComandoProbabilita(elemento, evento)) {
+        return;
+    }
+    if (impostazioni.bersaglio === 'personalizzato') riempiSceltaBersaglio();
     aggiornaTutto();
 }
 
@@ -79,6 +107,10 @@ function collegaComandi() {
             aggiornaTutto();
         }
     });
+    document.getElementById('sceltaBersaglio').addEventListener('change', evento => {
+        scegliBersaglio(evento.target.value);
+        aggiornaTutto();
+    });
     document.getElementById('btnSvuota').addEventListener('click', premiSvuota);
     document.addEventListener('click', gestisciClic);
     document.addEventListener('change', gestisciCambio);
@@ -89,11 +121,16 @@ async function avvia() {
         await caricaDati();
     } catch (errore) {
         document.getElementById('errore-caricamento').classList.remove('nascosto');
+        document.getElementById('schede').classList.add('nascosto');
         document.getElementById('errore-dettaglio').textContent = errore.message;
         return;
     }
+    impostaDatiMotore(Dati.regole, Dati.equip);
+    caricaImpostazioni();
+    if (!SCHEDE[impostazioni.scheda]) impostazioni.scheda = 'banda';
     apriBanda(ultimaBandaSalvata() || Dati.indice[0].id);
     riempiSceltaBanda();
+    riempiSceltaBersaglio();
     mostraCorone();
     collegaComandi();
     aggiornaTutto();

@@ -69,6 +69,12 @@
     margin-top: 8px;
 }
 
+/* Le colonne possono stringersi sotto la larghezza del contenuto */
+.banda-colonne > *,
+.elenco-unita > * {
+    min-width: 0;
+}
+
 /* --- Catalogo --- */
 .catalogo {
     background: var(--carta);
@@ -292,6 +298,6 @@
     }
 
     .elenco-unita {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
     }
 }
