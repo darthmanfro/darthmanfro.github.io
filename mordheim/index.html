@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mordheim - Banda</title>
+    <link rel="stylesheet" href="./css/base.css">   <!-- Pagina, testata, comandi comuni -->
+    <link rel="stylesheet" href="./css/banda.css">  <!-- Scheda Banda: catalogo e unità -->
+</head>
+
+<body>
+
+    <header class="testata">
+        <h1>Mordheim</h1>
+        <div class="testata-scelte">
+            <label class="campo">
+                <span>Banda</span>
+                <select id="sceltaBanda"></select>
+            </label>
+            <label class="campo campo-corto">
+                <span>Corone</span>
+                <input type="number" id="corone" min="0" step="5">
+            </label>
+            <button type="button" id="btnSvuota" class="btn">Svuota banda</button>
+            <a class="btn btn-link" href="istruzioni.html">Istruzioni</a>
+        </div>
+    </header>
+
+    <!-- Dati non caricati (di solito: pagina aperta con doppio clic, senza server) -->
+    <div id="errore-caricamento" class="errore-caricamento nascosto">
+        <h2>Non riesco a caricare i dati</h2>
+        <p>I dati di Mordheim sono file JSON e il browser li legge solo se la pagina arriva da un server:
+            aprila dal sito pubblicato oppure da un piccolo server locale (per esempio
+            <code>npx serve</code> nella cartella del sito), non con il doppio clic sul file.</p>
+        <p class="errore-dettaglio" id="errore-dettaglio"></p>
+    </div>
+
+    <main>
+        <section id="scheda-banda" class="scheda">
+            <div id="riepilogo" class="riepilogo"></div>
+            <ul id="problemi" class="problemi"></ul>
+            <div class="banda-colonne">
+                <aside id="catalogo" class="catalogo"></aside>
+                <div id="elenco-unita" class="elenco-unita"></div>
+            </div>
+        </section>
+    </main>
+
+    <script src="./js/dati.js"></script>         <!-- Caricamento dei file JSON -->
+    <script src="./js/banda.js"></script>        <!-- Stato, costi e controlli della banda -->
+    <script src="./js/banda-vista.js"></script>  <!-- Disegno della scheda Banda -->
+    <script src="./js/app.js"></script>          <!-- Avvio e comandi -->
+</body>
+
+</html>

@@ -1,0 +1,297 @@
+/* ==========================================================================
+   SCHEDA BANDA
+   Riepilogo dei costi, problemi, catalogo dei modelli e schede delle unità.
+   ========================================================================== */
+
+/* --- Riepilogo --- */
+.riepilogo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 28px;
+    background: var(--carta);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    padding: 10px 16px;
+}
+
+.riepilogo-voce {
+    display: flex;
+    flex-direction: column;
+}
+
+.riepilogo-etichetta {
+    font-size: 0.75rem;
+    color: var(--attenuato);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.riepilogo-valore {
+    font-size: 1.4rem;
+    font-weight: bold;
+}
+
+.riepilogo-valore.sforato {
+    color: var(--accento);
+}
+
+.riepilogo meter {
+    width: 160px;
+    height: 10px;
+}
+
+/* --- Problemi di composizione --- */
+.problemi {
+    list-style: none;
+    margin: 8px 0;
+}
+
+.problema {
+    padding: 4px 10px;
+    margin-bottom: 4px;
+    border-left: 4px solid var(--oro);
+    background: #f6ecd3;
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.problema.grave {
+    border-left-color: var(--accento);
+    background: #f5dcd5;
+}
+
+/* --- Colonne: catalogo a sinistra, unità a destra --- */
+.banda-colonne {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 8px;
+}
+
+/* --- Catalogo --- */
+.catalogo {
+    background: var(--carta);
+    border: 1px solid var(--bordo);
+    border-radius: var(--raggio);
+    padding: 10px;
+    position: sticky;
+    top: 10px;
+}
+
+.catalogo h2 {
+    font-size: 1rem;
+    color: var(--accento);
+    margin: 6px 0 4px;
+}
+
+.catalogo-voce {
+    font: inherit;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 8px;
+    align-items: center;
+    text-align: left;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    background: var(--carta-scura);
+    color: var(--inchiostro);
+    cursor: pointer;
+}
+
+.catalogo-voce:hover:not(:disabled) {
+    border-color: var(--accento);
+}
+
+.catalogo-voce:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.catalogo-nome em {
+    font-size: 0.8rem;
+    color: var(--attenuato);
+}
+
+.catalogo-limite {
+    font-size: 0.75rem;
+    color: var(--attenuato);
+}
+
+.catalogo-costo {
+    font-weight: bold;
+    color: var(--oro);
+}
+
+/* --- Unità --- */
+.elenco-unita {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 12px;
+}
+
+.vuoto {
+    color: var(--attenuato);
+    padding: 20px;
+}
+
+.unita {
+    background: var(--carta);
+    border: 1px solid var(--bordo);
+    border-top: 4px solid var(--attenuato);
+    border-radius: var(--raggio);
+    padding: 10px 12px;
+}
+
+.unita.eroe {
+    border-top-color: var(--accento);
+}
+
+.unita-testata {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.unita-testata h3 {
+    font-size: 1.05rem;
+    flex: 1;
+}
+
+.etichetta-capo {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    font-size: 0.7rem;
+    font-weight: normal;
+    background: var(--accento);
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 5px;
+    vertical-align: middle;
+}
+
+.unita-costo {
+    color: var(--oro);
+    white-space: nowrap;
+}
+
+.btn-rimuovi:hover {
+    background: var(--accento);
+    color: #fff;
+}
+
+.numero {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.numero-valore {
+    min-width: 22px;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Profilo M AC AB F R Fe I A Cd */
+.profilo {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.profilo th {
+    background: var(--carta-scura);
+    font-weight: normal;
+    font-size: 0.75rem;
+    color: var(--attenuato);
+}
+
+.profilo th,
+.profilo td {
+    border: 1px solid var(--bordo);
+    padding: 2px 0;
+}
+
+/* Equipaggiamento */
+.equip {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.equip-voce {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--carta-scura);
+    border: 1px solid var(--bordo);
+    border-radius: 12px;
+    padding: 1px 4px 1px 9px;
+    font-size: 0.85rem;
+}
+
+.equip-voce.gratuito {
+    padding-right: 9px;
+    color: var(--attenuato);
+}
+
+.equip-costo {
+    color: var(--oro);
+    font-size: 0.75rem;
+}
+
+.btn-togli {
+    border: none;
+    background: none;
+    color: var(--attenuato);
+    cursor: pointer;
+    font-size: 0.8rem;
+    padding: 0 3px;
+}
+
+.btn-togli:hover {
+    color: var(--accento);
+}
+
+.equip-aggiungi {
+    font: inherit;
+    font-size: 0.85rem;
+    width: 100%;
+    padding: 4px 6px;
+    border: 1px dashed var(--bordo);
+    border-radius: 6px;
+    background: var(--carta);
+    color: var(--inchiostro);
+}
+
+.equip-nota {
+    font-size: 0.85rem;
+    color: var(--attenuato);
+}
+
+.unita-regole {
+    margin: 6px 0 0 18px;
+    font-size: 0.8rem;
+    color: var(--attenuato);
+}
+
+/* Cellulari: catalogo sopra, unità a tutta larghezza */
+@media (max-width: 760px) {
+    .banda-colonne {
+        grid-template-columns: 1fr;
+    }
+
+    .catalogo {
+        position: static;
+    }
+
+    .elenco-unita {
+        grid-template-columns: 1fr;
+    }
+}

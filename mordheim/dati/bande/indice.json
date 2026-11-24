@@ -1,0 +1,6 @@
+{
+    "_nota": "Elenco delle bande: 'file' è il nome del file in dati/bande/.",
+    "bande": [
+        { "id": "skaven", "nome": "Skaven del Clan Eshin", "file": "skaven.json" }
+    ]
+}

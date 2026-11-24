@@ -1,0 +1,62 @@
+{
+    "_nota": "Tabelle del regolamento di Mordheim. Indici: riga = valore di chi attacca (1-10), colonna = valore del bersaglio (1-10). null = impossibile.",
+    "colpireCorpoACorpo": {
+        "_nota": "Riga: AC di chi attacca. Colonna: AC del bersaglio. Valore: risultato minimo del D6.",
+        "tabella": [
+            [4, 4, 5, 5, 5, 5, 5, 5, 5, 5],
+            [3, 4, 4, 4, 5, 5, 5, 5, 5, 5],
+            [3, 3, 4, 4, 4, 4, 5, 5, 5, 5],
+            [3, 3, 3, 4, 4, 4, 4, 4, 5, 5],
+            [3, 3, 3, 3, 4, 4, 4, 4, 4, 4],
+            [3, 3, 3, 3, 3, 4, 4, 4, 4, 4],
+            [3, 3, 3, 3, 3, 3, 4, 4, 4, 4],
+            [3, 3, 3, 3, 3, 3, 3, 4, 4, 4],
+            [3, 3, 3, 3, 3, 3, 3, 3, 4, 4],
+            [3, 3, 3, 3, 3, 3, 3, 3, 3, 4]
+        ]
+    },
+    "colpireTiro": {
+        "_nota": "Risultato minimo = 7 - AB, più i modificatori. Oltre il 6 serve un 6 e poi 4+ (7), 5+ (8), 6 (9); da 10 in su è impossibile.",
+        "base": 7,
+        "modificatori": {
+            "lungaGittata": 1,
+            "copertura": 1,
+            "bersaglioGrosso": -1
+        }
+    },
+    "ferire": {
+        "_nota": "Riga: Forza dell'attacco. Colonna: Resistenza del bersaglio.",
+        "tabella": [
+            [4, 5, 6, null, null, null, null, null, null, null],
+            [3, 4, 5, 6, null, null, null, null, null, null],
+            [2, 3, 4, 5, 6, null, null, null, null, null],
+            [2, 2, 3, 4, 5, 6, null, null, null, null],
+            [2, 2, 2, 3, 4, 5, 6, null, null, null],
+            [2, 2, 2, 2, 3, 4, 5, 6, null, null],
+            [2, 2, 2, 2, 2, 3, 4, 5, 6, null],
+            [2, 2, 2, 2, 2, 2, 3, 4, 5, 6],
+            [2, 2, 2, 2, 2, 2, 2, 3, 4, 5],
+            [2, 2, 2, 2, 2, 2, 2, 2, 3, 4]
+        ]
+    },
+    "modificatoreTSPerForza": {
+        "_nota": "Penalità al tiro salvezza dell'armatura secondo la Forza del colpo (Forza 3 o meno: nessuna).",
+        "4": 1, "5": 2, "6": 3, "7": 4, "8": 5, "9": 6, "10": 7
+    },
+    "feriteGravi": {
+        "_nota": "Tiro del D6 quando un modello perde l'ultima ferita.",
+        "risultati": [
+            { "da": 1, "a": 2, "esito": "aTerra", "nome": "A terra" },
+            { "da": 3, "a": 4, "esito": "stordito", "nome": "Stordito" },
+            { "da": 5, "a": 6, "esito": "fuori", "nome": "Fuori combattimento" }
+        ]
+    },
+    "critici": {
+        "_nota": "Con un 6 al tiro per ferire il colpo è critico (uno solo per modello in ogni fase).",
+        "risultati": [
+            { "da": 1, "a": 2, "nome": "Punto vitale", "ferite": 2, "ignoraArmatura": false, "bonusFeriteGravi": 0 },
+            { "da": 3, "a": 4, "nome": "Punto scoperto", "ferite": 1, "ignoraArmatura": true, "bonusFeriteGravi": 0 },
+            { "da": 5, "a": 6, "nome": "Colpo da maestro", "ferite": 2, "ignoraArmatura": true, "bonusFeriteGravi": 2 }
+        ]
+    }
+}

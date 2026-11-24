@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Istruzioni - Mordheim</title>
+    <link rel="stylesheet" href="css/istruzioni.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Istruzioni - Mordheim</h1>
+    <p>Questa pagina aiuta a comporre una banda di Mordheim: scegli la banda e le corone a disposizione, aggiungi i modelli e il loro equipaggiamento e vedi subito quanto spendi. Tutto funziona nel browser.</p>
+
+    <h2>1. Composizione della banda</h2>
+    <ul>
+        <li><strong>Banda e corone:</strong> in alto scegli la banda; le corone partono dal valore del regolamento (500, 600 per i Mercenari di Marienburg) e puoi cambiarle.</li>
+        <li><strong>Aggiungere modelli:</strong> nell'elenco a sinistra (in alto sul cellulare) ci sono eroi e truppe con il costo e, se c'è, il numero minimo e massimo (per esempio <em>0-2</em>). Gli eroi si aggiungono uno alla volta; le truppe in gruppi da 1 a 5 modelli con lo stesso equipaggiamento: usa <strong>−</strong> e <strong>+</strong> sulla scheda del gruppo. Un tipo esaurito diventa grigio.</li>
+        <li><strong>Equipaggiamento:</strong> ogni modello (tranne gli animali) ha già un pugnale gratuito. Dal menu <em>+ Equipaggiamento</em> scegli tra gli oggetti della lista della banda, con il loro prezzo; la ✕ accanto all'oggetto lo toglie. Al massimo due armi da corpo a corpo oltre al pugnale, due armi da tiro, un'armatura: gli oggetti che supererebbero il limite sono disattivati. Sulle truppe il costo è per modello e moltiplicato per il gruppo.</li>
+        <li><strong>Riepilogo:</strong> in alto spesa e corone rimaste (in rosso se superi il budget), numero di modelli ed eroi. Sotto compaiono gli eventuali problemi: capo mancante, troppi modelli di un tipo o in totale, budget superato.</li>
+        <li><strong>Salvataggio:</strong> la banda viene salvata nel browser a ogni modifica, una per ogni fazione: cambiando banda e tornando indietro la ritrovi. <em>Svuota banda</em> (con un secondo clic di conferma) ricomincia da zero.</li>
+    </ul>
+
+    <h2>2. I dati</h2>
+    <ul>
+        <li>Tabelle dei tiri, equipaggiamento e bande sono file JSON nella cartella <code>dati/</code>: <code>regole.json</code>, <code>equipaggiamento.json</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.json</code>). Per correggere un profilo o un costo basta modificare il file.</li>
+        <li>La pagina legge i file JSON, quindi va aperta dal sito pubblicato o da un server locale (per esempio <code>npx serve</code>): con il doppio clic sul file il browser blocca la lettura e compare un avviso.</li>
+    </ul>
+
+    <a class="btn-back" href="index.html">Torna alla banda</a>
+</div>
+
+</body>
+</html>

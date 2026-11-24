@@ -1,0 +1,182 @@
+/* ==========================================================================
+   BASE
+   Colori, pagina, testata e comandi comuni.
+   ========================================================================== */
+:root {
+    --sfondo: #e9e1d0;
+    --carta: #fbf7ee;
+    --carta-scura: #f1e8d6;
+    --inchiostro: #2b2118;
+    --attenuato: #75685a;
+    --bordo: #d6c8ae;
+    --accento: #7a1f1f;
+    --accento-chiaro: #a33a2a;
+    --oro: #a77b19;
+    --buono: #2f6b3a;
+    --raggio: 8px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--sfondo);
+    color: var(--inchiostro);
+    line-height: 1.4;
+    min-height: 100vh;
+}
+
+h1, h2, h3 {
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.nascosto {
+    display: none !important;
+}
+
+/* --- Testata --- */
+.testata {
+    background: var(--inchiostro);
+    color: var(--carta);
+    padding: 10px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 24px;
+}
+
+.testata h1 {
+    font-size: 1.6rem;
+    letter-spacing: 0.08em;
+    color: #e4c27a;
+}
+
+.testata-scelte {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.75rem;
+    gap: 2px;
+}
+
+.campo select,
+.campo input {
+    font: inherit;
+    font-size: 0.95rem;
+    padding: 5px 8px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    background: var(--carta);
+    color: var(--inchiostro);
+    min-width: 0;
+}
+
+.campo-corto input {
+    width: 90px;
+}
+
+/* --- Pulsanti --- */
+.btn {
+    font: inherit;
+    font-size: 0.9rem;
+    padding: 6px 12px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    background: var(--carta-scura);
+    color: var(--inchiostro);
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn:hover {
+    background: var(--carta);
+}
+
+.btn.conferma {
+    background: var(--accento);
+    border-color: var(--accento);
+    color: #fff;
+}
+
+.btn-primario {
+    background: var(--accento);
+    border-color: var(--accento);
+    color: #fff;
+    font-weight: bold;
+}
+
+.btn-primario:hover {
+    background: var(--accento-chiaro);
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.btn-piccolo {
+    font: inherit;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--bordo);
+    border-radius: 6px;
+    background: var(--carta-scura);
+    color: var(--inchiostro);
+    cursor: pointer;
+    line-height: 1;
+}
+
+.btn-piccolo:hover {
+    background: var(--carta);
+}
+
+/* --- Pagina --- */
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.errore-caricamento {
+    max-width: 700px;
+    margin: 30px auto;
+    padding: 20px;
+    background: var(--carta);
+    border-left: 5px solid var(--accento);
+    border-radius: var(--raggio);
+}
+
+.errore-caricamento h2 {
+    margin-bottom: 8px;
+    color: var(--accento);
+}
+
+.errore-caricamento p + p {
+    margin-top: 8px;
+}
+
+.errore-dettaglio {
+    font-family: monospace;
+    color: var(--attenuato);
+}
+
+@media (max-width: 600px) {
+    main {
+        padding: 10px;
+    }
+
+    .testata {
+        padding: 8px 10px;
+    }
+}
