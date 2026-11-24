@@ -88,13 +88,14 @@ function disegnaOpzioni() {
         <fieldset class="opzioni-gruppo">
             <legend>Turno di corpo a corpo</legend>
             ${radio('media', 'Media tra primo turno e successivi')}
-            ${radio('primo', 'Primo turno (mazzafrusto e stella del mattino con il bonus di Forza)')}
+            ${radio('primo', 'Primo turno (flagello e mazzafrusto con il bonus di Forza)')}
             ${radio('successivi', 'Turni successivi')}
         </fieldset>
         <fieldset class="opzioni-gruppo">
             <legend>Tiro</legend>
             <label><input type="checkbox" data-azione="lungaGittata" ${impostazioni.lungaGittata ? 'checked' : ''}> Gittata lunga (-1)</label>
-            <label><input type="checkbox" data-azione="copertura" ${impostazioni.copertura ? 'checked' : ''}> Bersaglio in copertura (-1)</label>
+            <label><input type="checkbox" data-azione="copertura" ${impostazioni.copertura ? 'checked' : ''}> Bersaglio al riparo (-1)</label>
+            <label><input type="checkbox" data-azione="muovere" ${impostazioni.muovere ? 'checked' : ''}> Il tiratore ha mosso (-1; balestra, archibugio e moschetto non tirano)</label>
         </fieldset>`;
 }
 
@@ -237,6 +238,7 @@ function gestisciComandoProbabilita(elemento, evento) {
         case 'bersaglioTogli': modificaBersaglio(b => { b.equip.splice(Number(elemento.dataset.indice), 1); }); break;
         case 'lungaGittata': impostazioni.lungaGittata = elemento.checked; break;
         case 'copertura': impostazioni.copertura = elemento.checked; break;
+        case 'muovere': impostazioni.muovere = elemento.checked; break;
         case 'confrontoTipo': {
             const g = gruppoDa(elemento);
             g.tipoId = elemento.value;

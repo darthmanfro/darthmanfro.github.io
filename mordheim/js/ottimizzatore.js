@@ -137,6 +137,7 @@ function valutaStato(stato, candidati, obiettivo) {
 function statoValido(stato, banda, candidati, corone, conteggioMinimi = false) {
     const v = valutaStato(stato, candidati, 'attacco');
     if (v.costo > corone || v.modelli > banda.maxModelli) return false;
+    if (banda.maxEroi && stato.filter(u => u.eroe).reduce((s, u) => s + u.n, 0) > banda.maxEroi) return false;
     for (const tipo of [...banda.eroi, ...banda.truppe]) {
         const n = stato.filter(u => u.tipoId === tipo.id).reduce((s, u) => s + u.n, 0);
         if (tipo.max !== undefined && n > tipo.max) return false;

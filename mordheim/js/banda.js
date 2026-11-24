@@ -43,13 +43,18 @@ function modelliDelTipo(unitaElenco, tipoId) {
     return unitaElenco.filter(u => u.tipoId === tipoId).reduce((s, u) => s + u.numero, 0);
 }
 
+function contaEroi(banda, unitaElenco) {
+    return unitaElenco.filter(u => tipoDi(banda, u.tipoId).eroe).length;
+}
+
 // Quanti modelli di quel tipo si possono ancora aggiungere (Infinity = senza limite)
 function postiLiberi(banda, unitaElenco, tipoId) {
-    const { tipo } = tipoDi(banda, tipoId);
+    const { tipo, eroe } = tipoDi(banda, tipoId);
     const max = tipo.max === undefined ? Infinity : tipo.max;
     const perTipo = max - modelliDelTipo(unitaElenco, tipoId);
     const perBanda = banda.maxModelli - contaModelli(unitaElenco);
-    return Math.min(perTipo, perBanda);
+    const perEroi = eroe && banda.maxEroi ? banda.maxEroi - contaEroi(banda, unitaElenco) : Infinity;
+    return Math.min(perTipo, perBanda, perEroi);
 }
 
 // --------------------------------------------------------------------------
@@ -128,6 +133,10 @@ function controllaBanda(banda, unitaElenco, corone) {
     const modelli = contaModelli(unitaElenco);
     if (modelli > banda.maxModelli) {
         problemi.push({ grave: true, testo: 'Troppi modelli: ' + modelli + ' su un massimo di ' + banda.maxModelli + '.' });
+    }
+    const eroi = contaEroi(banda, unitaElenco);
+    if (banda.maxEroi && eroi > banda.maxEroi) {
+        problemi.push({ grave: true, testo: 'Troppi eroi: ' + eroi + ' su un massimo di ' + banda.maxEroi + ' (capo compreso).' });
     }
     [...banda.eroi, ...banda.truppe].forEach(tipo => {
         const n = modelliDelTipo(unitaElenco, tipo.id);

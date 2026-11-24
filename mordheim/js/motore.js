@@ -11,9 +11,10 @@
 // con armi naturali).
 //
 // Sequenza in corpo a corpo: per colpire (AC contro AC) → parata → per
-// ferire (F contro R; un 6 è un critico, uno per modello) → tiro salvezza
-// dell'armatura → ferite gravi quando finiscono le Ferite (si tira per ogni
-// ferita in più e vale il risultato peggiore).
+// ferire (F contro R; un 6 è un critico, uno per modello, ma non se serve
+// proprio un 6) → tiro salvezza dell'armatura → ferite gravi quando finiscono
+// le Ferite (si tira per ogni ferita in più e vale il risultato peggiore).
+// Armi avvelenate: con un 6 per colpire la ferita è automatica.
 // Esiti: 0 nessuno, 1 a terra, 2 stordito, 3 fuori combattimento.
 // Non calcolati: incantesimi, abilità, regole speciali non elencate nei
 // flag, colpi automatici contro modelli già a terra o storditi.
@@ -53,13 +54,10 @@ function modificatoreTS(forza) {
 }
 
 // Probabilità di riuscire un tiro di D6 con risultato minimo "serve"
-// (1 fallisce sempre; oltre il 6 serve un 6 e poi 4+, 5+, 6)
+// (1 fallisce sempre; oltre il 6 è impossibile)
 function probD6(serve) {
-    if (serve === null || serve === undefined) return 0;
-    if (serve <= 2) return 5 / 6;
-    if (serve <= 6) return (7 - serve) / 6;
-    if (serve <= 9) return (1 / 6) * ((7 - (serve - 3)) / 6);
-    return 0;
+    if (serve === null || serve === undefined || serve > 6) return 0;
+    return (7 - Math.max(2, serve)) / 6;
 }
 
 // --------------------------------------------------------------------------
@@ -81,26 +79,25 @@ function configurazioniCC(modello) {
     const corpo = oggetti.filter(o => o.tipo === 'corpo');
     const scudo = oggetti.find(o => o.tipo === 'scudo' && o.bonusTS);
     const brocchiere = oggetti.find(o => o.tipo === 'scudo' && o.parata);
-    const unaMano = [...corpo.filter(o => !o.dueMani && !o.coppia), equipMotore[PUGNALE_GRATUITO_ID]];
+    const unaMano = [...corpo.filter(o => !o.dueMani && !o.coppia && !o.esclusiva), equipMotore[PUGNALE_GRATUITO_ID]];
     const configurazioni = [];
+    // Parata: 1 = un tentativo, 2 = si ripete (spada e brocchiere, artigli); due spade non ripetono
     const aggiungi = (armi, descrizione, conScudo, conBrocchiere) => {
         const parataArmi = armi.some(a => a.parata);
-        const parata = conBrocchiere && parataArmi ? 2 : (conBrocchiere || parataArmi ? 1 : 0);
+        const ripete = armi.some(a => a.parataRipetuta) || (conBrocchiere && parataArmi);
+        const parata = ripete ? 2 : (conBrocchiere || parataArmi ? 1 : 0);
         configurazioni.push({ armi, descrizione, scudo: !!conScudo, parata });
     };
-    corpo.filter(o => o.dueMani).forEach(o => aggiungi(Array(A).fill(o), o.nome, false, false));
+    corpo.filter(o => o.dueMani || (o.esclusiva && !o.coppia)).forEach(o => aggiungi(Array(A).fill(o), o.nome, false, false));
     corpo.filter(o => o.coppia).forEach(o => aggiungi(Array(A + 1).fill(o), o.nome + ' (coppia)', false, false));
     unaMano.forEach((principale, i) => {
         // Un'arma sola, con scudo e/o brocchiere nell'altra mano
         const mano = [scudo && 'scudo', brocchiere && 'brocchiere'].filter(Boolean);
         const testo = principale.nome + (mano.length ? ' + ' + mano.join(' e ') : '');
         aggiungi(Array(A).fill(principale), testo, scudo, brocchiere);
-        // Due armi a una mano: +1 attacco con la seconda
-        if (principale.conScudoOSola) return;
+        // Due armi a una mano: +1 attacco con la seconda (con un solo attacco l'ordine non conta)
         unaMano.forEach((seconda, j) => {
-            if (i === j || seconda.conScudoOSola) return;
-            // Con un solo attacco l'ordine delle due armi non conta
-            if (A === 1 && j < i && !unaMano[j].conScudoOSola) return;
+            if (i === j || (A === 1 && j < i)) return;
             aggiungi([...Array(A).fill(principale), seconda], principale.nome + ' + ' + seconda.nome.toLowerCase(), false, false);
         });
     });
@@ -137,24 +134,49 @@ function forzaArma(profilo, arma, primoTurno) {
 // Dati di un colpo: risultati minimi per ferire e per salvarsi, modificatore alle ferite gravi
 function parametriColpo(attaccante, arma, bersaglio, difesaBersaglio, primoTurno) {
     const forza = forzaArma(attaccante.profilo, arma, primoTurno);
-    let serveF = arma.ferisceSempre || serveFerire(forza, bersaglio.profilo.R);
-    if (serveF && arma.bonusFerire) serveF = Math.max(2, serveF - arma.bonusFerire);
-    let serveTS = difesaBersaglio.ts - (arma.pugnale ? 1 : 0);
+    const serveF = serveFerire(forza, bersaglio.profilo.R);
+    let serveTS = difesaBersaglio.ts - (arma.piuUnoTA ? 1 : 0);
     serveTS += modificatoreTS(forza) + (arma.modTS || 0) + (attaccante.modTS || 0);
     const pSalvo = serveTS <= 6 ? (7 - Math.max(2, serveTS)) / 6 : 0;
-    return { forza, serveFerire: serveF, serveTS: serveTS <= 6 ? Math.max(2, serveTS) : null, pSalvo, concussione: !!arma.concussione };
+    return {
+        forza,
+        serveFerire: serveF,
+        serveTS: serveTS <= 6 ? Math.max(2, serveTS) : null,
+        pSalvo,
+        concussione: !!arma.concussione,
+        // Niente critici se per ferire serve un 6 o se l'arma non li causa (cerbottana)
+        critici: !!serveF && serveF < 6 && !arma.maiCritici,
+        veleno: arma.veleno || null
+    };
 }
 
 // Esiti di un colpo a segno: [{ p, ferite, bonusFG, critico }]
 // critico = true se il colpo usa il critico (anche se poi salvato)
-function esitiColpo(par, criticoDisponibile) {
+// quotaSei: probabilità che il tiro per colpire di questo colpo sia stato un 6
+// (conta solo per le armi avvelenate, che con un 6 feriscono in automatico)
+function esitiColpo(par, criticoDisponibile, quotaSei = 0) {
+    if (!par.veleno || quotaSei <= 0) return esitiFerire(par, criticoDisponibile, par.serveFerire);
+    const normali = esitiFerire(par, criticoDisponibile, par.serveFerire);
+    // Loto Nero: ferita automatica, si tira comunque il dado (6 = critico).
+    // Cerbottana: ferita automatica, mai critici.
+    const avvelenati = par.veleno === 'lotoNero'
+        ? esitiFerire({ ...par, critici: true }, criticoDisponibile, 1)
+        : esitiFerire({ ...par, critici: false }, criticoDisponibile, 1);
+    return [
+        ...normali.map(e => ({ ...e, p: e.p * (1 - quotaSei) })),
+        ...avvelenati.map(e => ({ ...e, p: e.p * quotaSei }))
+    ].filter(e => e.p > 1e-12);
+}
+
+// Tiro per ferire con risultato minimo "serve" (1 = ferita automatica)
+function esitiFerire(par, criticoDisponibile, serve) {
     const esiti = [];
-    if (!par.serveFerire) return [{ p: 1, ferite: 0, bonusFG: 0, critico: false }];
+    if (!serve) return [{ p: 1, ferite: 0, bonusFG: 0, critico: false }];
     const pSei = 1 / 6;
-    const pNormale = par.serveFerire <= 5 ? (6 - Math.max(2, par.serveFerire)) / 6 : 0;
-    // Ferita normale (risultati da serveFerire a 5)
+    // Ferita normale: risultati da "serve" a 5 (con la ferita automatica da 1 a 5)
+    const pNormale = serve <= 5 ? (6 - serve) / 6 : 0;
     esiti.push({ p: pNormale * (1 - par.pSalvo), ferite: 1, bonusFG: 0, critico: false });
-    if (criticoDisponibile) {
+    if (criticoDisponibile && par.critici) {
         for (const c of regoleMotore.critici.risultati) {
             const pc = pSei * (c.a - c.da + 1) / 6;
             if (c.ignoraArmatura) {
@@ -192,7 +214,7 @@ function tiroFeriteGravi(bonus, concussione, elmo) {
 // Sequenza di colpi (programmazione dinamica sugli stati del bersaglio)
 // --------------------------------------------------------------------------
 
-// colpi: [{ peso: probabilità (o peso) che il colpo vada a segno, par }]
+// colpi: [{ peso: probabilità che il colpo vada a segno, par, quotaSei: probabilità che sia un 6 per colpire }]
 // Restituisce la distribuzione degli esiti e le ferite attese.
 function sequenzaColpi(colpi, feriteBersaglio, elmo) {
     // Stato: feriteRimaste|criticoUsato|esito|feriteInflitte → probabilità
@@ -204,7 +226,7 @@ function sequenzaColpi(colpi, feriteBersaglio, elmo) {
             const [rimaste, critico, esito, inflitte] = chiave.split('|').map(Number);
             if (colpo.peso < 1) somma(nuovi, chiave, p * (1 - colpo.peso));
             if (colpo.peso <= 0) continue;
-            for (const e of esitiColpo(colpo.par, !critico)) {
+            for (const e of esitiColpo(colpo.par, !critico, colpo.quotaSei || 0)) {
                 const pe = p * colpo.peso * e.p;
                 const nuovoCritico = critico || (e.critico ? 1 : 0);
                 if (e.ferite === 0) {
@@ -263,7 +285,8 @@ function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
     let colpiParati = 0;
 
     if (difB.parata === 0) {
-        accumula(totale, sequenzaColpi(parametri.map(par => ({ peso: pc, par })), bersaglio.profilo.Fe, difB.elmo), 1);
+        const quotaSei = pc > 0 ? (1 / 6) / pc : 0;
+        accumula(totale, sequenzaColpi(parametri.map(par => ({ peso: pc, par, quotaSei })), bersaglio.profilo.Fe, difB.elmo), 1);
     } else {
         // Si para il colpo con il risultato più alto (il primo, a parità): per ogni attacco j
         // e risultato v si calcola il caso "j è il colpo più alto con v".
@@ -276,10 +299,14 @@ function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
                 const pesoMancati = confA.armi.reduce((prod, _, i) => i === j ? prod : prod * (pesi[i] + pMancato), 1);
                 const pScenario = (1 / 6) * pesoMancati;
                 if (pScenario <= 0) continue;
-                let pParata = (v >= 6 || confA.armi[j].nonParabile) ? 0 : (6 - v) / 6;
+                // Non si para un 6, un'arma che non può essere parata o un colpo con Forza doppia
+                const imparabile = v >= 6 || confA.armi[j].nonParabile || parametri[j].forza >= 2 * bersaglio.profilo.F;
+                let pParata = imparabile ? 0 : (6 - v) / 6;
                 if (difB.parata === 2) pParata = 1 - Math.pow(1 - pParata, 2);
                 colpiParati += pScenario * pParata;
-                const altri = parametri.map((par, i) => ({ peso: i === j ? 1 : pesi[i] / (pesi[i] + pMancato), par }));
+                // Quota di 6 per colpire (veleno): j ha proprio v; dopo j i colpi vanno da serve a v
+                const quota = i => (i === j ? (v === 6 ? 1 : 0) : (i > j && v === 6 ? 1 / (v - serve + 1) : 0));
+                const altri = parametri.map((par, i) => ({ peso: i === j ? 1 : pesi[i] / (pesi[i] + pMancato), par, quotaSei: quota(i) }));
                 const senzaJ = altri.filter((_, i) => i !== j);
                 if (pParata > 0) accumula(totale, sequenzaColpi(senzaJ, bersaglio.profilo.Fe, difB.elmo), pScenario * pParata);
                 if (pParata < 1) accumula(totale, sequenzaColpi(altri, bersaglio.profilo.Fe, difB.elmo), pScenario * (1 - pParata));
@@ -325,18 +352,23 @@ function turnoMedio(attaccante, confA, bersaglio, confB) {
 // Tiro
 // --------------------------------------------------------------------------
 
-// opzioni: { lungaGittata, copertura }
+// opzioni: { lungaGittata, copertura, muovere }
+// Armi da lancio: niente penalità per gittata lunga e movimento.
+// Armi "muovi o tira": se il modello ha mosso non tirano.
 function tiro(attaccante, arma, bersaglio, opzioni = {}) {
     const mod = regoleMotore.colpireTiro.modificatori;
     let serve = regoleMotore.colpireTiro.base - attaccante.profilo.AB + (arma.modColpire || 0);
-    if (opzioni.lungaGittata && arma.id !== 'coltelliDaLancio') serve += mod.lungaGittata;
+    if (opzioni.lungaGittata && !arma.daLancio) serve += mod.lungaGittata;
+    if (opzioni.muovere && !arma.daLancio) serve += mod.muovere;
     if (opzioni.copertura) serve += mod.copertura;
     if (bersaglio.grosso) serve += mod.bersaglioGrosso;
-    const pc = attaccante.profilo.AB > 0 ? probD6(serve) : 0;
+    const puoTirare = attaccante.profilo.AB > 0 && !(opzioni.muovere && arma.muoviOTira);
+    const pc = puoTirare ? probD6(serve) : 0;
     const difB = difesa(bersaglio, null, false);
     const par = parametriColpo(attaccante, arma, bersaglio, difB, false);
-    const uno = sequenzaColpi([{ peso: pc, par }], bersaglio.profilo.Fe, difB.elmo);
-    const colpiPerTurno = arma.tiriPerTurno || 1;
+    const quotaSei = pc > 0 ? (1 / 6) / pc : 0;
+    const uno = sequenzaColpi([{ peso: pc, par, quotaSei }], bersaglio.profilo.Fe, difB.elmo);
+    const colpiPerTurno = arma.tiriPerTurno ?? 1;
     return {
         arma,
         serveColpire: serve,

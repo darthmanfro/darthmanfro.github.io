@@ -42,7 +42,8 @@ function tipoDi(banda, tipoId) {
 }
 
 // Oggetti che un tipo di modello può comprare: [{ id, costo, oggetto }]
-// Nella lista della banda il valore è il costo oppure { "costo": n, "soloEroi": true }
+// Nella lista della banda il valore è il costo oppure { "costo": n, "soloEroi": true };
+// "vieta" nel tipo esclude interi tipi di oggetto (es. l'Augure: niente armature né scudi)
 function oggettiAcquistabili(banda, tipo, eroe) {
     if (tipo.animale || !tipo.lista) return [];
     const lista = banda.liste[tipo.lista] || {};
@@ -53,7 +54,7 @@ function oggettiAcquistabili(banda, tipo, eroe) {
             const soloEroi = typeof voce === 'object' && voce.soloEroi;
             return { id, costo, soloEroi, oggetto: Dati.equip[id] };
         })
-        .filter(v => v.oggetto && (eroe || !v.soloEroi));
+        .filter(v => v.oggetto && (eroe || !v.soloEroi) && !(tipo.vieta || []).includes(v.oggetto.tipo));
 }
 
 // Modello per il motore delle probabilità (js/motore.js) da un tipo e dal suo equipaggiamento

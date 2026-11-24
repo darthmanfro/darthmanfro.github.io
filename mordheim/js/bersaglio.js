@@ -15,6 +15,7 @@ let impostazioni = {
     turno: 'media',            // media | primo | successivi
     lungaGittata: false,
     copertura: false,
+    muovere: false,            // il tiratore ha mosso (-1, le armi "muovi o tira" non sparano)
     scheda: 'banda',
     confronto: null,           // vedi js/probabilita.js
     obiettivo: 'equilibrio',   // ottimizzatore: equilibrio | attacco
@@ -84,7 +85,7 @@ function modificaBersaglio(modifica) {
 
 // Opzioni per il motore
 function opzioniCalcolo() {
-    return { turno: impostazioni.turno, lungaGittata: impostazioni.lungaGittata, copertura: impostazioni.copertura };
+    return { turno: impostazioni.turno, lungaGittata: impostazioni.lungaGittata, copertura: impostazioni.copertura, muovere: impostazioni.muovere };
 }
 
 // Menu di scelta del bersaglio (nella testata)
