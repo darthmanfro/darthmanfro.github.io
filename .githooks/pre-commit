@@ -2,6 +2,11 @@
 # Aggiorna js/versione.js con data e ora del commit ("compilazione")
 # e lo aggiunge al commit. Attivazione (una volta per clone):
 #   git config core.hooksPath .githooks
+# I commit che toccano solo mordheim/ (app separata) non cambiano
+# la versione della Tombola.
+if ! git diff --cached --name-only | grep -qv '^mordheim/'; then
+    exit 0
+fi
 BASE="1.4.0"
 TIMBRO=$(date +%Y%m%d.%H%M)
 cat > js/versione.js <<FINE
