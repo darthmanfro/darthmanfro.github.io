@@ -126,6 +126,23 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
     return frontiera(tutti);
 }
 
+// Attacco, resistenza e indice di una banda già composta (per esempio fatta a
+// mano nella scheda Banda), con gli stessi conti delle proposte.
+// unitaElenco: [{ tipoId, numero, equip }]; opzioni come ottimizzaBanda (senza corone)
+function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
+    let attacco = 0, resistenza = 0;
+    for (const u of unitaElenco) {
+        const { tipo } = tipoDi(banda, u.tipoId);
+        const v = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioni);
+        const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
+        const tiroTurno = v.tiro ? v.tiro.fuoriPerTurno : 0;
+        attacco += (v.attacco.pFuori + opzioni.pesoTiro * tiroTurno) * crescita * u.numero;
+        resistenza += Math.min(RESISTENZA_MASSIMA, 1 / Math.max(v.subito.pFuori, 1 / RESISTENZA_MASSIMA)) * crescita * u.numero;
+    }
+    const indice = opzioni.obiettivo === 'attacco' ? attacco : attacco * resistenza;
+    return { attacco, resistenza, indice };
+}
+
 // --------------------------------------------------------------------------
 // Ricerca della composizione
 // --------------------------------------------------------------------------

@@ -268,6 +268,17 @@ const SPIEGAZIONI = {
         ]) + p("Con il bonus campagna, attacco, resistenza e indice comprendono il bonus; la colonna \"Fuori comb. a turno\" delle righe no (è il valore vero di oggi).")
     },
 
+    indiciBanda: {
+        titolo: 'Attacco, resistenza, indice della banda',
+        testo: () => p("Gli stessi valori delle proposte della scheda Ottimizzatore, calcolati sulla banda che hai composto, contro il bersaglio scelto in alto. Valgono le scelte di obiettivo, tiro e campagna dell'Ottimizzatore: così, se cambi a mano modelli o equipaggiamento, vedi subito se la banda migliora o peggiora.")
+            + elenco([
+                '<strong>Attacco</strong>: bersagli messi fuori combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta).',
+                '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 50 per modello).',
+                "<strong>Indice</strong>: attacco × resistenza (o solo l'attacco con l'obiettivo \"Massimo attacco\")."
+            ])
+            + p("Se hai già calcolato le proposte con gli stessi dati, accanto all'indice vedi quello della proposta 1, per confronto.")
+    },
+
     fuoriCorone: {
         titolo: 'Fuori combattimento ogni 100 corone',
         testo: () => p("Fuori combattimento attesi divisi per il costo del gruppo, × 100: quanto rende ogni corona spesa. Utile per confrontare gruppi che costano diversamente (per esempio 10 modelli economici contro 5 costosi).")

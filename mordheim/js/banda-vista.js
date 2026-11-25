@@ -51,6 +51,30 @@ function disegnaRiepilogo(banda) {
         <div class="riepilogo-voce">
             <span class="riepilogo-etichetta">Fuori comb. a turno ${iconaInfo('rendimentoBanda')}</span>
             <span class="riepilogo-valore">${formatta(rendimento.corpo)}${rendimento.tiro > 0 ? ` <small>+ ${formatta(rendimento.tiro)} al tiro</small>` : ''}</span>
+        </div>
+        ${riepilogoIndici(banda)}`;
+}
+
+// Attacco, resistenza e indice come nella scheda Ottimizzatore (stesse scelte
+// di obiettivo, tiro e campagna), con l'indice della proposta migliore se calcolata
+function riepilogoIndici(banda) {
+    const opzioni = { ...opzioniCalcolo(), obiettivo: impostazioni.obiettivo,
+        pesoTiro: Number(impostazioni.pesoTiro), pesoCampagna: Number(impostazioni.pesoCampagna) };
+    const v = valoriBanda(banda, statoBanda.unita, bersaglioCorrente(), opzioni);
+    const migliore = proposte && proposte.length > 0 && chiaveProposte === chiaveCalcolo()
+        ? `<small>proposta 1: ${formatta(proposte[0].indice)}</small>` : '';
+    return `
+        <div class="riepilogo-voce">
+            <span class="riepilogo-etichetta">Attacco</span>
+            <span class="riepilogo-valore">${formatta(v.attacco)}</span>
+        </div>
+        <div class="riepilogo-voce">
+            <span class="riepilogo-etichetta">Resistenza</span>
+            <span class="riepilogo-valore">${formatta(v.resistenza, 1)}</span>
+        </div>
+        <div class="riepilogo-voce">
+            <span class="riepilogo-etichetta">Indice ${iconaInfo('indiciBanda')}</span>
+            <span class="riepilogo-valore">${formatta(v.indice)} ${migliore}</span>
         </div>`;
 }
 
