@@ -63,6 +63,27 @@
     margin-bottom: 12px;
 }
 
+/* La banda fatta a mano, mandata dalla scheda Banda per il confronto */
+.proposta-tua {
+    border-top-color: var(--oro);
+}
+
+.proposta-tua .proposta-testata h3 {
+    color: var(--oro);
+}
+
+.scarto {
+    font-weight: bold;
+}
+
+.scarto.meglio {
+    color: var(--buono);
+}
+
+.scarto.peggio {
+    color: var(--accento);
+}
+
 .proposta-testata {
     display: flex;
     flex-wrap: wrap;

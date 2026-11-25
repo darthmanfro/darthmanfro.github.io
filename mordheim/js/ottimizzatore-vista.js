@@ -58,10 +58,34 @@ function disegnaOttimizzatore() {
     disegnaProposte(banda);
 }
 
+// Opzioni del calcolo: quelle della scheda Probabilità più le scelte dell'Ottimizzatore
+function opzioniOttimizzatore() {
+    return { ...opzioniCalcolo(), obiettivo: impostazioni.obiettivo,
+        pesoTiro: Number(impostazioni.pesoTiro), pesoCampagna: Number(impostazioni.pesoCampagna) };
+}
+
+// Prima proposta, se è stata calcolata con i dati attuali (altrimenti null)
+function propostaMigliore() {
+    return proposte && proposte.length > 0 && chiaveProposte === chiaveCalcolo() ? proposte[0] : null;
+}
+
+// Banda mandata dalla scheda Banda per il confronto, se è della banda aperta e ancora valida
+function bandaInviata(banda) {
+    const b = impostazioni.bandaInviata;
+    const valida = b && b.bandaId === banda.id && Array.isArray(b.unita) && b.unita.every(u => {
+        const t = tipoDi(banda, u.tipoId);
+        return t && Number.isInteger(u.numero) && u.numero >= 1 && Array.isArray(u.equip)
+            && u.equip.every(id => oggettiAcquistabili(banda, t.tipo, t.eroe).some(v => v.id === id));
+    });
+    return valida ? b : null;
+}
+
 function disegnaProposte(banda) {
     const contenitore = document.getElementById('ottimizzatore-proposte');
+    const inviata = bandaInviata(banda);
+    const tua = inviata ? schedaBandaInviata(banda, inviata) : '';
     if (!proposte || chiaveProposte !== chiaveCalcolo()) {
-        contenitore.innerHTML = `
+        contenitore.innerHTML = tua + `
             <p class="nota spiegazione">Per ogni modello si provano tutte le combinazioni di equipaggiamento della lista
             (fino a due armi da corpo a corpo, un'arma da tiro, armatura, scudo o brocchiere, elmo) e poi si cerca la
             composizione con l'indice più alto senza superare le corone. <strong>Attacco</strong>: bersagli messi fuori
@@ -75,10 +99,10 @@ function disegnaProposte(banda) {
         return;
     }
     if (proposte.length === 0) {
-        contenitore.innerHTML = '<p class="problema grave">Con queste corone non si riesce a comporre una banda valida.</p>';
+        contenitore.innerHTML = tua + '<p class="problema grave">Con queste corone non si riesce a comporre una banda valida.</p>';
         return;
     }
-    contenitore.innerHTML = proposte.map((p, i) => `
+    contenitore.innerHTML = tua + proposte.map((p, i) => `
         <article class="proposta">
             <header class="proposta-testata">
                 <h3>Proposta ${i + 1}</h3>
@@ -91,25 +115,86 @@ function disegnaProposte(banda) {
                 <span>Indice <strong>${formatta(p.indice)}</strong></span>
                 ${iconaInfo('valoriProposta')}
             </div>
-            <table class="proposta-unita">
-                <thead><tr><th>Modelli</th><th>Equipaggiamento</th><th>Corone</th><th>Fuori comb. a turno</th></tr></thead>
-                <tbody>
-                    ${p.unita.map(u => {
-                        const { tipo } = tipoDi(banda, u.tipoId);
-                        const costo = costoModello(banda, u);
-                        const equip = tipo.animale ? 'armi naturali'
-                            : ['pugnale', ...u.equip.map(id => Dati.equip[id].nome.toLowerCase())].join(', ');
-                        const tiro = u.tiro > 0 ? ` <span class="nota">+ ${formatta(u.tiro * u.numero)} al tiro</span>` : '';
-                        return `<tr>
-                            <td>${u.numero} × ${escapeHtml(tipo.nome)}</td>
-                            <td>${escapeHtml(equip)}</td>
-                            <td>${u.numero > 1 ? `${costo} × ${u.numero} = ` : ''}${costo * u.numero}</td>
-                            <td>${formatta(u.corpo * u.numero)}${tiro}</td>
-                        </tr>`;
-                    }).join('')}
-                </tbody>
-            </table>
+            ${tabellaUnita(banda, p.unita)}
         </article>`).join('');
+}
+
+// Righe dei modelli: unita = [{ tipoId, numero, equip, corpo, tiro }]
+function tabellaUnita(banda, unita) {
+    return `
+        <table class="proposta-unita">
+            <thead><tr><th>Modelli</th><th>Equipaggiamento</th><th>Corone</th><th>Fuori comb. a turno</th></tr></thead>
+            <tbody>
+                ${unita.map(u => {
+                    const { tipo } = tipoDi(banda, u.tipoId);
+                    const costo = costoModello(banda, u);
+                    const equip = tipo.animale ? 'armi naturali'
+                        : ['pugnale', ...u.equip.map(id => Dati.equip[id].nome.toLowerCase())].join(', ');
+                    const tiro = u.tiro > 0 ? ` <span class="nota">+ ${formatta(u.tiro * u.numero)} al tiro</span>` : '';
+                    return `<tr>
+                        <td>${u.numero} × ${escapeHtml(tipo.nome)}</td>
+                        <td>${escapeHtml(equip)}</td>
+                        <td>${u.numero > 1 ? `${costo} × ${u.numero} = ` : ''}${costo * u.numero}</td>
+                        <td>${formatta(u.corpo * u.numero)}${tiro}</td>
+                    </tr>`;
+                }).join('')}
+            </tbody>
+        </table>`;
+}
+
+// La banda mandata dalla scheda Banda, calcolata come le proposte con i dati attuali
+function schedaBandaInviata(banda, inviata) {
+    const bersaglio = bersaglioCorrente();
+    const v = valoriBanda(banda, inviata.unita, bersaglio, opzioniOttimizzatore());
+    const unita = inviata.unita.map(u => {
+        const { tipo } = tipoDi(banda, u.tipoId);
+        const val = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioniCalcolo());
+        return { ...u, corpo: val.attacco.pFuori, tiro: val.tiro ? val.tiro.fuoriPerTurno : 0 };
+    });
+    const prima = propostaMigliore();
+    let confronto = '';
+    if (prima && prima.indice > 0) {
+        const scarto = (v.indice / prima.indice - 1) * 100;
+        const classe = scarto > 0.05 ? 'scarto meglio' : scarto < -0.05 ? 'scarto peggio' : 'scarto';
+        confronto = `<span class="${classe}">${scarto >= 0 ? '+' : ''}${formatta(scarto, 1)}% rispetto alla proposta 1</span>`;
+    }
+    const problemi = controllaBanda(banda, inviata.unita, statoBanda.corone)
+        .map(p => `<li class="${p.grave ? 'problema grave' : 'problema'}">${escapeHtml(p.testo)}</li>`).join('');
+    return `
+        <article class="proposta proposta-tua">
+            <header class="proposta-testata">
+                <h3>La tua banda ${iconaInfo('bandaInviata')}</h3>
+                <span>${costoTotale(banda, inviata.unita)} corone · ${contaModelli(inviata.unita)} modelli</span>
+                <button type="button" class="btn" data-azione="usaBandaInviata">Rimettila nella scheda Banda</button>
+                <button type="button" class="btn" data-azione="togliBandaInviata">Togli dal confronto</button>
+            </header>
+            ${problemi ? `<ul class="problemi">${problemi}</ul>` : ''}
+            <div class="proposta-valori">
+                <span>Attacco <strong>${formatta(v.attacco)}</strong></span>
+                <span>Resistenza <strong>${formatta(v.resistenza, 1)}</strong></span>
+                <span>Indice <strong>${formatta(v.indice)}</strong></span>
+                ${confronto}
+            </div>
+            ${tabellaUnita(banda, unita)}
+        </article>`;
+}
+
+// Copia la banda della scheda Banda nel confronto e apre l'Ottimizzatore
+function inviaBanda() {
+    impostazioni.bandaInviata = {
+        bandaId: statoBanda.bandaId,
+        unita: statoBanda.unita.map(u => ({ tipoId: u.tipoId, numero: u.numero, equip: [...u.equip] }))
+    };
+    impostazioni.scheda = 'ottimizzatore';
+}
+
+// Rimette la banda del confronto nella scheda Banda (sostituisce quella attuale)
+function usaBandaInviata() {
+    const inviata = bandaInviata(bandaCorrente());
+    if (!inviata) return;
+    statoBanda.unita = inviata.unita.map((u, i) => ({ uid: i + 1, tipoId: u.tipoId, numero: u.numero, equip: [...u.equip] }));
+    statoBanda.prossimoUid = statoBanda.unita.length + 1;
+    impostazioni.scheda = 'banda';
 }
 
 async function avviaOttimizzazione() {
@@ -119,7 +204,7 @@ async function avviaOttimizzazione() {
     const chiave = chiaveCalcolo();
     const barra = () => document.getElementById('avanzamento');
     const risultato = await ottimizzaBanda(bandaCorrente(), bersaglioCorrente(),
-        { ...opzioniCalcolo(), corone: statoBanda.corone, obiettivo: impostazioni.obiettivo, pesoTiro: Number(impostazioni.pesoTiro), pesoCampagna: Number(impostazioni.pesoCampagna) },
+        { ...opzioniOttimizzatore(), corone: statoBanda.corone },
         frazione => { if (barra()) barra().value = frazione; });
     calcoloInCorso = false;
     proposte = risultato;
@@ -144,6 +229,9 @@ function gestisciComandoOttimizzatore(elemento) {
         case 'pesoCampagna': impostazioni.pesoCampagna = Number(elemento.value); return true;
         case 'ottimizza': avviaOttimizzazione(); return true;
         case 'usaProposta': usaProposta(Number(elemento.dataset.indice)); return true;
+        case 'inviaBanda': inviaBanda(); return true;
+        case 'usaBandaInviata': usaBandaInviata(); return true;
+        case 'togliBandaInviata': impostazioni.bandaInviata = null; return true;
         default: return false;
     }
 }

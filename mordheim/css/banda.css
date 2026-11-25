@@ -35,6 +35,10 @@
     color: var(--accento);
 }
 
+.riepilogo-comando {
+    justify-content: center;
+}
+
 .riepilogo meter {
     width: 160px;
     height: 10px;

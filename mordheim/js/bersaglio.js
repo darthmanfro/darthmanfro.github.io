@@ -20,7 +20,8 @@ let impostazioni = {
     confronto: null,           // vedi js/probabilita.js
     obiettivo: 'equilibrio',   // ottimizzatore: equilibrio | attacco
     pesoTiro: 0.5,             // ottimizzatore: peso del tiro rispetto al corpo a corpo
-    pesoCampagna: 0            // ottimizzatore: bonus a chi guadagna esperienza (0 = prima partita)
+    pesoCampagna: 0,           // ottimizzatore: bonus a chi guadagna esperienza (0 = prima partita)
+    bandaInviata: null         // ottimizzatore: { bandaId, unita } mandata dalla scheda Banda per il confronto
 };
 
 let bersaglioInUso = null;     // modello per il motore, rifatto quando cambia il bersaglio

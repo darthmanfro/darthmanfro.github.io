@@ -279,6 +279,18 @@ const SPIEGAZIONI = {
             + p("Se hai già calcolato le proposte con gli stessi dati, accanto all'indice vedi quello della proposta 1, per confronto.")
     },
 
+    bandaInviata: {
+        titolo: 'La tua banda',
+        testo: () => p("È la banda che hai mandato dalla scheda Banda con \"Confronta con le proposte\", calcolata con gli stessi conti delle proposte e con i dati attuali (bersaglio, obiettivo, tiro, campagna): i valori sono direttamente confrontabili. Resta qui finché non la togli o ne mandi un'altra; se poi la modifichi nella scheda Banda, rimandala per aggiornarla.")
+            + p("Perché a volte batte l'Ottimizzatore:")
+            + elenco([
+                "nella rifinitura l'Ottimizzatore dà lo stesso equipaggiamento alle truppe dello stesso tipo, per avere gruppi più semplici da giocare, anche se l'indice cala fino all'1% (e fino a un altro 0,5% quando unisce due gruppi);",
+                'prova solo certe combinazioni di equipaggiamento: al massimo due armi da corpo a corpo e una da tiro a modello;',
+                'la ricerca prova molte bande, ma non tutte: può fermarsi su una buona soluzione senza trovare la migliore.'
+            ])
+            + p("Se la tua banda ha un problema (corone superate, modelli mancanti o di troppo), lo vedi in rosso: in quel caso il confronto non è alla pari.")
+    },
+
     fuoriCorone: {
         titolo: 'Fuori combattimento ogni 100 corone',
         testo: () => p("Fuori combattimento attesi divisi per il costo del gruppo, × 100: quanto rende ogni corona spesa. Utile per confrontare gruppi che costano diversamente (per esempio 10 modelli economici contro 5 costosi).")
