@@ -30,6 +30,9 @@
                 <select id="sceltaBersaglio"></select>
             </label>
             <button type="button" id="btnSvuota" class="btn">Svuota banda</button>
+            <button type="button" id="btnEsporta" class="btn" title="Scarica un file .json con bande, impostazioni e proposte">Esporta</button>
+            <button type="button" id="btnImporta" class="btn" title="Ricarica un file .json esportato">Importa</button>
+            <input type="file" id="fileImporta" class="nascosto" accept=".json,application/json">
             <a class="btn btn-link" href="istruzioni.html">Istruzioni</a>
         </div>
     </header>
@@ -92,6 +95,7 @@
     <script src="./js/probabilita.js"></script>  <!-- Scheda Probabilità -->
     <script src="./js/ottimizzatore.js"></script>        <!-- Ricerca della banda migliore -->
     <script src="./js/ottimizzatore-vista.js"></script>  <!-- Scheda Ottimizzatore -->
+    <script src="./js/esporta.js"></script>      <!-- Esporta e importa in un file .json -->
     <script src="./js/app.js"></script>          <!-- Avvio e comandi -->
 </body>
 

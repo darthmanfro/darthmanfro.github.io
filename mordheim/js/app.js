@@ -118,6 +118,7 @@ function collegaComandi() {
         aggiornaTutto();
     });
     document.getElementById('btnSvuota').addEventListener('click', premiSvuota);
+    collegaEsportaImporta();
     collegaSpiegazioni();
     document.addEventListener('click', gestisciClic);
     document.addEventListener('change', gestisciCambio);
