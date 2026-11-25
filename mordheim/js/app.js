@@ -134,6 +134,7 @@ async function avvia() {
     }
     impostaDatiMotore(Dati.regole, Dati.equip);
     caricaImpostazioni();
+    caricaProposte();
     if (!SCHEDE[impostazioni.scheda]) impostazioni.scheda = 'banda';
     apriBanda(ultimaBandaSalvata() || Dati.indice[0].id);
     riempiSceltaBanda();

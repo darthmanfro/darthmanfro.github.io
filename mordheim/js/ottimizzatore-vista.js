@@ -8,6 +8,29 @@ let proposte = null;           // ultime proposte calcolate
 let chiaveProposte = '';       // dati con cui sono state calcolate
 let calcoloInCorso = false;
 
+// Le ultime proposte restano salvate nel browser: riaprendo la pagina si ritrovano
+// (si mostrano solo se banda, corone, bersaglio e opzioni sono ancora gli stessi)
+const CHIAVE_PROPOSTE = 'mordheim-proposte-v1';
+
+function salvaProposte() {
+    try {
+        localStorage.setItem(CHIAVE_PROPOSTE, JSON.stringify({ chiave: chiaveProposte, proposte }));
+    } catch (e) { /* si lavora senza salvataggio */ }
+}
+
+function caricaProposte() {
+    try {
+        const salvate = JSON.parse(localStorage.getItem(CHIAVE_PROPOSTE));
+        const banda = Dati.bande[JSON.parse(salvate.chiave)[0]];
+        const valide = banda && Array.isArray(salvate.proposte) && salvate.proposte.every(p =>
+            Array.isArray(p.unita) && p.unita.every(u => tipoDi(banda, u.tipoId) && u.equip.every(id => Dati.equip[id])));
+        if (valide) {
+            proposte = salvate.proposte;
+            chiaveProposte = salvate.chiave;
+        }
+    } catch (e) { /* nessuna proposta salvata, o salvataggio rovinato */ }
+}
+
 const OBIETTIVI = {
     equilibrio: 'Equilibrio: attacco × resistenza',
     attacco: 'Massimo attacco'
@@ -209,6 +232,7 @@ async function avviaOttimizzazione() {
     calcoloInCorso = false;
     proposte = risultato;
     chiaveProposte = chiave;
+    salvaProposte();
     aggiornaTutto();
 }
 
