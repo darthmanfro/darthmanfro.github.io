@@ -54,8 +54,10 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
    a terra, stordito o fuori combattimento (`pAbbattuto`, `abbattutiPerTurno` in
    js/motore.js): per l'utente conta ferire, quale dei tre esiti esca è
    fortuna e chi è a terra o stordito lo finisce un altro modello (p. 38).
-   Conseguenza: lo stordimento in più di mazze/martelli e l'elmo non cambiano
-   gli abbattuti. *attacco* = probabilità di abbattere il bersaglio in un
+   Gli esiti sono pesati poco diversi (`PESI_ESITI` in js/motore.js: fuori 1,
+   stordito 0,9, a terra 0,8, scelti con l'utente il 2026-11-26) per premiare
+   un po' chi fa più male: così contano lo stordimento di mazze/martelli e
+   l'elmo (con pesi uguali non contavano niente). *attacco* = probabilità di abbattere il bersaglio in un
    turno + `pesoTiro` × abbattuti al tiro; *pAbbattuto* = probabilità di essere
    abbattuto in un turno di attacchi del bersaglio; *resistenza* = 1 / pAbbattuto, al massimo
    `TURNI_PARTITA` (10). Il bonus campagna moltiplica attacco e resistenza dei
@@ -74,8 +76,12 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
      quadrato dei modelli → porta quasi sempre al massimo dei modelli (era il
      difetto segnalato dall'utente). Senza rotta.
    - `attacco`: solo attacco totale.
-4. **Ricerca**: ricottura simulata (8 partenze × 6000 passi, seme fisso →
-   risultati ripetibili), poi `rifinisci`: stesso equipaggiamento per le truppe
+4. **Ricerca**: ricottura simulata (16 partenze × 15000 passi, seme fisso →
+   risultati ripetibili; mosse: aggiungi, togli, cambia un modello, cambia
+   l'equipaggiamento di tutto un gruppo), poi `salitaLocale` (prova tutte le
+   modifiche vicine: un modello in più o in meno, un gruppo intero con un altro
+   equipaggiamento, un modello che diventa un altro; tiene la migliore finché
+   migliora), poi `rifinisci`: stesso equipaggiamento per le truppe
    dello stesso tipo (se l'indice cala < 1%), toglie i modelli che valgono
    meno dello 0,5% dell'indice, aggiunge modelli con le corone avanzate solo
    se migliorano l'indice di almeno lo 0,5% (`SOGLIA_MENO_MODELLI`).
@@ -93,7 +99,9 @@ entrambi i posti.
 
 - Ottimizzatore senza browser:
   `node mordheim/prove/ottimizza.js skaven,posseduti duelli umano`
-  (bande vuote o `tutte` = tutte; obiettivo `duelli|massa|attacco`; ~0,5 s a banda).
+  (bande vuote o `tutte` = tutte; obiettivo `duelli|massa|attacco`; ~3 s a banda).
+  La ricerca non è perfetta: con una ricerca molto più lunga si trova al
+  massimo un 2-3% in più (il terreno è a scatti per la soglia di rotta).
 - Pagina: aprire `file:///.../mordheim/index.html` con Edge headless
   (`"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --virtual-time-budget=5000 --dump-dom <url>`)
   e controllare che `#errore-caricamento` resti `nascosto`.
@@ -104,16 +112,17 @@ Le proposte salvate hanno nella chiave `VERSIONE_CALCOLO` (in
 proposte vecchie non si mostrano come attuali.
 
 Risultati di riferimento (bersaglio "umano", corone della banda, obiettivo
-`duelli`, calcolo versione 3): Reikland 10 modelli, Middenheim 11, Marienburg
-13, Posseduti 9 (1 Posseduto, 3 Uominibestia), Cacciatori 12, Sorelle 13,
-Nonmorti 14, Skaven 20 (12 Ratti giganti, niente Rattorco). Con `massa` quasi tutte al massimo.
+`duelli`, calcolo versione 4, pesi 1/0,9/0,8): Reikland 10 modelli (indice
+10,30), Middenheim 11 (10,78), Marienburg 13 (12,20), Posseduti 9 (10,64),
+Cacciatori 12 (9,45), Sorelle 15 (12,63), Nonmorti 13 (9,68), Skaven 20 (11,02;
+10 Ratti giganti, niente Rattorco). Con `massa` quasi tutte al massimo.
 
 Confronto con liste di giocatori trovate sul web (2026-11-26; Dakka Dakka e
 Reddit non si leggono in automatico): Skaven del forum EEFL (13 modelli, eroi
-con spade) −5% rispetto alla proposta 1; Middenheim del blog Mordheim Treasure
-Hunters (13 modelli con alabarda, trombone, archi) −15%; Posseduti "tanti
+con spade) −10% rispetto alla proposta 1; Middenheim del blog Mordheim Treasure
+Hunters (13 modelli con alabarda, trombone, archi) −18%; Posseduti "tanti
 cultisti" del wiki 2d4chan (Magister in armatura pesante + 10 cultisti con
-ascia e scudo) −31% (calcolo versione 3). Le liste dei giocatori non sono per
+ascia e scudo) −32% (calcolo versione 4). Le liste dei giocatori non sono per
 forza migliori: servono a capire dove guardare. I giocatori comprano oggetti che rendono poco nei conti
 (alabarda, trombone, archi senza arma da mischia, armature pesanti) e
 considerano cose non calcolate (malapietra, incantesimi, movimento).

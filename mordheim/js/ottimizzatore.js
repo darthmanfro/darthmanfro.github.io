@@ -43,8 +43,8 @@
 const TURNI_PARTITA = 10;                 // durata di una partita nei conti
 const RESISTENZA_MASSIMA = TURNI_PARTITA;
 const QUOTA_ROTTA = 0.25;                // test di rotta con il 25% dei modelli fuori combattimento
-const PASSI_RICERCA = 6000;
-const PARTENZE = 8;
+const PASSI_RICERCA = 15000;
+const PARTENZE = 16;
 const SOGLIA_MENO_MODELLI = 0.005;   // un modello in più deve migliorare l'indice di almeno lo 0,5%
 
 // Probabilità di superare un test di Disciplina (2D6 <= Cd)
@@ -297,6 +297,10 @@ function mossa(stato, banda, candidati, tipi, casuale) {
         const n = nuovo.filter(x => x.tipoId === u.tipoId).reduce((s, x) => s + x.n, 0);
         if (tipo.min && n <= tipo.min) return null;
         u.n -= 1;
+    } else if (scelta < 0.75) {
+        // Tutto un gruppo cambia equipaggiamento insieme (un modello alla volta servirebbero molti passi)
+        const u = unaQualsiasi();
+        u.c = candidatoACaso(u.tipoId);
     } else if (scelta < 0.9) {
         const u = unaQualsiasi();
         if (u.n > 1) {   // un solo modello del gruppo cambia equipaggiamento
@@ -327,11 +331,52 @@ function statoIniziale(banda) {
     return compatta(stato);
 }
 
-// Rifinitura: le truppe dello stesso tipo prendono lo stesso equipaggiamento (gruppi
-// più semplici da giocare) se l'indice cala meno dell'1%; poi si spendono le corone
-// avanzate aggiungendo il modello che migliora di più.
-function rifinisci(stato, banda, candidati, opzioni) {
+// Salita locale: prova tutte le modifiche vicine e tiene la migliore, finché ne trova
+// una che migliora: un gruppo intero cambia equipaggiamento, oppure un modello di un
+// gruppo diventa un altro tipo o un altro equipaggiamento (anche dello stesso tipo).
+// Le truppe vanno trattate a gruppi: un modello alla volta la ricerca casuale ci mette troppo.
+function salitaLocale(stato, banda, candidati, opzioni, tipi) {
     let attuale = compatta(stato);
+    let valoreAttuale = valutaStato(attuale, candidati, opzioni).indice;
+    for (let giri = 0; giri < 50; giri++) {
+        let migliore = null;
+        const prova = nuovo => {
+            const s = compatta(nuovo);
+            if (!statoValido(s, banda, candidati, opzioni.corone, true)) return;
+            const v = valutaStato(s, candidati, opzioni).indice;
+            if (v > valoreAttuale * (1 + 1e-9) && (!migliore || v > migliore.v)) migliore = { s, v };
+        };
+        // Un modello in più, di qualsiasi tipo ed equipaggiamento
+        for (const t of tipi) {
+            candidati[t.tipo.id].forEach((_, c) => prova([...attuale, { tipoId: t.tipo.id, eroe: t.eroe, c, n: 1 }]));
+        }
+        attuale.forEach((u, i) => {
+            // Un modello in meno
+            prova(attuale.map((x, j) => (j === i ? { ...x, n: x.n - 1 } : x)));
+            // Tutto il gruppo con un altro equipaggiamento
+            candidati[u.tipoId].forEach((_, c) => {
+                if (c !== u.c) prova(attuale.map((x, j) => (j === i ? { ...x, c } : x)));
+            });
+            // Un modello del gruppo diventa un altro modello (tipo ed equipaggiamento qualsiasi)
+            const senzaUno = attuale.map((x, j) => (j === i ? { ...x, n: x.n - 1 } : x));
+            for (const t of tipi) {
+                candidati[t.tipo.id].forEach((_, c) => {
+                    if (t.tipo.id !== u.tipoId || c !== u.c) prova([...senzaUno, { tipoId: t.tipo.id, eroe: t.eroe, c, n: 1 }]);
+                });
+            }
+        });
+        if (!migliore) break;
+        attuale = migliore.s;
+        valoreAttuale = migliore.v;
+    }
+    return attuale;
+}
+
+// Rifinitura: dopo la salita locale, le truppe dello stesso tipo prendono lo stesso
+// equipaggiamento (gruppi più semplici da giocare) se l'indice cala meno dell'1%; poi
+// si tolgono i modelli inutili e si spendono le corone avanzate.
+function rifinisci(stato, banda, candidati, opzioni, tipi) {
+    let attuale = salitaLocale(stato, banda, candidati, opzioni, tipi);
     const valore = s => valutaStato(s, candidati, opzioni).indice;
     const tipiTruppa = [...new Set(attuale.filter(u => !u.eroe).map(u => u.tipoId))];
     for (const tipoId of tipiTruppa) {
@@ -442,7 +487,7 @@ async function ottimizzaBanda(banda, bersaglio, opzioniScelte, avanzamento = () 
             }
         }
         if (statoValido(migliore.stato, banda, candidati, opzioni.corone, true)) {
-            const rifinito = rifinisci(migliore.stato, banda, candidati, opzioni);
+            const rifinito = rifinisci(migliore.stato, banda, candidati, opzioni, tipi);
             trovate.set(firma(rifinito, candidati), { stato: rifinito, valore: valutaStato(rifinito, candidati, opzioni) });
         }
     }
