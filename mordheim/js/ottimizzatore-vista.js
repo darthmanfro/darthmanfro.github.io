@@ -32,7 +32,8 @@ function caricaProposte() {
 }
 
 const OBIETTIVI = {
-    equilibrio: 'Equilibrio: attacco × resistenza',
+    duelli: 'Uno contro uno: bersagli abbattuti prima di cadere',
+    massa: 'Massa: attacco totale × resistenza totale (premia il numero)',
     attacco: 'Massimo attacco'
 };
 const PESI_CAMPAGNA = {
@@ -114,8 +115,10 @@ function disegnaProposte(banda) {
             composizione con l'indice più alto senza superare le corone. <strong>Attacco</strong>: bersagli messi fuori
             combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta). <strong>Resistenza</strong>:
             turni di attacchi del bersaglio che servono in media per mettere fuori combattimento ogni modello, sommati.
-            <strong>Equilibrio</strong> moltiplica i due valori: conta quanto colpisci e quanto a lungo resti in campo,
-            per questo spesso conviene avere tanti modelli. <strong>Campagna</strong>: eroi e truppa che guadagnano
+            <strong>Uno contro uno</strong> (predefinito): per ogni modello attacco × resistenza, cioè quanti bersagli
+            mette fuori combattimento prima di finirci lui; si sommano. Un modello forte vale quanto più modelli deboli
+            dello stesso prezzo, e a parità di risultato vince la banda con meno modelli. <strong>Massa</strong> moltiplica
+            attacco totale e resistenza totale: cresce col quadrato dei modelli e porta quasi sempre al massimo. <strong>Campagna</strong>: eroi e truppa che guadagnano
             esperienza cresceranno partita dopo partita, gli animali (Ratti giganti, Mastini, Zombi, Lupi Neri...) no
             e non possono comprare armi; con il bonus campagna i primi valgono di più (attacco, resistenza e indice
             delle proposte lo comprendono, i fuori combattimento a turno delle righe no).</p>`;

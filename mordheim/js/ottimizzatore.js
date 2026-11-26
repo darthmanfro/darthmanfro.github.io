@@ -11,10 +11,18 @@
 //    turno (corpo a corpo + tiro col suo peso); resistenza = turni di
 //    attacchi del bersaglio che servono in media per metterlo fuori
 //    combattimento (1 / probabilità, al massimo 50).
-// 3. Indice della banda (obiettivo "equilibrio"): attacco totale ×
-//    resistenza totale, come nella legge di Lanchester: conta sia quanto
-//    colpisci sia quanto a lungo resti in campo. Con l'obiettivo
-//    "attacco" conta solo l'attacco totale.
+// 3. Indice della banda, secondo l'obiettivo:
+//    - "duelli" (predefinito): somma per ogni modello di attacco ×
+//      resistenza = bersagli che il modello mette fuori combattimento, in
+//      media, prima di finirci lui, combattendo uno contro uno come in
+//      Mordheim. Un modello forte vale quanto più modelli deboli che
+//      costano uguale: il numero di modelli non è premiato di per sé.
+//    - "massa": attacco totale × resistenza totale (legge quadratica di
+//      Lanchester). Cresce col quadrato dei modelli: premia sempre il
+//      numero e porta quasi sempre al massimo di modelli.
+//    - "attacco": conta solo l'attacco totale.
+//    A parità di risultato (scarto sotto SOGLIA_MENO_MODELLI) si
+//    preferisce la banda con meno modelli.
 //    Opzione campagna: i modelli che guadagnano esperienza (eroi e truppa non
 //    animale) hanno attacco e resistenza aumentati della percentuale scelta,
 //    perché cresceranno; gli animali (Ratti giganti, Mastini, Zombi...) no.
@@ -26,6 +34,14 @@
 const RESISTENZA_MASSIMA = 50;
 const PASSI_RICERCA = 6000;
 const PARTENZE = 8;
+const SOGLIA_MENO_MODELLI = 0.005;   // un modello in più deve migliorare l'indice di almeno lo 0,5%
+
+// Indice di una banda dai suoi totali: { attacco, resistenza, duelli }
+function indiceObiettivo(obiettivo, totali) {
+    if (obiettivo === 'attacco') return totali.attacco;
+    if (obiettivo === 'massa') return totali.attacco * totali.resistenza;
+    return totali.duelli;
+}
 
 const pausa = () => new Promise(r => setTimeout(r, 0));
 
@@ -74,11 +90,13 @@ function combinazioniCorpo(acquistabili) {
     return combinazioni;
 }
 
-// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, corpo, tiro }]
-// attacco e resistenza comprendono il bonus campagna; corpo e tiro no.
+// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, duello, corpo, tiro }]
+// attacco, resistenza e duello comprendono il bonus campagna (una volta sola
+// nel duello); corpo e tiro no.
 async function candidatiDelTipo(banda, tipo, eroe, bersaglio, opzioni) {
     const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
-    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: c.resistenza * crescita });
+    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: c.resistenza * crescita,
+        duello: c.attacco * c.resistenza * crescita });
     return (await candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni)).map(conCrescita);
 }
 
@@ -130,16 +148,19 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
 // mano nella scheda Banda), con gli stessi conti delle proposte.
 // unitaElenco: [{ tipoId, numero, equip }]; opzioni come ottimizzaBanda (senza corone)
 function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
-    let attacco = 0, resistenza = 0;
+    let attacco = 0, resistenza = 0, duelli = 0;
     for (const u of unitaElenco) {
         const { tipo } = tipoDi(banda, u.tipoId);
         const v = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioni);
         const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
         const tiroTurno = v.tiro ? v.tiro.fuoriPerTurno : 0;
-        attacco += (v.attacco.pFuori + opzioni.pesoTiro * tiroTurno) * crescita * u.numero;
-        resistenza += Math.min(RESISTENZA_MASSIMA, 1 / Math.max(v.subito.pFuori, 1 / RESISTENZA_MASSIMA)) * crescita * u.numero;
+        const att = v.attacco.pFuori + opzioni.pesoTiro * tiroTurno;
+        const res = Math.min(RESISTENZA_MASSIMA, 1 / Math.max(v.subito.pFuori, 1 / RESISTENZA_MASSIMA));
+        attacco += att * crescita * u.numero;
+        resistenza += res * crescita * u.numero;
+        duelli += att * res * crescita * u.numero;
     }
-    const indice = opzioni.obiettivo === 'attacco' ? attacco : attacco * resistenza;
+    const indice = indiceObiettivo(opzioni.obiettivo, { attacco, resistenza, duelli });
     return { attacco, resistenza, indice };
 }
 
@@ -149,15 +170,16 @@ function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
 
 // Stato: [{ tipoId, eroe, c (indice del candidato), n }]
 function valutaStato(stato, candidati, obiettivo) {
-    let attacco = 0, resistenza = 0, costo = 0, modelli = 0;
+    let attacco = 0, resistenza = 0, duelli = 0, costo = 0, modelli = 0;
     for (const u of stato) {
         const c = candidati[u.tipoId][u.c];
         attacco += c.attacco * u.n;
         resistenza += c.resistenza * u.n;
+        duelli += c.duello * u.n;
         costo += c.costo * u.n;
         modelli += u.n;
     }
-    const indice = obiettivo === 'attacco' ? attacco : attacco * resistenza;
+    const indice = indiceObiettivo(obiettivo, { attacco, resistenza, duelli });
     return { attacco, resistenza, costo, modelli, indice };
 }
 
@@ -268,7 +290,19 @@ function rifinisci(stato, banda, candidati, opzioni) {
             }
         }
     }
-    // Corone avanzate
+    // Meno modelli a parità di risultato: si tolgono quelli che valgono meno dello 0,5% dell'indice
+    for (let tolto = true; tolto;) {
+        tolto = false;
+        let migliore = null;
+        attuale.forEach((u, i) => {
+            const prova = compatta(attuale.map((x, j) => (j === i ? { ...x, n: x.n - 1 } : x)));
+            if (!statoValido(prova, banda, candidati, opzioni.corone, true)) return;
+            const v = valore(prova);
+            if (v >= valore(attuale) * (1 - SOGLIA_MENO_MODELLI) && (!migliore || v > migliore.v)) migliore = { prova, v };
+        });
+        if (migliore) { attuale = migliore.prova; tolto = true; }
+    }
+    // Corone avanzate: un modello in più solo se migliora l'indice di almeno lo 0,5%
     for (let giri = 0; giri < 20; giri++) {
         let migliore = null;
         for (const tipo of [...banda.eroi, ...banda.truppe]) {
@@ -278,7 +312,7 @@ function rifinisci(stato, banda, candidati, opzioni) {
                 const prova = compatta([...copiaStato(attuale), { tipoId: tipo.id, eroe, c, n: 1 }]);
                 if (!statoValido(prova, banda, candidati, opzioni.corone, true)) return;
                 const v = valore(prova);
-                if (v > valore(attuale) + 1e-9 && (!migliore || v > migliore.v)) migliore = { prova, v };
+                if (v > valore(attuale) * (1 + SOGLIA_MENO_MODELLI) && (!migliore || v > migliore.v)) migliore = { prova, v };
             });
         }
         if (!migliore) break;
@@ -291,7 +325,7 @@ function firma(stato, candidati) {
     return stato.map(u => `${u.n}x${u.tipoId}:${candidati[u.tipoId][u.c].equip.slice().sort().join('+')}`).sort().join('|');
 }
 
-// opzioni: { corone, obiettivo: 'equilibrio'|'attacco', pesoTiro, pesoCampagna, turno, lungaGittata, copertura, muovere }
+// opzioni: { corone, obiettivo: 'duelli'|'massa'|'attacco', pesoTiro, pesoCampagna, turno, lungaGittata, copertura, muovere }
 // avanzamento(frazione): chiamata durante il calcolo
 // Restituisce fino a 3 proposte diverse, la migliore per prima:
 // [{ unita: [{ tipoId, numero, equip }], attacco, resistenza, costo, modelli, indice }]
@@ -340,8 +374,11 @@ async function ottimizzaBanda(banda, bersaglio, opzioni, avanzamento = () => {})
     }
     avanzamento(1);
 
+    // La migliore per prima; se due sono quasi pari, prima quella con meno modelli
+    const quasiPari = (a, b) => Math.abs(a.indice - b.indice) <= SOGLIA_MENO_MODELLI * Math.max(a.indice, b.indice);
     return [...trovate.values()]
-        .sort((a, b) => b.valore.indice - a.valore.indice)
+        .sort((a, b) => (quasiPari(a.valore, b.valore) && a.valore.modelli !== b.valore.modelli
+            ? a.valore.modelli - b.valore.modelli : b.valore.indice - a.valore.indice))
         .slice(0, 3)
         .map(({ stato, valore }) => ({
             ...valore,

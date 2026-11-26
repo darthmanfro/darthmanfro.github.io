@@ -66,6 +66,7 @@ function importa(contenuto) {
     if (contenuto.impostazioni && typeof contenuto.impostazioni === 'object') {
         impostazioni = { ...impostazioni, ...contenuto.impostazioni };
         if (!datiBersaglio(impostazioni.bersaglio)) impostazioni.bersaglio = 'p:umano';
+        controllaObiettivo();
         if (!SCHEDE[impostazioni.scheda]) impostazioni.scheda = 'banda';
         bersaglioInUso = null;
         salvaImpostazioni();

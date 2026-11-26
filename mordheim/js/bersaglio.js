@@ -18,7 +18,7 @@ let impostazioni = {
     muovere: false,            // il tiratore ha mosso (-1, le armi "muovi o tira" non sparano)
     scheda: 'banda',
     confronto: null,           // vedi js/probabilita.js
-    obiettivo: 'equilibrio',   // ottimizzatore: equilibrio | attacco
+    obiettivo: 'duelli',       // ottimizzatore: duelli | massa | attacco (vedi OBIETTIVI)
     pesoTiro: 0.5,             // ottimizzatore: peso del tiro rispetto al corpo a corpo
     pesoCampagna: 0,           // ottimizzatore: bonus a chi guadagna esperienza (0 = prima partita)
     bandaInviata: null         // ottimizzatore: { bandaId, unita } mandata dalla scheda Banda per il confronto
@@ -38,6 +38,12 @@ function caricaImpostazioni() {
         if (salvate && typeof salvate === 'object') impostazioni = { ...impostazioni, ...salvate };
     } catch (e) { /* impostazioni predefinite */ }
     if (!datiBersaglio(impostazioni.bersaglio)) impostazioni.bersaglio = 'p:umano';
+    controllaObiettivo();
+}
+
+// Obiettivo sconosciuto (per esempio il vecchio "equilibrio", ora "massa") → quello predefinito
+function controllaObiettivo() {
+    if (!['duelli', 'massa', 'attacco'].includes(impostazioni.obiettivo)) impostazioni.obiettivo = 'duelli';
 }
 
 // Dati del bersaglio indicato: { nome, profilo, equip, animale, grosso } oppure null

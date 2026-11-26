@@ -239,7 +239,8 @@ const SPIEGAZIONI = {
     obiettivo: {
         titolo: "Obiettivo dell'ottimizzatore",
         testo: () => elenco([
-            "<strong>Equilibrio: attacco × resistenza</strong> (predefinito). <em>Attacco</em> = bersagli messi fuori combattimento in un turno da tutta la banda; <em>resistenza</em> = somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento. Il prodotto (come nella legge di Lanchester) premia sia quanto colpisci sia quanto resti in campo: per questo spesso conviene avere molti modelli.",
+            "<strong>Uno contro uno: bersagli abbattuti prima di cadere</strong> (predefinito). Per ogni modello: <em>attacco</em> (bersagli messi fuori combattimento in un turno) × <em>resistenza</em> (turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento) = quanti bersagli abbatte, in media, prima di essere abbattuto. Si sommano su tutta la banda. In Mordheim si combatte quasi sempre modello contro modello: un modello che vale il doppio in attacco e in resistenza abbatte quattro volte tanto, quindi la qualità conta quanto il numero. Un modello in più si aggiunge solo se migliora l'indice di almeno lo 0,5%, e a parità di risultato si propone la banda con meno modelli.",
+            "<strong>Massa: attacco totale × resistenza totale</strong> (legge quadratica di Lanchester, la scelta che c'era prima). Cresce con il quadrato del numero di modelli: premia sempre la quantità e porta quasi sempre al massimo dei modelli, anche con modelli scarsi.",
             "<strong>Massimo attacco</strong>: conta solo quanti bersagli metti fuori combattimento a turno; la resistenza non conta."
         ]) + p("L'ottimizzatore prova per ogni tipo di modello tutte le combinazioni di equipaggiamento della lista, scarta quelle battute da altre su costo, attacco e resistenza, poi cerca la composizione migliore senza superare le corone e rispettando capo, limiti per tipo, 6 eroi e modelli massimi.")
     },
@@ -264,7 +265,7 @@ const SPIEGAZIONI = {
         testo: () => elenco([
             '<strong>Attacco</strong>: bersagli messi fuori combattimento in un turno da tutta la proposta, ognuno contro un bersaglio diverso (con il tiro pesato secondo la scelta).',
             '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 50 per modello).',
-            "<strong>Indice</strong>: attacco × resistenza (o solo l'attacco con l'obiettivo \"Massimo attacco\"); è il numero che l'ottimizzatore rende più alto possibile."
+            "<strong>Indice</strong>: con <em>Uno contro uno</em> la somma, modello per modello, di attacco × resistenza (bersagli abbattuti prima di cadere); con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco; è il numero che l'ottimizzatore rende più alto possibile."
         ]) + p("Con il bonus campagna, attacco, resistenza e indice comprendono il bonus; la colonna \"Fuori comb. a turno\" delle righe no (è il valore vero di oggi).")
     },
 
@@ -274,7 +275,7 @@ const SPIEGAZIONI = {
             + elenco([
                 '<strong>Attacco</strong>: bersagli messi fuori combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta).',
                 '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 50 per modello).',
-                "<strong>Indice</strong>: attacco × resistenza (o solo l'attacco con l'obiettivo \"Massimo attacco\")."
+                "<strong>Indice</strong>: con <em>Uno contro uno</em> la somma, modello per modello, di attacco × resistenza (bersagli abbattuti prima di cadere); con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco."
             ])
             + p("Se hai già calcolato le proposte con gli stessi dati, accanto all'indice vedi quello della proposta 1, per confronto.")
     },
@@ -285,6 +286,7 @@ const SPIEGAZIONI = {
             + p("Perché a volte batte l'Ottimizzatore:")
             + elenco([
                 "nella rifinitura l'Ottimizzatore dà lo stesso equipaggiamento alle truppe dello stesso tipo, per avere gruppi più semplici da giocare, anche se l'indice cala fino all'1% (e fino a un altro 0,5% quando unisce due gruppi);",
+                "toglie i modelli che pesano meno dello 0,5% dell'indice e ne aggiunge solo se lo migliorano almeno dello 0,5%: preferisce meno modelli a parità di risultato;",
                 'prova solo certe combinazioni di equipaggiamento: al massimo due armi da corpo a corpo e una da tiro a modello;',
                 'la ricerca prova molte bande, ma non tutte: può fermarsi su una buona soluzione senza trovare la migliore.'
             ])
