@@ -7,10 +7,13 @@
 //    equipaggiamento (fino a 2 armi da corpo a corpo, un'arma da tiro,
 //    armatura, scudo o brocchiere, elmo) e si tengono solo quelle che
 //    nessun'altra batte insieme su costo, attacco e resistenza.
-// 2. Valore di un modello: attacco = bersagli messi fuori combattimento a
-//    turno (corpo a corpo + tiro col suo peso); pFuori = probabilità di
-//    finire fuori combattimento in un turno di attacchi del bersaglio;
-//    resistenza = 1 / pFuori, al massimo TURNI_PARTITA (una partita non
+// 2. Valore di un modello. "Abbattuto" = a terra, stordito o fuori
+//    combattimento: quale dei tre esca è fortuna, e chi è a terra o stordito
+//    viene finito facilmente da un altro modello (vedi js/motore.js).
+//    attacco = bersagli abbattuti a turno (corpo a corpo + tiro col suo
+//    peso); pAbbattuto = probabilità di essere abbattuto in un turno di
+//    attacchi del bersaglio;
+//    resistenza = 1 / pAbbattuto, al massimo TURNI_PARTITA (una partita non
 //    dura di più).
 // 3. Indice della banda, secondo l'obiettivo:
 //    - "duelli" (predefinito): bersagli abbattuti in una partita di
@@ -56,17 +59,17 @@ function cdComandante(banda) {
     return capo ? capo.profilo.Cd : 7;
 }
 
-// Probabilità di sopravvivere t turni: vivo[t] = (1 - pFuori)^t, t = 0..TURNI_PARTITA
-function sopravvivenza(pFuori) {
+// Probabilità di sopravvivere t turni: vivo[t] = (1 - pAbbattuto)^t, t = 0..TURNI_PARTITA
+function sopravvivenza(pAbbattuto) {
     const vivo = [1];
-    for (let t = 1; t <= TURNI_PARTITA; t++) vivo.push(vivo[t - 1] * (1 - pFuori));
+    for (let t = 1; t <= TURNI_PARTITA; t++) vivo.push(vivo[t - 1] * (1 - pAbbattuto));
     return vivo;
 }
 
 // Bersagli abbattuti in media in una partita, uno contro uno, con il test di rotta.
 // gruppi: [{ attacco (a turno), vivo (vedi sopravvivenza), n }]; cd: Disciplina del comandante.
-// Ogni modello combatte finché non è fuori combattimento. Dalla fine del turno in cui
-// la banda ha almeno il 25% dei modelli fuori combattimento, all'inizio di ogni turno
+// Ogni modello combatte finché non è abbattuto. Dalla fine del turno in cui la banda
+// ha almeno il 25% dei modelli abbattuti (contati come fuori combattimento), all'inizio di ogni turno
 // si tira il test: se fallisce la partita finisce (la banda non abbatte più nessuno).
 function abbattutiInPartita(gruppi, cd) {
     const modelli = gruppi.reduce((s, g) => s + g.n, 0);
@@ -119,12 +122,12 @@ function casualeConSeme(seme) {
     };
 }
 
-// Tiene solo i candidati che nessun altro batte (costo <=, attacco >=, pFuori <=)
+// Tiene solo i candidati che nessun altro batte (costo <=, attacco >=, pAbbattuto <=)
 function frontiera(candidati) {
-    const ordinati = [...candidati].sort((a, b) => a.costo - b.costo || b.attacco - a.attacco || a.pFuori - b.pFuori);
+    const ordinati = [...candidati].sort((a, b) => a.costo - b.costo || b.attacco - a.attacco || a.pAbbattuto - b.pAbbattuto);
     const tenuti = [];
     for (const c of ordinati) {
-        const battuto = tenuti.some(t => t.costo <= c.costo && t.attacco >= c.attacco - 1e-9 && t.pFuori <= c.pFuori + 1e-12);
+        const battuto = tenuti.some(t => t.costo <= c.costo && t.attacco >= c.attacco - 1e-9 && t.pAbbattuto <= c.pAbbattuto + 1e-12);
         if (!battuto) tenuti.push(c);
     }
     return tenuti;
@@ -152,18 +155,18 @@ function combinazioniCorpo(acquistabili) {
     return combinazioni;
 }
 
-// Resistenza mostrata: turni che servono in media al bersaglio per mettere fuori combattimento il modello
-function resistenzaDa(pFuori) {
-    return Math.min(RESISTENZA_MASSIMA, 1 / Math.max(pFuori, 1 / RESISTENZA_MASSIMA));
+// Resistenza mostrata: turni che servono in media al bersaglio per abbattere il modello
+function resistenzaDa(pAbbattuto) {
+    return Math.min(RESISTENZA_MASSIMA, 1 / Math.max(pAbbattuto, 1 / RESISTENZA_MASSIMA));
 }
 
-// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, pFuori, vivo, corpo, tiro }]
-// attacco e resistenza comprendono il bonus campagna; corpo, tiro, pFuori e vivo no
+// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, pAbbattuto, vivo, corpo, tiro }]
+// attacco e resistenza comprendono il bonus campagna; corpo, tiro, pAbbattuto e vivo no
 // (nella partita il bonus conta una volta sola, sull'attacco).
 async function candidatiDelTipo(banda, tipo, eroe, bersaglio, opzioni) {
     const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
-    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: resistenzaDa(c.pFuori) * crescita,
-        vivo: sopravvivenza(c.pFuori) });
+    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: resistenzaDa(c.pAbbattuto) * crescita,
+        vivo: sopravvivenza(c.pAbbattuto) });
     return (await candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni)).map(conCrescita);
 }
 
@@ -174,10 +177,10 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
         return {
             equip,
             costo: costoDi(equip),
-            corpo: v.attacco.pFuori,
+            corpo: v.attacco.pAbbattuto,
             tiro: 0,
-            attacco: v.attacco.pFuori,
-            pFuori: v.subito.pFuori
+            attacco: v.attacco.pAbbattuto,
+            pAbbattuto: v.subito.pAbbattuto
         };
     };
     if (tipo.animale) return [valuta([])];
@@ -195,7 +198,7 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
     const modello = modelloPerMotore(tipo, []);
     const tiri = [{ id: null, costo: 0, fuori: 0 }, ...acquistabili
         .filter(v => v.oggetto.tipo === 'tiro')
-        .map(v => ({ id: v.id, costo: v.costo, fuori: tiro(modello, v.oggetto, bersaglio, opzioni).fuoriPerTurno }))];
+        .map(v => ({ id: v.id, costo: v.costo, fuori: tiro(modello, v.oggetto, bersaglio, opzioni).abbattutiPerTurno }))];
     const tutti = [];
     for (const c of migliori) {
         for (const t of tiri) {
@@ -221,11 +224,11 @@ function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
         const { tipo } = tipoDi(banda, u.tipoId);
         const v = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioni);
         const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
-        const tiroTurno = v.tiro ? v.tiro.fuoriPerTurno : 0;
-        const att = (v.attacco.pFuori + opzioni.pesoTiro * tiroTurno) * crescita;
+        const tiroTurno = v.tiro ? v.tiro.abbattutiPerTurno : 0;
+        const att = (v.attacco.pAbbattuto + opzioni.pesoTiro * tiroTurno) * crescita;
         attacco += att * u.numero;
-        resistenza += resistenzaDa(v.subito.pFuori) * crescita * u.numero;
-        gruppi.push({ attacco: att, vivo: sopravvivenza(v.subito.pFuori), n: u.numero });
+        resistenza += resistenzaDa(v.subito.pAbbattuto) * crescita * u.numero;
+        gruppi.push({ attacco: att, vivo: sopravvivenza(v.subito.pAbbattuto), n: u.numero });
     }
     const indice = indiceObiettivo(opzioni.obiettivo, { attacco, resistenza }, gruppi, cdComandante(banda));
     return { attacco, resistenza, indice };

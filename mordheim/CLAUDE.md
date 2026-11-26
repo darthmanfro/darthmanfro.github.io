@@ -50,10 +50,14 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
    (fino a 2 armi da corpo a corpo, 1 da tiro, armatura, scudo/brocchiere,
    elmo); si tengono solo quelle non battute su costo, attacco e resistenza
    (`frontiera`). Animali: solo armi naturali.
-2. **Valori di un modello** contro il bersaglio: *attacco* = probabilità di
-   metterlo fuori combattimento in un turno + `pesoTiro` × fuori combattimento
-   al tiro; *pFuori* = probabilità di finire fuori combattimento in un turno di
-   attacchi del bersaglio; *resistenza* = 1 / pFuori, al massimo
+2. **Valori di un modello** contro il bersaglio. Si conta **abbattuto** =
+   a terra, stordito o fuori combattimento (`pAbbattuto`, `abbattutiPerTurno` in
+   js/motore.js): per l'utente conta ferire, quale dei tre esiti esca è
+   fortuna e chi è a terra o stordito lo finisce un altro modello (p. 38).
+   Conseguenza: lo stordimento in più di mazze/martelli e l'elmo non cambiano
+   gli abbattuti. *attacco* = probabilità di abbattere il bersaglio in un
+   turno + `pesoTiro` × abbattuti al tiro; *pAbbattuto* = probabilità di essere
+   abbattuto in un turno di attacchi del bersaglio; *resistenza* = 1 / pAbbattuto, al massimo
    `TURNI_PARTITA` (10). Il bonus campagna moltiplica attacco e resistenza dei
    non animali.
 3. **Indice** (`indiceObiettivo`), secondo `opzioni.obiettivo`:
@@ -100,15 +104,16 @@ Le proposte salvate hanno nella chiave `VERSIONE_CALCOLO` (in
 proposte vecchie non si mostrano come attuali.
 
 Risultati di riferimento (bersaglio "umano", corone della banda, obiettivo
-`duelli`, calcolo versione 2): Reikland 10 modelli, Middenheim 10, Marienburg
-14, Posseduti 9 (1 Posseduto, 3 Uominibestia), Cacciatori 12, Sorelle 14,
-Nonmorti 13, Skaven 17 (niente Rattorco). Con `massa` quasi tutte al massimo.
+`duelli`, calcolo versione 3): Reikland 10 modelli, Middenheim 11, Marienburg
+13, Posseduti 9 (1 Posseduto, 3 Uominibestia), Cacciatori 12, Sorelle 13,
+Nonmorti 14, Skaven 20 (12 Ratti giganti, niente Rattorco). Con `massa` quasi tutte al massimo.
 
 Confronto con liste di giocatori trovate sul web (2026-11-26; Dakka Dakka e
 Reddit non si leggono in automatico): Skaven del forum EEFL (13 modelli, eroi
-con spade) −6% rispetto alla proposta 1; Middenheim del blog Mordheim Treasure
-Hunters (13 modelli con alabarda, trombone, archi) −20%; Posseduti "tanti
+con spade) −5% rispetto alla proposta 1; Middenheim del blog Mordheim Treasure
+Hunters (13 modelli con alabarda, trombone, archi) −15%; Posseduti "tanti
 cultisti" del wiki 2d4chan (Magister in armatura pesante + 10 cultisti con
-ascia e scudo) −33%. I giocatori comprano oggetti che rendono poco nei conti
+ascia e scudo) −31% (calcolo versione 3). Le liste dei giocatori non sono per
+forza migliori: servono a capire dove guardare. I giocatori comprano oggetti che rendono poco nei conti
 (alabarda, trombone, archi senza arma da mischia, armature pesanti) e
 considerano cose non calcolate (malapietra, incantesimi, movimento).

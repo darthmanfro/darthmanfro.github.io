@@ -33,7 +33,7 @@ function caricaProposte() {
 }
 
 // Cambia quando cambiano i conti: le proposte salvate con i conti vecchi non si mostrano più
-const VERSIONE_CALCOLO = 2;
+const VERSIONE_CALCOLO = 3;
 
 const OBIETTIVI = {
     duelli: 'Uno contro uno in una partita (10 turni, test di rotta)',
@@ -116,9 +116,10 @@ function disegnaProposte(banda) {
         contenitore.innerHTML = tua + `
             <p class="nota spiegazione">Per ogni modello si provano tutte le combinazioni di equipaggiamento della lista
             (fino a due armi da corpo a corpo, un'arma da tiro, armatura, scudo o brocchiere, elmo) e poi si cerca la
-            composizione con l'indice più alto senza superare le corone. <strong>Attacco</strong>: bersagli messi fuori
-            combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta). <strong>Resistenza</strong>:
-            turni di attacchi del bersaglio che servono in media per mettere fuori combattimento ogni modello, sommati.
+            composizione con l'indice più alto senza superare le corone. <strong>Abbattuto</strong> = a terra, stordito o fuori
+            combattimento: quale dei tre è fortuna, e chi è a terra o stordito viene finito facilmente da un altro modello.
+            <strong>Attacco</strong>: bersagli abbattuti in un turno da tutta la banda (il tiro pesa secondo la scelta).
+            <strong>Resistenza</strong>: turni di attacchi del bersaglio che servono in media per abbattere ogni modello, sommati.
             <strong>Uno contro uno</strong> (predefinito): bersagli abbattuti in media in una partita di 10 turni,
             modello contro modello, finché la banda non fallisce il test di rotta (dal 25% di perdite, sulla Disciplina
             del comandante). Un modello forte vale quanto più modelli deboli dello stesso prezzo, una banda troppo piccola
@@ -126,7 +127,7 @@ function disegnaProposte(banda) {
             attacco totale e resistenza totale: cresce col quadrato dei modelli e porta quasi sempre al massimo. <strong>Campagna</strong>: eroi e truppa che guadagnano
             esperienza cresceranno partita dopo partita, gli animali (Ratti giganti, Mastini, Zombi, Lupi Neri...) no
             e non possono comprare armi; con il bonus campagna i primi valgono di più (attacco, resistenza e indice
-            delle proposte lo comprendono, i fuori combattimento a turno delle righe no).</p>`;
+            delle proposte lo comprendono, gli abbattuti a turno delle righe no).</p>`;
         return;
     }
     if (proposte.length === 0) {
@@ -154,7 +155,7 @@ function disegnaProposte(banda) {
 function tabellaUnita(banda, unita) {
     return `
         <table class="proposta-unita">
-            <thead><tr><th>Modelli</th><th>Equipaggiamento</th><th>Corone</th><th>Fuori comb. a turno</th></tr></thead>
+            <thead><tr><th>Modelli</th><th>Equipaggiamento</th><th>Corone</th><th>Abbattuti a turno</th></tr></thead>
             <tbody>
                 ${unita.map(u => {
                     const { tipo } = tipoDi(banda, u.tipoId);
@@ -180,7 +181,7 @@ function schedaBandaInviata(banda, inviata) {
     const unita = inviata.unita.map(u => {
         const { tipo } = tipoDi(banda, u.tipoId);
         const val = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioniCalcolo());
-        return { ...u, corpo: val.attacco.pFuori, tiro: val.tiro ? val.tiro.fuoriPerTurno : 0 };
+        return { ...u, corpo: val.attacco.pAbbattuto, tiro: val.tiro ? val.tiro.abbattutiPerTurno : 0 };
     });
     const prima = propostaMigliore();
     let confronto = '';

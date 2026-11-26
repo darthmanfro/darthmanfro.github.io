@@ -16,6 +16,11 @@
 // le Ferite (si tira per ogni ferita in più e vale il risultato peggiore).
 // Armi avvelenate: con un 6 per colpire la ferita è automatica.
 // Esiti: 0 nessuno, 1 a terra, 2 stordito, 3 fuori combattimento.
+// "Abbattuto" = a terra, stordito o fuori combattimento: quale dei tre esca è
+// fortuna, e un modello a terra o stordito viene finito facilmente da un altro
+// (regolamento p. 38: chi è stordito va fuori combattimento se un nemico lo
+// attacca in corpo a corpo, chi è a terra viene colpito in automatico).
+// La scelta di come combattere e l'ottimizzatore usano gli abbattuti.
 // Non calcolati: incantesimi, abilità, regole speciali non elencate nei
 // flag, colpi automatici contro modelli già a terra o storditi.
 // ==========================================================================
@@ -277,7 +282,7 @@ function accumula(totale, parziale, peso) {
 // Un turno di corpo a corpo
 // --------------------------------------------------------------------------
 
-// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, colpiParati, feriteAttese, pFerito, esiti[4], pFuori, colpi: [par] }
+// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, colpiParati, feriteAttese, pFerito, esiti[4], pFuori, pAbbattuto, colpi: [par] }
 // esiti: probabilità che nel turno il bersaglio resti senza conseguenze, sia atterrato, stordito, fuori combattimento
 function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
     const difB = difesa(bersaglio, confB, true);
@@ -327,6 +332,7 @@ function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
         pFerito: totale.pFerito,
         esiti: totale.esiti,
         pFuori: totale.esiti[ESITO_FUORI],
+        pAbbattuto: 1 - totale.esiti[ESITO_NESSUNO],
         colpi: parametri
     };
 }
@@ -350,7 +356,8 @@ function turnoMedio(attaccante, confA, bersaglio, confB) {
         feriteAttese: media(primo.feriteAttese, dopo.feriteAttese),
         pFerito: media(primo.pFerito, dopo.pFerito),
         esiti: primo.esiti.map((p, x) => media(p, dopo.esiti[x])),
-        pFuori: media(primo.pFuori, dopo.pFuori)
+        pFuori: media(primo.pFuori, dopo.pFuori),
+        pAbbattuto: media(primo.pAbbattuto, dopo.pAbbattuto)
     };
 }
 
@@ -385,7 +392,8 @@ function tiro(attaccante, arma, bersaglio, opzioni = {}) {
         pFeritoPerTiro: uno.pFerito,
         feritePerTiro: uno.feriteAttese,
         tiriPerTurno: colpiPerTurno,
-        fuoriPerTurno: uno.esiti[ESITO_FUORI] * colpiPerTurno
+        fuoriPerTurno: uno.esiti[ESITO_FUORI] * colpiPerTurno,
+        abbattutiPerTurno: (1 - uno.esiti[ESITO_NESSUNO]) * colpiPerTurno
     };
 }
 
@@ -396,7 +404,7 @@ function migliorTiro(modello, bersaglio, opzioni) {
     let migliore = null;
     for (const arma of armi) {
         const r = tiro(modello, arma, bersaglio, opzioni);
-        if (!migliore || r.fuoriPerTurno > migliore.fuoriPerTurno) migliore = r;
+        if (!migliore || r.abbattutiPerTurno > migliore.abbattutiPerTurno) migliore = r;
     }
     return migliore;
 }
@@ -415,8 +423,8 @@ function configurazioneBersaglio(bersaglio) {
         const confPari = configurazioniCC(pari)[0];
         let migliore = confs[0], valoreMigliore = -1;
         for (const c of confs) {
-            const offesa = turnoMedio(bersaglio, c, pari, confPari).pFuori;
-            const subisce = Math.max(0.005, turnoMedio(pari, confPari, bersaglio, c).pFuori);
+            const offesa = turnoMedio(bersaglio, c, pari, confPari).pAbbattuto;
+            const subisce = Math.max(0.005, turnoMedio(pari, confPari, bersaglio, c).pAbbattuto);
             if (offesa / subisce > valoreMigliore) { valoreMigliore = offesa / subisce; migliore = c; }
         }
         bersaglio._configurazione = migliore;
@@ -447,7 +455,7 @@ function valutaModello(modello, bersaglio, opzioni = {}) {
         const d = difesa(modello, conf, true);
         const subito = ricorda(chiaveProfilo + '|D|' + [d.ts, d.parata, d.elmo].join(','),
             () => turnoScelto(bersaglio, confB, modello, conf, opzioni.turno));
-        const rapporto = attacco.pFuori / Math.max(0.005, subito.pFuori);
+        const rapporto = attacco.pAbbattuto / Math.max(0.005, subito.pAbbattuto);
         if (!migliore || rapporto > migliore.rapporto) {
             migliore = { configurazione: conf, attacco, subito, rapporto };
         }
