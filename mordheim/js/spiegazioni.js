@@ -247,6 +247,14 @@ const SPIEGAZIONI = {
         ]) + p("L'ottimizzatore prova per ogni tipo di modello tutte le combinazioni di equipaggiamento della lista, scarta quelle battute da altre su costo, attacco e resistenza, poi cerca la composizione migliore senza superare le corone e rispettando capo, limiti per tipo, 6 eroi e modelli massimi.")
     },
 
+    avversari: {
+        titolo: 'Contro chi si calcola',
+        testo: () => elenco([
+            "<strong>Il bersaglio scelto in alto</strong>: la banda migliore contro quel modello. Utile se sai chi affronterai, ma la banda può essere troppo specializzata (per esempio niente asce se il bersaglio non ha armatura).",
+            "<strong>Più bersagli di riferimento (media)</strong>: per ogni modello si calcolano attacco e difesa contro ciascun bersaglio scelto, e l'indice della banda è la media degli indici contro i singoli bersagli. Ne esce una banda per tutte le occasioni, come ragiona un giocatore che non sa chi incontrerà. Attacco e resistenza mostrati sono anch'essi medie. Il calcolo dura di più (qualche secondo per bersaglio)."
+        ]) + p("Vale anche per attacco, resistenza e indice della scheda Banda e per il confronto tra bande. Il bersaglio in alto resta quello della scheda Probabilità e delle righe della scheda Banda.")
+    },
+
     pesoTiro: {
         titolo: 'Peso del tiro',
         testo: () => p("Quanto contano le armi da tiro rispetto al corpo a corpo nell'<em>attacco</em> di un modello: <strong>non conta</strong> (si guarda solo il corpo a corpo), <strong>la metà</strong> (predefinito: in partita non si tira in ogni turno e non sempre si vede un bersaglio), <strong>come il corpo a corpo</strong>. Valgono le opzioni di tiro della scheda Probabilità (gittata lunga, riparo, ha mosso).")
@@ -273,7 +281,7 @@ const SPIEGAZIONI = {
 
     indiciBanda: {
         titolo: 'Attacco, resistenza, indice della banda',
-        testo: () => p("Gli stessi valori delle proposte della scheda Ottimizzatore, calcolati sulla banda che hai composto, contro il bersaglio scelto in alto. Valgono le scelte di obiettivo, tiro e campagna dell'Ottimizzatore: così, se cambi a mano modelli o equipaggiamento, vedi subito se la banda migliora o peggiora.")
+        testo: () => p("Gli stessi valori delle proposte della scheda Ottimizzatore, calcolati sulla banda che hai composto, contro il bersaglio scelto in alto o contro più bersagli, secondo la scelta \"Contro\" dell'Ottimizzatore. Valgono le scelte di obiettivo, tiro e campagna dell'Ottimizzatore: così, se cambi a mano modelli o equipaggiamento, vedi subito se la banda migliora o peggiora.")
             + elenco([
                 '<strong>Attacco</strong>: bersagli abbattuti (a terra, storditi o fuori combattimento) in un turno da tutta la banda (il tiro pesa secondo la scelta).',
                 '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per abbatterlo (al massimo 10 per modello: una partita non dura di più).',

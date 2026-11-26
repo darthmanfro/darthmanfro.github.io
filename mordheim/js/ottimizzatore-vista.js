@@ -45,6 +45,10 @@ const PESI_CAMPAGNA = {
     0.15: 'Campagna: +15% a chi guadagna esperienza',
     0.3: 'Campagna lunga: +30% a chi guadagna esperienza'
 };
+const AVVERSARI = {
+    uno: 'Il bersaglio scelto in alto',
+    misti: 'Più bersagli di riferimento (media)'
+};
 const PESI_TIRO = {
     0: 'Non conta',
     0.5: 'Conta la metà del corpo a corpo',
@@ -53,8 +57,10 @@ const PESI_TIRO = {
 
 // Le proposte valgono solo per la banda, le corone, il bersaglio e le opzioni con cui sono state calcolate
 function chiaveCalcolo() {
-    return JSON.stringify([VERSIONE_CALCOLO, statoBanda.bandaId, statoBanda.corone, impostazioni.bersaglio,
-        impostazioni.personalizzato, opzioniCalcolo(), impostazioni.obiettivo, impostazioni.pesoTiro, impostazioni.pesoCampagna]);
+    const avversari = impostazioni.avversari === 'misti'
+        ? ['misti', idBersagliMisti()] : [impostazioni.bersaglio, impostazioni.personalizzato];
+    return JSON.stringify([VERSIONE_CALCOLO, statoBanda.bandaId, statoBanda.corone, ...avversari,
+        opzioniCalcolo(), impostazioni.obiettivo, impostazioni.pesoTiro, impostazioni.pesoCampagna]);
 }
 
 function disegnaOttimizzatore() {
@@ -63,9 +69,13 @@ function disegnaOttimizzatore() {
         .map(([v, testo]) => `<option value="${v}" ${String(scelto) === v ? 'selected' : ''}>${testo}</option>`).join('');
     document.getElementById('ottimizzatore-comandi').innerHTML = `
         <h2>Banda migliore per ${escapeHtml(banda.nome)} con ${statoBanda.corone} corone</h2>
-        <p class="nota">Contro il bersaglio <strong>${escapeHtml(bersaglioCorrente().nome)}</strong>
-            (si cambia in alto; il turno di corpo a corpo e le opzioni di tiro sono quelle della scheda Probabilità).</p>
+        <p class="nota">Contro ${impostazioni.avversari === 'misti' ? '' : 'il bersaglio '}<strong>${escapeHtml(descrizioneAvversari())}</strong>
+            (${impostazioni.avversari === 'misti' ? 'si scelgono qui sotto' : 'si cambia in alto'}; il turno di corpo a corpo e le opzioni di tiro sono quelle della scheda Probabilità).</p>
         <div class="ottimizzatore-scelte">
+            <div class="campo-riga">
+                <span>Contro ${iconaInfo('avversari')}</span>
+                <select data-azione="avversari" aria-label="Contro">${opzioni(AVVERSARI, impostazioni.avversari)}</select>
+            </div>
             <div class="campo-riga">
                 <span>Obiettivo ${iconaInfo('obiettivo')}</span>
                 <select data-azione="obiettivo" aria-label="Obiettivo">${opzioni(OBIETTIVI, impostazioni.obiettivo)}</select>
@@ -82,8 +92,24 @@ function disegnaOttimizzatore() {
                 ${calcoloInCorso ? 'Calcolo in corso…' : 'Calcola la banda migliore'}
             </button>
         </div>
+        ${impostazioni.avversari === 'misti' ? sceltaBersagliMisti() : ''}
         <progress id="avanzamento" class="${calcoloInCorso ? 'avanzamento' : 'avanzamento nascosto'}" max="1" value="0"></progress>`;
     disegnaProposte(banda);
+}
+
+// Caselle dei bersagli di riferimento per il calcolo contro più bersagli
+function sceltaBersagliMisti() {
+    const scelti = idBersagliMisti();
+    return `
+        <fieldset class="bersagli-misti">
+            <legend>Bersagli di riferimento (la media conta ognuno allo stesso modo)</legend>
+            ${Dati.bersagli.map(b => `
+                <label class="bersaglio-misto">
+                    <input type="checkbox" data-azione="bersaglioMisto" value="${b.id}" ${scelti.includes(b.id) ? 'checked' : ''}
+                           ${scelti.length === 1 && scelti.includes(b.id) ? 'disabled' : ''}>
+                    ${escapeHtml(b.nome)}
+                </label>`).join('')}
+        </fieldset>`;
 }
 
 // Opzioni del calcolo: quelle della scheda Probabilità più le scelte dell'Ottimizzatore
@@ -177,13 +203,8 @@ function tabellaUnita(banda, unita) {
 
 // La banda mandata dalla scheda Banda, calcolata come le proposte con i dati attuali
 function schedaBandaInviata(banda, inviata) {
-    const bersaglio = bersaglioCorrente();
-    const v = valoriBanda(banda, inviata.unita, bersaglio, opzioniOttimizzatore());
-    const unita = inviata.unita.map(u => {
-        const { tipo } = tipoDi(banda, u.tipoId);
-        const val = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioniCalcolo());
-        return { ...u, corpo: val.attacco.pAbbattuto, tiro: val.tiro ? val.tiro.abbattutiPerTurno : 0 };
-    });
+    const v = valoriBanda(banda, inviata.unita, bersagliOttimizzatore(), opzioniOttimizzatore());
+    const unita = righeConRendimento(banda, inviata.unita);
     const prima = propostaMigliore();
     let confronto = '';
     if (prima && prima.indice > 0) {
@@ -212,6 +233,14 @@ function schedaBandaInviata(banda, inviata) {
         </article>`;
 }
 
+// Unità con gli abbattuti a turno (corpo e tiro, senza bonus campagna, media sui bersagli) per tabellaUnita
+function righeConRendimento(banda, unitaElenco) {
+    return unitaElenco.map(u => {
+        const val = valoriModello(tipoDi(banda, u.tipoId).tipo, u.equip, bersagliOttimizzatore(), opzioniOttimizzatore());
+        return { ...u, corpo: val.corpo, tiro: val.tiro };
+    });
+}
+
 // Copia la banda della scheda Banda nel confronto e apre l'Ottimizzatore
 function inviaBanda() {
     impostazioni.bandaInviata = {
@@ -236,7 +265,7 @@ async function avviaOttimizzazione() {
     disegnaOttimizzatore();
     const chiave = chiaveCalcolo();
     const barra = () => document.getElementById('avanzamento');
-    const risultato = await ottimizzaBanda(bandaCorrente(), bersaglioCorrente(),
+    const risultato = await ottimizzaBanda(bandaCorrente(), bersagliOttimizzatore(),
         { ...opzioniOttimizzatore(), corone: statoBanda.corone },
         frazione => { if (barra()) barra().value = frazione; });
     calcoloInCorso = false;
@@ -261,6 +290,8 @@ function gestisciComandoOttimizzatore(elemento) {
         case 'obiettivo': impostazioni.obiettivo = elemento.value; return true;
         case 'pesoTiro': impostazioni.pesoTiro = Number(elemento.value); return true;
         case 'pesoCampagna': impostazioni.pesoCampagna = Number(elemento.value); return true;
+        case 'avversari': impostazioni.avversari = elemento.value === 'misti' ? 'misti' : 'uno'; return true;
+        case 'bersaglioMisto': cambiaBersaglioMisto(elemento.value, elemento.checked); return true;
         case 'ottimizza': avviaOttimizzazione(); return true;
         case 'usaProposta': usaProposta(Number(elemento.dataset.indice)); return true;
         case 'inviaBanda': inviaBanda(); return true;

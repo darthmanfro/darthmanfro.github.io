@@ -34,7 +34,7 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
 | `js/dati.js` | Caricamento dati, `tipoDi`, `oggettiAcquistabili`, `modelloPerMotore`, `formatta`, `escapeHtml`. |
 | `js/motore.js` | Calcolo esatto (niente simulazioni) di un turno di corpo a corpo e del tiro. `valutaModello(modello, bersaglio, opzioni)` → `{ attacco, subito, rapporto, tiro }`, con memoria nel bersaglio. |
 | `js/banda.js` | Stato della banda a mano (`statoBanda`), costi, `controllaBanda`, salvataggio in localStorage (`mordheim-banda-v1`). |
-| `js/bersaglio.js` | `impostazioni` (bersaglio, turno, opzioni di tiro, obiettivo, pesi...) salvate in `mordheim-impostazioni-v1`; `controllaObiettivo`. |
+| `js/bersaglio.js` | `impostazioni` (bersaglio, turno, opzioni di tiro, obiettivo, pesi...) salvate in `mordheim-impostazioni-v1`; `controllaObiettivo`; `bersagliOttimizzatore()` = bersagli dell'Ottimizzatore (il bersaglio in alto, oppure con `avversari: 'misti'` i bersagli di riferimento in `bersagliMisti`). |
 | `js/banda-vista.js` | Disegno della scheda Banda (riepilogo con attacco/resistenza/indice). |
 | `js/probabilita.js` | Scheda Probabilità: confronto passo per passo di due gruppi contro il bersaglio. |
 | `js/ottimizzatore.js` | Ricerca della banda migliore (vedi sotto). |
@@ -46,6 +46,13 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
 
 ## Ottimizzatore (`js/ottimizzatore.js`)
 
+0. **Bersagli**: `ottimizzaBanda` e `valoriBanda` ricevono un elenco di bersagli.
+   Ogni candidato ha i valori per bersaglio (`att[k]`, `pAbb[k]`, `vivo[k]`,
+   `res[k]`, vedi `completaCandidato`); `valutaGruppi` calcola l'indice contro
+   ogni bersaglio e fa la media. La frontiera tiene un candidato se nessun altro
+   lo batte contro *tutti* i bersagli, quindi con più bersagli i candidati sono
+   molti di più (Reikland: 720 con 1, 3523 con 7) e il calcolo è più lento
+   (~9 s a banda con 7 bersagli).
 1. **Candidati per tipo di modello**: tutte le combinazioni di equipaggiamento
    (fino a 2 armi da corpo a corpo, 1 da tiro, armatura, scudo/brocchiere,
    elmo); si tengono solo quelle non battute su costo, attacco e resistenza
@@ -85,6 +92,8 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
    dello stesso tipo (se l'indice cala < 1%), toglie i modelli che valgono
    meno dello 0,5% dell'indice, aggiunge modelli con le corone avanzate solo
    se migliorano l'indice di almeno lo 0,5% (`SOGLIA_MENO_MODELLI`).
+   La salita locale parte solo dalle `RIFINITE` (5) migliori ricerche diverse:
+   è la parte più lenta.
 5. **Proposte**: fino a 3; ordinate per indice, ma tra proposte quasi pari
    (scarto ≤ 0,5%) viene prima quella con meno modelli.
 
@@ -99,6 +108,7 @@ entrambi i posti.
 
 - Ottimizzatore senza browser:
   `node mordheim/prove/ottimizza.js skaven,posseduti duelli umano`
+  (bersaglio: un id, più id separati da virgola o `tutti` per la media)
   (bande vuote o `tutte` = tutte; obiettivo `duelli|massa|attacco`; ~3 s a banda).
   La ricerca non è perfetta: con una ricerca molto più lunga si trova al
   massimo un 2-3% in più (il terreno è a scatti per la soglia di rotta).

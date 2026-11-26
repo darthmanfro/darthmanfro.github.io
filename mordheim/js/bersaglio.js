@@ -21,7 +21,9 @@ let impostazioni = {
     obiettivo: 'duelli',       // ottimizzatore: duelli | massa | attacco (vedi OBIETTIVI)
     pesoTiro: 0.5,             // ottimizzatore: peso del tiro rispetto al corpo a corpo
     pesoCampagna: 0,           // ottimizzatore: bonus a chi guadagna esperienza (0 = prima partita)
-    bandaInviata: null         // ottimizzatore: { bandaId, unita } mandata dalla scheda Banda per il confronto
+    bandaInviata: null,        // ottimizzatore: { bandaId, unita } mandata dalla scheda Banda per il confronto
+    avversari: 'uno',          // ottimizzatore: 'uno' (il bersaglio scelto in alto) | 'misti' (media su più bersagli)
+    bersagliMisti: null        // ottimizzatore: id dei bersagli di riferimento per 'misti' (null = tutti)
 };
 
 let bersaglioInUso = null;     // modello per il motore, rifatto quando cambia il bersaglio
@@ -89,6 +91,43 @@ function modificaBersaglio(modifica) {
     impostazioni.personalizzato = copia;
     impostazioni.bersaglio = 'personalizzato';
     bersaglioInUso = null;
+}
+
+// Bersagli di riferimento scelti per il calcolo contro più bersagli (almeno uno)
+function idBersagliMisti() {
+    const tutti = Dati.bersagli.map(b => b.id);
+    const scelti = Array.isArray(impostazioni.bersagliMisti) ? impostazioni.bersagliMisti.filter(id => tutti.includes(id)) : tutti;
+    return scelti.length ? scelti : tutti;
+}
+
+// Bersagli contro cui calcolano l'Ottimizzatore e gli indici delle bande: il bersaglio
+// scelto in alto oppure i bersagli di riferimento scelti (si fa la media).
+// I modelli restano in memoria: il motore ci tiene i conti già fatti.
+let bersagliMistiInUso = { chiave: '', bersagli: [] };
+function bersagliOttimizzatore() {
+    if (impostazioni.avversari !== 'misti') return [bersaglioCorrente()];
+    const ids = idBersagliMisti();
+    const chiave = ids.join(',');
+    if (bersagliMistiInUso.chiave !== chiave) {
+        const bersagli = ids.map(id => Dati.bersagli.find(b => b.id === id))
+            .map(d => ({ ...modelloPerMotore(d, d.equip || []), nome: d.nome }));
+        bersagliMistiInUso = { chiave, bersagli };
+    }
+    return bersagliMistiInUso.bersagli;
+}
+
+// Testo breve: "Guerriero umano (spada)" oppure "media di 7 bersagli"
+function descrizioneAvversari() {
+    const bersagli = bersagliOttimizzatore();
+    return bersagli.length === 1 && impostazioni.avversari !== 'misti'
+        ? bersagli[0].nome : `la media di ${bersagli.length} ${bersagli.length === 1 ? 'bersaglio' : 'bersagli'} di riferimento`;
+}
+
+// Attiva o toglie un bersaglio dal calcolo contro più bersagli
+function cambiaBersaglioMisto(id, attivo) {
+    const scelti = new Set(idBersagliMisti());
+    if (attivo) scelti.add(id); else if (scelti.size > 1) scelti.delete(id);
+    impostazioni.bersagliMisti = Dati.bersagli.map(b => b.id).filter(x => scelti.has(x));
 }
 
 // Opzioni per il motore

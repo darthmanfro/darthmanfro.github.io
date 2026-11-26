@@ -58,7 +58,7 @@ function disegnaRiepilogo(banda) {
 // Attacco, resistenza e indice come nella scheda Ottimizzatore (stesse scelte
 // di obiettivo, tiro e campagna), con l'indice della proposta migliore se calcolata
 function riepilogoIndici(banda) {
-    const v = valoriBanda(banda, statoBanda.unita, bersaglioCorrente(), opzioniOttimizzatore());
+    const v = valoriBanda(banda, statoBanda.unita, bersagliOttimizzatore(), opzioniOttimizzatore());
     const migliore = propostaMigliore()
         ? `<small>proposta 1: ${formatta(propostaMigliore().indice)}</small>` : '';
     return `

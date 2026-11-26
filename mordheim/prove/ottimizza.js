@@ -2,7 +2,8 @@
 // Uso (dalla cartella del repo):
 //   node mordheim/prove/ottimizza.js [bande] [obiettivo] [bersaglio] [corone]
 //   bande: id separati da virgola (vuoto o "tutte" = tutte), obiettivo: duelli|massa|attacco,
-//   bersaglio: id di dati/bersagli.js (predefinito umano), corone: predefinite quelle della banda
+//   bersaglio: id di dati/bersagli.js (predefinito umano), più id separati da virgola o "tutti" per la media
+//   contro più bersagli; corone: predefinite quelle della banda
 // Esempio: node mordheim/prove/ottimizza.js skaven,posseduti duelli umano
 const fs = require('fs'), vm = require('vm'), path = require('path');
 
@@ -20,12 +21,12 @@ vm.runInContext('applicaDati(); impostaDatiMotore(Dati.regole, Dati.equip);', co
 contesto.argomenti = { bande: bandeArg && bandeArg !== 'tutte' ? bandeArg.split(',') : [], obiettivo, bersaglio, corone: Number(coroneArg) || 0 };
 vm.runInContext(`(async () => {
     const ids = argomenti.bande.length ? argomenti.bande : Dati.indice.map(b => b.id);
-    const d = Dati.bersagli.find(b => b.id === argomenti.bersaglio);
+    const elenco = argomenti.bersaglio === 'tutti' ? Dati.bersagli : argomenti.bersaglio.split(',').map(id => Dati.bersagli.find(b => b.id === id));
     for (const id of ids) {
         const banda = Dati.bande[id];
-        const bers = { ...modelloPerMotore(d, d.equip), nome: d.nome };
+        const bersagli = elenco.map(d => ({ ...modelloPerMotore(d, d.equip), nome: d.nome }));
         const corone = argomenti.corone || banda.corone;
-        const proposte = await ottimizzaBanda(banda, bers, { corone, obiettivo: argomenti.obiettivo, pesoTiro: 0.5, pesoCampagna: 0, turno: 'media' });
+        const proposte = await ottimizzaBanda(banda, bersagli, { corone, obiettivo: argomenti.obiettivo, pesoTiro: 0.5, pesoCampagna: 0, turno: 'media' });
         console.log('== ' + banda.nome + ' (' + corone + ' corone, massimo ' + banda.maxModelli + ' modelli)');
         for (const p of proposte) {
             console.log('  ' + p.modelli + ' modelli, ' + p.costo + ' corone, attacco ' + p.attacco.toFixed(2)
