@@ -33,7 +33,7 @@ function caricaProposte() {
 }
 
 // Cambia quando cambiano i conti: le proposte salvate con i conti vecchi non si mostrano più
-const VERSIONE_CALCOLO = 3;
+const VERSIONE_CALCOLO = 4;
 
 const OBIETTIVI = {
     duelli: 'Uno contro uno in una partita (10 turni, test di rotta)',
@@ -117,7 +117,8 @@ function disegnaProposte(banda) {
             <p class="nota spiegazione">Per ogni modello si provano tutte le combinazioni di equipaggiamento della lista
             (fino a due armi da corpo a corpo, un'arma da tiro, armatura, scudo o brocchiere, elmo) e poi si cerca la
             composizione con l'indice più alto senza superare le corone. <strong>Abbattuto</strong> = a terra, stordito o fuori
-            combattimento: quale dei tre è fortuna, e chi è a terra o stordito viene finito facilmente da un altro modello.
+            combattimento: quale dei tre è fortuna, e chi è a terra o stordito viene finito facilmente da un altro modello;
+            contano poco diversi (fuori 1, stordito 0,9, a terra 0,8), così vale un po' di più chi fa più male.
             <strong>Attacco</strong>: bersagli abbattuti in un turno da tutta la banda (il tiro pesa secondo la scelta).
             <strong>Resistenza</strong>: turni di attacchi del bersaglio che servono in media per abbattere ogni modello, sommati.
             <strong>Uno contro uno</strong> (predefinito): bersagli abbattuti in media in una partita di 10 turni,

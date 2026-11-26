@@ -20,12 +20,17 @@
 // fortuna, e un modello a terra o stordito viene finito facilmente da un altro
 // (regolamento p. 38: chi è stordito va fuori combattimento se un nemico lo
 // attacca in corpo a corpo, chi è a terra viene colpito in automatico).
-// La scelta di come combattere e l'ottimizzatore usano gli abbattuti.
+// La scelta di come combattere e l'ottimizzatore usano gli abbattuti, pesati poco
+// per esito (PESI_ESITI): fa un po' più male chi manda più spesso fuori combattimento.
+// Così contano anche lo stordimento delle armi da botta e l'elmo.
 // Non calcolati: incantesimi, abilità, regole speciali non elencate nei
 // flag, colpi automatici contro modelli già a terra o storditi.
 // ==========================================================================
 
 const ESITO_NESSUNO = 0, ESITO_A_TERRA = 1, ESITO_STORDITO = 2, ESITO_FUORI = 3;
+// Valore di ogni esito per gli abbattuti: nessuno, a terra, stordito, fuori combattimento
+const PESI_ESITI = [0, 0.8, 0.9, 1];
+const abbattutoPesato = esiti => esiti.reduce((s, p, x) => s + p * PESI_ESITI[x], 0);
 
 // Pugnale gratuito e armi naturali (animali), che non sono nel file JSON
 const PUGNALE_GRATUITO_ID = 'pugnale';
@@ -282,7 +287,8 @@ function accumula(totale, parziale, peso) {
 // Un turno di corpo a corpo
 // --------------------------------------------------------------------------
 
-// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, colpiParati, feriteAttese, pFerito, esiti[4], pFuori, pAbbattuto, colpi: [par] }
+// Risultato: { dadi, serveColpire, pColpo, colpiAttesi, colpiParati, feriteAttese, pFerito, esiti[4], pFuori,
+//             pAbbattuto (esiti pesati con PESI_ESITI), colpi: [par] }
 // esiti: probabilità che nel turno il bersaglio resti senza conseguenze, sia atterrato, stordito, fuori combattimento
 function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
     const difB = difesa(bersaglio, confB, true);
@@ -332,7 +338,7 @@ function turnoCorpoACorpo(attaccante, confA, bersaglio, confB, primoTurno) {
         pFerito: totale.pFerito,
         esiti: totale.esiti,
         pFuori: totale.esiti[ESITO_FUORI],
-        pAbbattuto: 1 - totale.esiti[ESITO_NESSUNO],
+        pAbbattuto: abbattutoPesato(totale.esiti),
         colpi: parametri
     };
 }
@@ -393,7 +399,7 @@ function tiro(attaccante, arma, bersaglio, opzioni = {}) {
         feritePerTiro: uno.feriteAttese,
         tiriPerTurno: colpiPerTurno,
         fuoriPerTurno: uno.esiti[ESITO_FUORI] * colpiPerTurno,
-        abbattutiPerTurno: (1 - uno.esiti[ESITO_NESSUNO]) * colpiPerTurno
+        abbattutiPerTurno: abbattutoPesato(uno.esiti) * colpiPerTurno
     };
 }
 

@@ -9,7 +9,8 @@
 //    nessun'altra batte insieme su costo, attacco e resistenza.
 // 2. Valore di un modello. "Abbattuto" = a terra, stordito o fuori
 //    combattimento: quale dei tre esca è fortuna, e chi è a terra o stordito
-//    viene finito facilmente da un altro modello (vedi js/motore.js).
+//    viene finito facilmente da un altro modello; pesati poco per esito
+//    (fuori 1, stordito 0,9, a terra 0,8: PESI_ESITI in js/motore.js).
 //    attacco = bersagli abbattuti a turno (corpo a corpo + tiro col suo
 //    peso); pAbbattuto = probabilità di essere abbattuto in un turno di
 //    attacchi del bersaglio;
