@@ -52,16 +52,23 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
    (`frontiera`). Animali: solo armi naturali.
 2. **Valori di un modello** contro il bersaglio: *attacco* = probabilità di
    metterlo fuori combattimento in un turno + `pesoTiro` × fuori combattimento
-   al tiro; *resistenza* = 1 / probabilità di finire fuori combattimento in un
-   turno di attacchi del bersaglio (massimo 50). Il bonus campagna moltiplica
-   i valori dei non animali.
+   al tiro; *pFuori* = probabilità di finire fuori combattimento in un turno di
+   attacchi del bersaglio; *resistenza* = 1 / pFuori, al massimo
+   `TURNI_PARTITA` (10). Il bonus campagna moltiplica attacco e resistenza dei
+   non animali.
 3. **Indice** (`indiceObiettivo`), secondo `opzioni.obiettivo`:
-   - `duelli` (predefinito dal 2026-11-26): Σ attacco × resistenza per
-     modello = bersagli abbattuti prima di cadere, uno contro uno. Non premia
-     il numero di modelli di per sé.
+   - `duelli` (predefinito, "Uno contro uno in una partita"):
+     `abbattutiInPartita` = bersagli abbattuti in media in 10 turni, modello
+     contro modello; ogni modello resta in piedi con probabilità
+     (1 − pFuori)^t; **test di rotta** (regolamento p. 39): da quando almeno il
+     25% dei modelli è fuori combattimento (`Math.ceil(n × 0,25)`, calcolato
+     esatto sui modelli indipendenti), a ogni turno si supera con
+     P(2D6 ≤ Cd del comandante), altrimenti la partita finisce. Così i modelli
+     quasi invulnerabili (Rattorco) non dominano e le bande piccole fuggono prima.
+     Non è additivo: `valutaStato` e `valoriBanda` lo calcolano sulla banda intera.
    - `massa` (era `equilibrio`): attacco totale × resistenza totale. Cresce col
      quadrato dei modelli → porta quasi sempre al massimo dei modelli (era il
-     difetto segnalato dall'utente).
+     difetto segnalato dall'utente). Senza rotta.
    - `attacco`: solo attacco totale.
 4. **Ricerca**: ricottura simulata (8 partenze × 6000 passi, seme fisso →
    risultati ripetibili), poi `rifinisci`: stesso equipaggiamento per le truppe
@@ -88,7 +95,20 @@ entrambi i posti.
   e controllare che `#errore-caricamento` resti `nascosto`.
 - `node --check mordheim/js/*.js` per la sintassi. Python non è installato.
 
+Le proposte salvate hanno nella chiave `VERSIONE_CALCOLO` (in
+`js/ottimizzatore-vista.js`): **aumentala quando cambi i conti**, così le
+proposte vecchie non si mostrano come attuali.
+
 Risultati di riferimento (bersaglio "umano", corone della banda, obiettivo
-`duelli`): Skaven 12 modelli con un Rattorco (con `massa` erano 20, con 11-13
-Ratti giganti); Posseduti 8 con 2 Posseduti; Reikland 11; Sorelle e Nonmorti
-restano a 14-15 perché lì i modelli economici rendono davvero.
+`duelli`, calcolo versione 2): Reikland 10 modelli, Middenheim 10, Marienburg
+14, Posseduti 9 (1 Posseduto, 3 Uominibestia), Cacciatori 12, Sorelle 14,
+Nonmorti 13, Skaven 17 (niente Rattorco). Con `massa` quasi tutte al massimo.
+
+Confronto con liste di giocatori trovate sul web (2026-11-26; Dakka Dakka e
+Reddit non si leggono in automatico): Skaven del forum EEFL (13 modelli, eroi
+con spade) −6% rispetto alla proposta 1; Middenheim del blog Mordheim Treasure
+Hunters (13 modelli con alabarda, trombone, archi) −20%; Posseduti "tanti
+cultisti" del wiki 2d4chan (Magister in armatura pesante + 10 cultisti con
+ascia e scudo) −33%. I giocatori comprano oggetti che rendono poco nei conti
+(alabarda, trombone, archi senza arma da mischia, armature pesanti) e
+considerano cose non calcolate (malapietra, incantesimi, movimento).

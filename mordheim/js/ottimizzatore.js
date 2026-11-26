@@ -8,18 +8,23 @@
 //    armatura, scudo o brocchiere, elmo) e si tengono solo quelle che
 //    nessun'altra batte insieme su costo, attacco e resistenza.
 // 2. Valore di un modello: attacco = bersagli messi fuori combattimento a
-//    turno (corpo a corpo + tiro col suo peso); resistenza = turni di
-//    attacchi del bersaglio che servono in media per metterlo fuori
-//    combattimento (1 / probabilità, al massimo 50).
+//    turno (corpo a corpo + tiro col suo peso); pFuori = probabilità di
+//    finire fuori combattimento in un turno di attacchi del bersaglio;
+//    resistenza = 1 / pFuori, al massimo TURNI_PARTITA (una partita non
+//    dura di più).
 // 3. Indice della banda, secondo l'obiettivo:
-//    - "duelli" (predefinito): somma per ogni modello di attacco ×
-//      resistenza = bersagli che il modello mette fuori combattimento, in
-//      media, prima di finirci lui, combattendo uno contro uno come in
-//      Mordheim. Un modello forte vale quanto più modelli deboli che
-//      costano uguale: il numero di modelli non è premiato di per sé.
+//    - "duelli" (predefinito): bersagli abbattuti in una partita di
+//      TURNI_PARTITA turni, uno contro uno (abbattutiInPartita): a ogni
+//      turno ogni modello ancora in piedi abbatte "attacco" bersagli; da
+//      quando la banda ha il 25% dei modelli fuori combattimento, all'inizio
+//      di ogni turno fa il test di rotta sulla Disciplina del comandante e,
+//      se lo fallisce, la partita finisce. Un modello forte vale quanto più
+//      modelli deboli che costano uguale, ma un modello quasi invulnerabile
+//      non conta all'infinito (la partita finisce) e una banda piccola
+//      fugge prima (pochi modelli persi bastano per la rotta).
 //    - "massa": attacco totale × resistenza totale (legge quadratica di
 //      Lanchester). Cresce col quadrato dei modelli: premia sempre il
-//      numero e porta quasi sempre al massimo di modelli.
+//      numero e porta quasi sempre al massimo di modelli. Senza rotta.
 //    - "attacco": conta solo l'attacco totale.
 //    A parità di risultato (scarto sotto SOGLIA_MENO_MODELLI) si
 //    preferisce la banda con meno modelli.
@@ -31,16 +36,73 @@
 //    con gli stessi dati il risultato è sempre lo stesso.
 // ==========================================================================
 
-const RESISTENZA_MASSIMA = 50;
+const TURNI_PARTITA = 10;                 // durata di una partita nei conti
+const RESISTENZA_MASSIMA = TURNI_PARTITA;
+const QUOTA_ROTTA = 0.25;                // test di rotta con il 25% dei modelli fuori combattimento
 const PASSI_RICERCA = 6000;
 const PARTENZE = 8;
 const SOGLIA_MENO_MODELLI = 0.005;   // un modello in più deve migliorare l'indice di almeno lo 0,5%
 
-// Indice di una banda dai suoi totali: { attacco, resistenza, duelli }
-function indiceObiettivo(obiettivo, totali) {
+// Probabilità di superare un test di Disciplina (2D6 <= Cd)
+function superaDisciplina(cd) {
+    let riusciti = 0;
+    for (let a = 1; a <= 6; a++) for (let b = 1; b <= 6; b++) if (a + b <= cd) riusciti++;
+    return riusciti / 36;
+}
+
+// Disciplina usata per il test di rotta: quella del comandante
+function cdComandante(banda) {
+    const capo = banda.eroi.find(t => t.capo) || banda.eroi[0];
+    return capo ? capo.profilo.Cd : 7;
+}
+
+// Probabilità di sopravvivere t turni: vivo[t] = (1 - pFuori)^t, t = 0..TURNI_PARTITA
+function sopravvivenza(pFuori) {
+    const vivo = [1];
+    for (let t = 1; t <= TURNI_PARTITA; t++) vivo.push(vivo[t - 1] * (1 - pFuori));
+    return vivo;
+}
+
+// Bersagli abbattuti in media in una partita, uno contro uno, con il test di rotta.
+// gruppi: [{ attacco (a turno), vivo (vedi sopravvivenza), n }]; cd: Disciplina del comandante.
+// Ogni modello combatte finché non è fuori combattimento. Dalla fine del turno in cui
+// la banda ha almeno il 25% dei modelli fuori combattimento, all'inizio di ogni turno
+// si tira il test: se fallisce la partita finisce (la banda non abbatte più nessuno).
+function abbattutiInPartita(gruppi, cd) {
+    const modelli = gruppi.reduce((s, g) => s + g.n, 0);
+    if (modelli === 0) return 0;
+    const soglia = Math.ceil(modelli * QUOTA_ROTTA);
+    const q = superaDisciplina(cd);
+    const dp = new Array(soglia);
+    let abbattuti = 0;
+    let rottaPrima = 0;     // P(almeno "soglia" perdite alla fine del turno precedente)
+    let testSuperati = 0;   // somma su k < t di P(soglia raggiunta al turno k) × q^(test fatti da allora)
+    for (let t = 1; t <= TURNI_PARTITA; t++) {
+        const inCampo = 1 - rottaPrima + testSuperati;
+        let colpi = 0;
+        for (const g of gruppi) colpi += g.attacco * g.n * g.vivo[t - 1];
+        abbattuti += inCampo * colpi;
+        // Perdite alla fine del turno t (somma di modelli indipendenti): servono solo le probabilità sotto la soglia
+        dp.fill(0); dp[0] = 1;
+        for (const g of gruppi) {
+            const x = 1 - g.vivo[t];
+            for (let m = 0; m < g.n; m++) {
+                for (let j = soglia - 1; j >= 1; j--) dp[j] = dp[j] * (1 - x) + dp[j - 1] * x;
+                dp[0] *= 1 - x;
+            }
+        }
+        const rotta = 1 - dp.reduce((s, v) => s + v, 0);
+        testSuperati = (testSuperati + rotta - rottaPrima) * q;
+        rottaPrima = rotta;
+    }
+    return abbattuti;
+}
+
+// Indice di una banda: totali = { attacco, resistenza }, gruppi e cd per abbattutiInPartita
+function indiceObiettivo(obiettivo, totali, gruppi, cd) {
     if (obiettivo === 'attacco') return totali.attacco;
     if (obiettivo === 'massa') return totali.attacco * totali.resistenza;
-    return totali.duelli;
+    return abbattutiInPartita(gruppi, cd);
 }
 
 const pausa = () => new Promise(r => setTimeout(r, 0));
@@ -57,12 +119,12 @@ function casualeConSeme(seme) {
     };
 }
 
-// Tiene solo i candidati che nessun altro batte (costo <=, attacco >=, resistenza >=)
+// Tiene solo i candidati che nessun altro batte (costo <=, attacco >=, pFuori <=)
 function frontiera(candidati) {
-    const ordinati = [...candidati].sort((a, b) => a.costo - b.costo || b.attacco - a.attacco || b.resistenza - a.resistenza);
+    const ordinati = [...candidati].sort((a, b) => a.costo - b.costo || b.attacco - a.attacco || a.pFuori - b.pFuori);
     const tenuti = [];
     for (const c of ordinati) {
-        const battuto = tenuti.some(t => t.costo <= c.costo && t.attacco >= c.attacco - 1e-9 && t.resistenza >= c.resistenza - 1e-9);
+        const battuto = tenuti.some(t => t.costo <= c.costo && t.attacco >= c.attacco - 1e-9 && t.pFuori <= c.pFuori + 1e-12);
         if (!battuto) tenuti.push(c);
     }
     return tenuti;
@@ -90,13 +152,18 @@ function combinazioniCorpo(acquistabili) {
     return combinazioni;
 }
 
-// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, duello, corpo, tiro }]
-// attacco, resistenza e duello comprendono il bonus campagna (una volta sola
-// nel duello); corpo e tiro no.
+// Resistenza mostrata: turni che servono in media al bersaglio per mettere fuori combattimento il modello
+function resistenzaDa(pFuori) {
+    return Math.min(RESISTENZA_MASSIMA, 1 / Math.max(pFuori, 1 / RESISTENZA_MASSIMA));
+}
+
+// Candidati di un tipo: [{ equip, costo (a modello), attacco, resistenza, pFuori, vivo, corpo, tiro }]
+// attacco e resistenza comprendono il bonus campagna; corpo, tiro, pFuori e vivo no
+// (nella partita il bonus conta una volta sola, sull'attacco).
 async function candidatiDelTipo(banda, tipo, eroe, bersaglio, opzioni) {
     const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
-    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: c.resistenza * crescita,
-        duello: c.attacco * c.resistenza * crescita });
+    const conCrescita = c => ({ ...c, attacco: c.attacco * crescita, resistenza: resistenzaDa(c.pFuori) * crescita,
+        vivo: sopravvivenza(c.pFuori) });
     return (await candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni)).map(conCrescita);
 }
 
@@ -110,7 +177,7 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
             corpo: v.attacco.pFuori,
             tiro: 0,
             attacco: v.attacco.pFuori,
-            resistenza: Math.min(RESISTENZA_MASSIMA, 1 / Math.max(v.subito.pFuori, 1 / RESISTENZA_MASSIMA))
+            pFuori: v.subito.pFuori
         };
     };
     if (tipo.animale) return [valuta([])];
@@ -148,19 +215,19 @@ async function candidatiSenzaCrescita(banda, tipo, eroe, bersaglio, opzioni) {
 // mano nella scheda Banda), con gli stessi conti delle proposte.
 // unitaElenco: [{ tipoId, numero, equip }]; opzioni come ottimizzaBanda (senza corone)
 function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
-    let attacco = 0, resistenza = 0, duelli = 0;
+    let attacco = 0, resistenza = 0;
+    const gruppi = [];
     for (const u of unitaElenco) {
         const { tipo } = tipoDi(banda, u.tipoId);
         const v = valutaModello(modelloPerMotore(tipo, u.equip), bersaglio, opzioni);
         const crescita = tipo.animale ? 1 : 1 + (opzioni.pesoCampagna || 0);
         const tiroTurno = v.tiro ? v.tiro.fuoriPerTurno : 0;
-        const att = v.attacco.pFuori + opzioni.pesoTiro * tiroTurno;
-        const res = Math.min(RESISTENZA_MASSIMA, 1 / Math.max(v.subito.pFuori, 1 / RESISTENZA_MASSIMA));
-        attacco += att * crescita * u.numero;
-        resistenza += res * crescita * u.numero;
-        duelli += att * res * crescita * u.numero;
+        const att = (v.attacco.pFuori + opzioni.pesoTiro * tiroTurno) * crescita;
+        attacco += att * u.numero;
+        resistenza += resistenzaDa(v.subito.pFuori) * crescita * u.numero;
+        gruppi.push({ attacco: att, vivo: sopravvivenza(v.subito.pFuori), n: u.numero });
     }
-    const indice = indiceObiettivo(opzioni.obiettivo, { attacco, resistenza, duelli });
+    const indice = indiceObiettivo(opzioni.obiettivo, { attacco, resistenza }, gruppi, cdComandante(banda));
     return { attacco, resistenza, indice };
 }
 
@@ -169,22 +236,24 @@ function valoriBanda(banda, unitaElenco, bersaglio, opzioni) {
 // --------------------------------------------------------------------------
 
 // Stato: [{ tipoId, eroe, c (indice del candidato), n }]
-function valutaStato(stato, candidati, obiettivo) {
-    let attacco = 0, resistenza = 0, duelli = 0, costo = 0, modelli = 0;
+// opzioni: { obiettivo, cd (Disciplina del comandante) }
+function valutaStato(stato, candidati, opzioni) {
+    let attacco = 0, resistenza = 0, costo = 0, modelli = 0;
+    const gruppi = [];
     for (const u of stato) {
         const c = candidati[u.tipoId][u.c];
         attacco += c.attacco * u.n;
         resistenza += c.resistenza * u.n;
-        duelli += c.duello * u.n;
         costo += c.costo * u.n;
         modelli += u.n;
+        gruppi.push({ attacco: c.attacco, vivo: c.vivo, n: u.n });
     }
-    const indice = indiceObiettivo(obiettivo, { attacco, resistenza, duelli });
+    const indice = indiceObiettivo(opzioni.obiettivo, { attacco, resistenza }, gruppi, opzioni.cd);
     return { attacco, resistenza, costo, modelli, indice };
 }
 
 function statoValido(stato, banda, candidati, corone, conteggioMinimi = false) {
-    const v = valutaStato(stato, candidati, 'attacco');
+    const v = valutaStato(stato, candidati, { obiettivo: 'attacco' });
     if (v.costo > corone || v.modelli > banda.maxModelli) return false;
     if (banda.maxEroi && stato.filter(u => u.eroe).reduce((s, u) => s + u.n, 0) > banda.maxEroi) return false;
     for (const tipo of [...banda.eroi, ...banda.truppe]) {
@@ -259,7 +328,7 @@ function statoIniziale(banda) {
 // avanzate aggiungendo il modello che migliora di più.
 function rifinisci(stato, banda, candidati, opzioni) {
     let attuale = compatta(stato);
-    const valore = s => valutaStato(s, candidati, opzioni.obiettivo).indice;
+    const valore = s => valutaStato(s, candidati, opzioni).indice;
     const tipiTruppa = [...new Set(attuale.filter(u => !u.eroe).map(u => u.tipoId))];
     for (const tipoId of tipiTruppa) {
         const gruppi = attuale.filter(u => u.tipoId === tipoId);
@@ -329,7 +398,8 @@ function firma(stato, candidati) {
 // avanzamento(frazione): chiamata durante il calcolo
 // Restituisce fino a 3 proposte diverse, la migliore per prima:
 // [{ unita: [{ tipoId, numero, equip }], attacco, resistenza, costo, modelli, indice }]
-async function ottimizzaBanda(banda, bersaglio, opzioni, avanzamento = () => {}) {
+async function ottimizzaBanda(banda, bersaglio, opzioniScelte, avanzamento = () => {}) {
+    const opzioni = { ...opzioniScelte, cd: cdComandante(banda) };
     const tipi = [...banda.eroi.map(t => ({ tipo: t, eroe: true })), ...banda.truppe.map(t => ({ tipo: t, eroe: false }))];
     const candidati = {};
     for (let i = 0; i < tipi.length; i++) {
@@ -344,13 +414,13 @@ async function ottimizzaBanda(banda, bersaglio, opzioni, avanzamento = () => {})
     for (let partenza = 0; partenza < PARTENZE; partenza++) {
         let stato = statoIniziale(banda);
         if (!statoValido(stato, banda, candidati, opzioni.corone)) return [];
-        let valore = valutaStato(stato, candidati, opzioni.obiettivo);
+        let valore = valutaStato(stato, candidati, opzioni);
         let migliore = { stato, valore };
         for (let passo = 0; passo < PASSI_RICERCA; passo++) {
             const temperatura = 0.15 * (1 - passo / PASSI_RICERCA);
             const nuovo = mossa(stato, banda, candidati, tipi, casuale);
             if (!nuovo || !statoValido(nuovo, banda, candidati, opzioni.corone)) continue;
-            const v = valutaStato(nuovo, candidati, opzioni.obiettivo);
+            const v = valutaStato(nuovo, candidati, opzioni);
             const relativo = (v.indice - valore.indice) / Math.max(valore.indice, 1e-6);
             // Si accetta se è meglio, oppure a volte se è di poco peggio (per non fermarsi troppo presto)
             const piuCaro = v.indice === valore.indice && v.costo > valore.costo;
@@ -369,7 +439,7 @@ async function ottimizzaBanda(banda, bersaglio, opzioni, avanzamento = () => {})
         }
         if (statoValido(migliore.stato, banda, candidati, opzioni.corone, true)) {
             const rifinito = rifinisci(migliore.stato, banda, candidati, opzioni);
-            trovate.set(firma(rifinito, candidati), { stato: rifinito, valore: valutaStato(rifinito, candidati, opzioni.obiettivo) });
+            trovate.set(firma(rifinito, candidati), { stato: rifinito, valore: valutaStato(rifinito, candidati, opzioni) });
         }
     }
     avanzamento(1);

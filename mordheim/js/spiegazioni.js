@@ -239,8 +239,10 @@ const SPIEGAZIONI = {
     obiettivo: {
         titolo: "Obiettivo dell'ottimizzatore",
         testo: () => elenco([
-            "<strong>Uno contro uno: bersagli abbattuti prima di cadere</strong> (predefinito). Per ogni modello: <em>attacco</em> (bersagli messi fuori combattimento in un turno) × <em>resistenza</em> (turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento) = quanti bersagli abbatte, in media, prima di essere abbattuto. Si sommano su tutta la banda. In Mordheim si combatte quasi sempre modello contro modello: un modello che vale il doppio in attacco e in resistenza abbatte quattro volte tanto, quindi la qualità conta quanto il numero. Un modello in più si aggiunge solo se migliora l'indice di almeno lo 0,5%, e a parità di risultato si propone la banda con meno modelli.",
-            "<strong>Massa: attacco totale × resistenza totale</strong> (legge quadratica di Lanchester, la scelta che c'era prima). Cresce con il quadrato del numero di modelli: premia sempre la quantità e porta quasi sempre al massimo dei modelli, anche con modelli scarsi.",
+            "<strong>Uno contro uno in una partita</strong> (predefinito): quanti bersagli abbatte in media la banda in una partita di 10 turni, combattendo modello contro modello. A ogni turno ogni modello ancora in piedi mette fuori combattimento in media <em>attacco</em> bersagli e ha una certa probabilità di finirci lui (contro gli attacchi del bersaglio). La qualità conta quanto il numero, ma un modello quasi invulnerabile (Rattorco, Posseduto) non vale all'infinito: la partita finisce.",
+            "<strong>Test di rotta</strong> (regolamento p. 39): quando almeno il 25% dei modelli è fuori combattimento (3 su 12, 4 su 13), all'inizio di ogni turno la banda tira 2D6 sulla Disciplina del comandante; se fallisce, la partita finisce e non abbatte più nessuno. Per questo una banda molto piccola rende meno: bastano poche perdite per farla fuggire. Il calcolo usa sempre la Disciplina del comandante, anche se nel frattempo è caduto.",
+            "Un modello in più si aggiunge solo se migliora l'indice di almeno lo 0,5%, e a parità di risultato si propone la banda con meno modelli.",
+            "<strong>Massa: attacco totale × resistenza totale</strong> (legge quadratica di Lanchester, la scelta che c'era prima). Cresce con il quadrato del numero di modelli: premia sempre la quantità e porta quasi sempre al massimo dei modelli, anche con modelli scarsi. Non considera il test di rotta.",
             "<strong>Massimo attacco</strong>: conta solo quanti bersagli metti fuori combattimento a turno; la resistenza non conta."
         ]) + p("L'ottimizzatore prova per ogni tipo di modello tutte le combinazioni di equipaggiamento della lista, scarta quelle battute da altre su costo, attacco e resistenza, poi cerca la composizione migliore senza superare le corone e rispettando capo, limiti per tipo, 6 eroi e modelli massimi.")
     },
@@ -264,8 +266,8 @@ const SPIEGAZIONI = {
         titolo: 'Attacco, resistenza, indice',
         testo: () => elenco([
             '<strong>Attacco</strong>: bersagli messi fuori combattimento in un turno da tutta la proposta, ognuno contro un bersaglio diverso (con il tiro pesato secondo la scelta).',
-            '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 50 per modello).',
-            "<strong>Indice</strong>: con <em>Uno contro uno</em> la somma, modello per modello, di attacco × resistenza (bersagli abbattuti prima di cadere); con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco; è il numero che l'ottimizzatore rende più alto possibile."
+            '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 10 per modello: una partita non dura di più).',
+            "<strong>Indice</strong>: con <em>Uno contro uno</em> i bersagli abbattuti in media in una partita di 10 turni, con il test di rotta; con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco; è il numero che l'ottimizzatore rende più alto possibile."
         ]) + p("Con il bonus campagna, attacco, resistenza e indice comprendono il bonus; la colonna \"Fuori comb. a turno\" delle righe no (è il valore vero di oggi).")
     },
 
@@ -274,8 +276,8 @@ const SPIEGAZIONI = {
         testo: () => p("Gli stessi valori delle proposte della scheda Ottimizzatore, calcolati sulla banda che hai composto, contro il bersaglio scelto in alto. Valgono le scelte di obiettivo, tiro e campagna dell'Ottimizzatore: così, se cambi a mano modelli o equipaggiamento, vedi subito se la banda migliora o peggiora.")
             + elenco([
                 '<strong>Attacco</strong>: bersagli messi fuori combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta).',
-                '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 50 per modello).',
-                "<strong>Indice</strong>: con <em>Uno contro uno</em> la somma, modello per modello, di attacco × resistenza (bersagli abbattuti prima di cadere); con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco."
+                '<strong>Resistenza</strong>: somma, per ogni modello, dei turni di attacchi del bersaglio che servono in media per metterlo fuori combattimento (al massimo 10 per modello: una partita non dura di più).',
+                "<strong>Indice</strong>: con <em>Uno contro uno</em> i bersagli abbattuti in media in una partita di 10 turni, con il test di rotta; con <em>Massa</em> attacco totale × resistenza totale; con <em>Massimo attacco</em> solo l'attacco."
             ])
             + p("Se hai già calcolato le proposte con gli stessi dati, accanto all'indice vedi quello della proposta 1, per confronto.")
     },

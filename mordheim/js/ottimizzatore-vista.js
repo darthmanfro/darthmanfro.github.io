@@ -21,8 +21,9 @@ function salvaProposte() {
 function caricaProposte() {
     try {
         const salvate = JSON.parse(localStorage.getItem(CHIAVE_PROPOSTE));
-        const banda = Dati.bande[JSON.parse(salvate.chiave)[0]];
-        const valide = banda && Array.isArray(salvate.proposte) && salvate.proposte.every(p =>
+        const [versione, bandaId] = JSON.parse(salvate.chiave);
+        const banda = Dati.bande[bandaId];
+        const valide = versione === VERSIONE_CALCOLO && banda && Array.isArray(salvate.proposte) && salvate.proposte.every(p =>
             Array.isArray(p.unita) && p.unita.every(u => tipoDi(banda, u.tipoId) && u.equip.every(id => Dati.equip[id])));
         if (valide) {
             proposte = salvate.proposte;
@@ -31,8 +32,11 @@ function caricaProposte() {
     } catch (e) { /* nessuna proposta salvata, o salvataggio rovinato */ }
 }
 
+// Cambia quando cambiano i conti: le proposte salvate con i conti vecchi non si mostrano più
+const VERSIONE_CALCOLO = 2;
+
 const OBIETTIVI = {
-    duelli: 'Uno contro uno: bersagli abbattuti prima di cadere',
+    duelli: 'Uno contro uno in una partita (10 turni, test di rotta)',
     massa: 'Massa: attacco totale × resistenza totale (premia il numero)',
     attacco: 'Massimo attacco'
 };
@@ -49,7 +53,7 @@ const PESI_TIRO = {
 
 // Le proposte valgono solo per la banda, le corone, il bersaglio e le opzioni con cui sono state calcolate
 function chiaveCalcolo() {
-    return JSON.stringify([statoBanda.bandaId, statoBanda.corone, impostazioni.bersaglio,
+    return JSON.stringify([VERSIONE_CALCOLO, statoBanda.bandaId, statoBanda.corone, impostazioni.bersaglio,
         impostazioni.personalizzato, opzioniCalcolo(), impostazioni.obiettivo, impostazioni.pesoTiro, impostazioni.pesoCampagna]);
 }
 
@@ -115,9 +119,10 @@ function disegnaProposte(banda) {
             composizione con l'indice più alto senza superare le corone. <strong>Attacco</strong>: bersagli messi fuori
             combattimento in un turno da tutta la banda (il tiro pesa secondo la scelta). <strong>Resistenza</strong>:
             turni di attacchi del bersaglio che servono in media per mettere fuori combattimento ogni modello, sommati.
-            <strong>Uno contro uno</strong> (predefinito): per ogni modello attacco × resistenza, cioè quanti bersagli
-            mette fuori combattimento prima di finirci lui; si sommano. Un modello forte vale quanto più modelli deboli
-            dello stesso prezzo, e a parità di risultato vince la banda con meno modelli. <strong>Massa</strong> moltiplica
+            <strong>Uno contro uno</strong> (predefinito): bersagli abbattuti in media in una partita di 10 turni,
+            modello contro modello, finché la banda non fallisce il test di rotta (dal 25% di perdite, sulla Disciplina
+            del comandante). Un modello forte vale quanto più modelli deboli dello stesso prezzo, una banda troppo piccola
+            fugge presto, e a parità di risultato vince la banda con meno modelli. <strong>Massa</strong> moltiplica
             attacco totale e resistenza totale: cresce col quadrato dei modelli e porta quasi sempre al massimo. <strong>Campagna</strong>: eroi e truppa che guadagnano
             esperienza cresceranno partita dopo partita, gli animali (Ratti giganti, Mastini, Zombi, Lupi Neri...) no
             e non possono comprare armi; con il bonus campagna i primi valgono di più (attacco, resistenza e indice
