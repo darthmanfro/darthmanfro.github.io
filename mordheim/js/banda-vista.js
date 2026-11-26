@@ -77,6 +77,7 @@ function riepilogoIndici(banda) {
         <div class="riepilogo-voce riepilogo-comando">
             <button type="button" class="btn" data-azione="inviaBanda" ${statoBanda.unita.length === 0 ? 'disabled' : ''}
                     title="Mostra questa banda accanto alle proposte dell'Ottimizzatore">Confronta con le proposte</button>
+            <div class="slot-pulsanti">${pulsantiSlot('slotDaBanda', statoBanda.unita)}</div>
         </div>`;
 }
 

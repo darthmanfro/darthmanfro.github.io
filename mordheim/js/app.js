@@ -7,7 +7,8 @@
 const SCHEDE = {
     banda: disegnaBanda,
     probabilita: disegnaProbabilita,
-    ottimizzatore: disegnaOttimizzatore
+    ottimizzatore: disegnaOttimizzatore,
+    confronto: disegnaConfrontoBande
 };
 
 // Salva e ridisegna la scheda aperta
@@ -58,7 +59,8 @@ function gestisciClic(evento) {
         case 'piu': cambiaNumero(uid, +1); break;
         case 'togliEquip': rimuoviEquip(uid, Number(pulsante.dataset.indice)); break;
         default:
-            if (!gestisciComandoProbabilita(pulsante, evento) && !gestisciComandoOttimizzatore(pulsante)) return;
+            if (!gestisciComandoProbabilita(pulsante, evento) && !gestisciComandoOttimizzatore(pulsante)
+                && !gestisciComandoConfrontoBande(pulsante)) return;
     }
     aggiornaTutto();
 }

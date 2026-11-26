@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="./css/banda.css">  <!-- Scheda Banda: catalogo e unità -->
     <link rel="stylesheet" href="./css/probabilita.css"> <!-- Scheda Probabilità: bersaglio e confronto -->
     <link rel="stylesheet" href="./css/ottimizzatore.css"> <!-- Scheda Ottimizzatore: proposte -->
+    <link rel="stylesheet" href="./css/confronto-bande.css"> <!-- Scheda Confronto bande: due slot -->
     <link rel="stylesheet" href="./css/spiegazioni.css">   <!-- Icone i e finestra delle spiegazioni -->
 </head>
 
@@ -49,6 +50,7 @@
         <button type="button" class="scheda-pulsante" data-scheda="banda">Banda</button>
         <button type="button" class="scheda-pulsante" data-scheda="probabilita">Probabilità</button>
         <button type="button" class="scheda-pulsante" data-scheda="ottimizzatore">Ottimizzatore</button>
+        <button type="button" class="scheda-pulsante" data-scheda="confronto">Confronto bande</button>
     </nav>
 
     <main>
@@ -73,6 +75,10 @@
             <div id="ottimizzatore-comandi" class="pannello"></div>
             <div id="ottimizzatore-proposte" class="ottimizzatore-proposte"></div>
         </section>
+
+        <section id="scheda-confronto" class="scheda">
+            <div id="confronto-bande"></div>
+        </section>
     </main>
 
     <!-- Spiegazione di una riga: si apre con le icone i (js/spiegazioni.js) -->
@@ -95,6 +101,7 @@
     <script src="./js/probabilita.js"></script>  <!-- Scheda Probabilità -->
     <script src="./js/ottimizzatore.js"></script>        <!-- Ricerca della banda migliore -->
     <script src="./js/ottimizzatore-vista.js"></script>  <!-- Scheda Ottimizzatore -->
+    <script src="./js/confronto-bande.js"></script>      <!-- Scheda Confronto bande -->
     <script src="./js/esporta.js"></script>      <!-- Esporta e importa in un file .json -->
     <script src="./js/app.js"></script>          <!-- Avvio e comandi -->
 </body>

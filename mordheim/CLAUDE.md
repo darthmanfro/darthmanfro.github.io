@@ -33,15 +33,16 @@ combattimento contro un bersaglio e cercare la banda migliore. Pagine statiche
 | `dati/bande/indice.js` + un file per banda | Reikland, Middenheim, Marienburg, Posseduti, Cacciatori di Streghe, Sorelle Sigmarite, Nonmorti, Skaven. Banda: `corone`, `maxModelli`, `maxEroi`, `liste` (prezzi per lista), `eroi`/`truppe` con `costo`, `min`, `max`, `profilo`, `lista`, `animale`, `grosso`, `vieta`, `maxGruppo`. |
 | `js/dati.js` | Caricamento dati, `tipoDi`, `oggettiAcquistabili`, `modelloPerMotore`, `formatta`, `escapeHtml`. |
 | `js/motore.js` | Calcolo esatto (niente simulazioni) di un turno di corpo a corpo e del tiro. `valutaModello(modello, bersaglio, opzioni)` → `{ attacco, subito, rapporto, tiro }`, con memoria nel bersaglio. |
-| `js/banda.js` | Stato della banda a mano (`statoBanda`), costi, `controllaBanda`, salvataggio in localStorage (`mordheim-banda-v1`). |
+| `js/banda.js` | Stato della banda a mano (`statoBanda`), costi, `controllaBanda`, salvataggio in localStorage (`mordheim-banda-v1`); `unitaValide` controlla le unità salvate, importate o negli slot. |
 | `js/bersaglio.js` | `impostazioni` (bersaglio, turno, opzioni di tiro, obiettivo, pesi...) salvate in `mordheim-impostazioni-v1`; `controllaObiettivo`; `bersagliOttimizzatore()` = bersagli dell'Ottimizzatore (il bersaglio in alto, oppure con `avversari: 'misti'` i bersagli di riferimento in `bersagliMisti`). |
 | `js/banda-vista.js` | Disegno della scheda Banda (riepilogo con attacco/resistenza/indice). |
 | `js/probabilita.js` | Scheda Probabilità: confronto passo per passo di due gruppi contro il bersaglio. |
 | `js/ottimizzatore.js` | Ricerca della banda migliore (vedi sotto). |
-| `js/ottimizzatore-vista.js` | Scheda Ottimizzatore: menu `OBIETTIVI`, `PESI_TIRO`, `PESI_CAMPAGNA`, proposte salvate (`mordheim-proposte-v1`), confronto con la banda fatta a mano. |
+| `js/ottimizzatore-vista.js` | Scheda Ottimizzatore: menu `OBIETTIVI`, `PESI_TIRO`, `PESI_CAMPAGNA`, proposte salvate (`mordheim-proposte-v1`), confronto con la banda fatta a mano; `righeConRendimento`, `tabellaUnita` usate anche dal confronto bande. |
 | `js/spiegazioni.js` | Testi delle icone "i" (chiavi come `obiettivo`, `valoriProposta`, `indiciBanda`). |
 | `js/esporta.js` | Esporta/importa bande, impostazioni e proposte in un `.json`. |
 | `js/app.js` | Avvio, collegamento dei comandi (`data-azione`), `aggiornaTutto()`. |
+| `js/confronto-bande.js` | Scheda Confronto bande: `impostazioni.slotConfronto` (2 slot `{ bandaId, corone, origine, unita }`), pulsanti `pulsantiSlot` (scheda Banda e proposte), tabella con il migliore in verde; calcola con `valoriBanda` e le scelte dell'Ottimizzatore. |
 | `prove/ottimizza.js` | Prova dell'ottimizzatore da riga di comando con Node (vedi sotto). |
 
 ## Ottimizzatore (`js/ottimizzatore.js`)
@@ -115,6 +116,15 @@ entrambi i posti.
 - Pagina: aprire `file:///.../mordheim/index.html` con Edge headless
   (`"/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" --headless=new --virtual-time-budget=5000 --dump-dom <url>`)
   e controllare che `#errore-caricamento` resti `nascosto`.
+- Interfaccia (clic veri): copiare `index.html`, `css/`, `js/`, `dati/` in una
+  cartella temporanea; nella copia di `index.html` mettere prima di `js/dati.js` uno
+  script che riempie `localStorage` (`mordheim-banda-v1`, `mordheim-impostazioni-v1`)
+  e prima di `</body>` uno script che clicca (`[data-azione=...]`) con dei
+  `setTimeout` e scrive i risultati in un `<pre>`; aprire con Edge headless
+  `--virtual-time-budget` alto (il calcolo dell'Ottimizzatore richiede tempo vero)
+  e leggere il `<pre>` dal `--dump-dom`. Scrivere questi script con il Write tool:
+  con gli heredoc della shell gli `
+` dentro le stringhe si rompono.
 - `node --check mordheim/js/*.js` per la sintassi. Python non è installato.
 
 Le proposte salvate hanno nella chiave `VERSIONE_CALCOLO` (in

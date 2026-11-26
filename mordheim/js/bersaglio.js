@@ -23,7 +23,8 @@ let impostazioni = {
     pesoCampagna: 0,           // ottimizzatore: bonus a chi guadagna esperienza (0 = prima partita)
     bandaInviata: null,        // ottimizzatore: { bandaId, unita } mandata dalla scheda Banda per il confronto
     avversari: 'uno',          // ottimizzatore: 'uno' (il bersaglio scelto in alto) | 'misti' (media su più bersagli)
-    bersagliMisti: null        // ottimizzatore: id dei bersagli di riferimento per 'misti' (null = tutti)
+    bersagliMisti: null,       // ottimizzatore: id dei bersagli di riferimento per 'misti' (null = tutti)
+    slotConfronto: [null, null] // confronto tra bande: vedi js/confronto-bande.js
 };
 
 let bersaglioInUso = null;     // modello per il motore, rifatto quando cambia il bersaglio

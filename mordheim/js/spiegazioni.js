@@ -255,6 +255,17 @@ const SPIEGAZIONI = {
         ]) + p("Vale anche per attacco, resistenza e indice della scheda Banda e per il confronto tra bande. Il bersaglio in alto resta quello della scheda Probabilità e delle righe della scheda Banda.")
     },
 
+    confrontoBande: {
+        titolo: 'Confronto tra due bande',
+        testo: () => p("Due posti, <strong>slot 1</strong> e <strong>slot 2</strong>, in cui mandare una banda con i pulsanti <em>Slot 1</em> e <em>Slot 2</em>: quelli del riepilogo della scheda Banda (la banda che stai componendo) e quelli di ogni proposta dell'Ottimizzatore. Puoi confrontare due proposte, la tua banda con una proposta, o due bande fatte da te (anche di tipi diversi, per esempio Skaven e Reikland).")
+            + elenco([
+                "Le due bande si calcolano con gli stessi conti delle proposte e con le scelte attuali dell'Ottimizzatore: contro chi (bersaglio in alto o più bersagli), obiettivo, tiro, campagna. Se le cambi, il confronto si aggiorna.",
+                "Nella tabella, riga per riga, in verde la banda migliore (per le corone, quella che spende meno). Sotto, di quanto è più alto l'indice della migliore.",
+                "Lo slot conserva una copia: se poi modifichi la banda nella scheda Banda, rimandala allo slot. Il pulsante dello slot che contiene già proprio quella banda ha la spunta ✓.",
+                "<em>Rimettila nella scheda Banda</em> sostituisce la banda della scheda Banda (e, se serve, apre quel tipo di banda con le corone dello slot)."
+            ])
+    },
+
     pesoTiro: {
         titolo: 'Peso del tiro',
         testo: () => p("Quanto contano le armi da tiro rispetto al corpo a corpo nell'<em>attacco</em> di un modello: <strong>non conta</strong> (si guarda solo il corpo a corpo), <strong>la metà</strong> (predefinito: in partita non si tira in ogni turno e non sempre si vede un bersaglio), <strong>come il corpo a corpo</strong>. Valgono le opzioni di tiro della scheda Probabilità (gittata lunga, riparo, ha mosso).")

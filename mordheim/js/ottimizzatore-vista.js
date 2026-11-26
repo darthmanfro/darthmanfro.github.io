@@ -126,12 +126,7 @@ function propostaMigliore() {
 // Banda mandata dalla scheda Banda per il confronto, se è della banda aperta e ancora valida
 function bandaInviata(banda) {
     const b = impostazioni.bandaInviata;
-    const valida = b && b.bandaId === banda.id && Array.isArray(b.unita) && b.unita.every(u => {
-        const t = tipoDi(banda, u.tipoId);
-        return t && Number.isInteger(u.numero) && u.numero >= 1 && Array.isArray(u.equip)
-            && u.equip.every(id => oggettiAcquistabili(banda, t.tipo, t.eroe).some(v => v.id === id));
-    });
-    return valida ? b : null;
+    return b && b.bandaId === banda.id && unitaValide(banda, b.unita) ? b : null;
 }
 
 function disegnaProposte(banda) {
@@ -167,6 +162,7 @@ function disegnaProposte(banda) {
                 <h3>Proposta ${i + 1}</h3>
                 <span>${p.costo} corone · ${p.modelli} modelli</span>
                 <button type="button" class="btn btn-primario" data-azione="usaProposta" data-indice="${i}">Usa questa banda</button>
+                ${pulsantiSlot('slotDaProposta', p.unita, `data-indice="${i}"`)}
             </header>
             <div class="proposta-valori">
                 <span>Attacco <strong>${formatta(p.attacco)}</strong></span>

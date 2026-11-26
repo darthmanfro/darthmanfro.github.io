@@ -47,7 +47,14 @@
         <li><strong>Limiti:</strong> l'ottimizzatore vede solo i numeri del calcolo: non valuta incantesimi, abilità, movimento, paura, esperienza iniziale degli eroi. Usalo come punto di partenza.</li>
     </ul>
 
-    <h2>4. I dati</h2>
+    <h2>4. Confronto bande</h2>
+    <ul>
+        <li><strong>Cosa fa:</strong> mette a confronto due bande, una per slot. Si mandano con i pulsanti <em>Slot 1</em> e <em>Slot 2</em> del riepilogo della scheda Banda (la banda che stai componendo) e di ogni proposta dell'Ottimizzatore: due proposte, la tua banda e una proposta, oppure due bande tue, anche di tipi diversi. Il pulsante dello slot che contiene già quella banda ha la spunta ✓.</li>
+        <li><strong>Come calcola:</strong> con gli stessi conti delle proposte e le scelte attuali dell'Ottimizzatore (contro chi, obiettivo, tiro, campagna). La tabella mostra banda, corone spese, modelli, attacco, resistenza e indice, con in verde la migliore riga per riga, e di quanto è più alto l'indice della migliore. Sotto, le due bande con i problemi di composizione e le righe dei modelli.</li>
+        <li><strong>Comandi:</strong> <em>Rimettila nella scheda Banda</em> sostituisce la banda della scheda Banda (aprendo, se serve, quel tipo di banda con le corone dello slot); <em>Svuota</em> libera lo slot. Gli slot restano salvati nel browser e finiscono nel file di <em>Esporta</em>.</li>
+    </ul>
+
+    <h2>5. I dati</h2>
     <ul>
         <li><strong>Bande disponibili</strong>: Mercenari del Reikland, di Middenheim e di Marienburg (600 corone), Culto dei Posseduti, Cacciatori di Streghe, Sorelle Sigmarite, Nonmorti, Skaven del Clan Eshin. Profili, costi, limiti, numero massimo di modelli, esperienza iniziale e liste di equipaggiamento (anche quelle separate: Tiratori, Fanatici, Flagellanti, Uominibestia e Anime Perdute, Truppa Skaven) vengono dalla sezione Bande del regolamento, con i suoi nomi. Mutazioni, incantesimi, preghiere e abilità non sono gestiti.</li>
         <li>Tabelle dei tiri, equipaggiamento, bersagli e bande sono nella cartella <code>dati/</code>: <code>regole.js</code>, <code>equipaggiamento.js</code>, <code>bersagli.js</code> e un file per banda in <code>dati/bande/</code> (elencati in <code>indice.js</code>). Ogni file contiene i dati in formato JSON dentro <code>registraDati("nome", { ... });</code>: per correggere un profilo o un costo modifica il valore rispettando virgolette doppie e virgole.</li>

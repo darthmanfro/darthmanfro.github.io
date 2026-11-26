@@ -1,0 +1,74 @@
+/* ==========================================================================
+   SCHEDA CONFRONTO BANDE
+   Due slot affiancati, tabella riepilogativa e pulsanti "Slot 1" "Slot 2".
+   Le schede degli slot riusano lo stile delle proposte (css/ottimizzatore.css),
+   la tabella quello del confronto della scheda Probabilità.
+   ========================================================================== */
+
+#confronto-bande h2 {
+    font-size: 1.15rem;
+}
+
+.tabella-confronto-bande {
+    margin-top: 10px;
+}
+
+.confronto-bande-esito {
+    margin-top: 8px;
+    font-size: 0.95rem;
+}
+
+.confronto-bande-colonne {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+    align-items: start;
+}
+
+.proposta-slot {
+    border-top-color: var(--oro);
+}
+
+.proposta-slot .proposta-testata h3 {
+    color: var(--oro);
+}
+
+.slot-vuoto {
+    border-style: dashed;
+    border-top-style: solid;
+}
+
+.slot-vuoto .nota {
+    margin-top: 6px;
+}
+
+.slot-comandi {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Pulsanti "Slot 1" "Slot 2": quello che contiene già la banda è segnato */
+.slot-pulsanti {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+.btn-slot {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.btn-slot.nello-slot {
+    border-color: var(--buono);
+    color: var(--buono);
+}
+
+@media (max-width: 760px) {
+    .confronto-bande-colonne {
+        grid-template-columns: 1fr;
+    }
+}

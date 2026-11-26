@@ -182,16 +182,21 @@ function ultimaBandaSalvata() {
     return Dati.bande[ultima] ? ultima : null;
 }
 
+// Unità ancora valide per la banda (tipi ed equipaggiamento presenti nei dati): per i
+// salvataggi, gli slot del confronto e le bande importate da un file
+function unitaValide(banda, unita) {
+    return Array.isArray(unita) && unita.every(u => {
+        const t = u && tipoDi(banda, u.tipoId);
+        return t && Number.isInteger(u.numero) && u.numero >= 1 && Array.isArray(u.equip)
+            && u.equip.every(id => oggettiAcquistabili(banda, t.tipo, t.eroe).some(v => v.id === id));
+    });
+}
+
 // Apre la banda indicata: quella salvata se è ancora valida, altrimenti una nuova
 function apriBanda(bandaId) {
     const salvata = leggiArchivio().bande[bandaId];
     const banda = Dati.bande[bandaId];
-    const valida = salvata && Array.isArray(salvata.unita) && Number.isFinite(salvata.corone)
-        && salvata.unita.every(u => {
-            const t = tipoDi(banda, u.tipoId);
-            return t && Number.isInteger(u.numero) && u.numero >= 1 && Array.isArray(u.equip)
-                && u.equip.every(id => oggettiAcquistabili(banda, t.tipo, t.eroe).some(v => v.id === id));
-        });
+    const valida = salvata && Number.isFinite(salvata.corone) && unitaValide(banda, salvata.unita);
     if (!valida) {
         nuovaBanda(bandaId);
         return;
